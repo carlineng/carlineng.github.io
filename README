@@ -1,0 +1,4 @@
+Generate the site with a theme
+
+pelican content -s pelicanconf.py -t /projects/your-site/themes/your-theme
+pelican content -s pelicanconf.py -t simple
