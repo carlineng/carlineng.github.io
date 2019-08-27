@@ -1,5 +1,5 @@
 Title: PBP: Tastes
-Date: 2019-08-26 14:00
+Date: 2019-08-26 09:00
 Category: Paris-Brest-Paris
 
 I suspect the best food of PBP is not found at the large controls where everyone stops. Volunteers there must plan to feed each one of the 6000+ hungry riders moving through. Those stops are purely concerned with volume. Will there be enough pasta, enough baguettes, enough coffee to feed the ravenous horde? Quality takes a back seat, and rightly so. Most people are famished, and would eat anything.

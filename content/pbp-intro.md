@@ -1,5 +1,5 @@
 Title: Paris-Brest-Paris 2019 Ride Report
-Date: 2019-08-25 13:08
+Date: 2019-08-26 23:59
 Category: Paris-Brest-Paris
 
 Paris-Brest-Paris has a credible claim to being the greatest cycling event in the world. If this is true, it’s not because the route is the most beautiful or the most challenging (though it has its fair share of both), but because of the sheer number of people doing the ride. Over 6000 riders attempt the 1200 km course, and the drama, triumph, and despair of each individual ride is on full display to onlookers.

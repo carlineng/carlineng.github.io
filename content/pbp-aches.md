@@ -1,5 +1,5 @@
 Title: PBP: A diary of discomfort
-Date: 2019-08-26 14:00
+Date: 2019-08-26 08:00
 Category: Paris-Brest-Paris
 
 Sunday 7:30 PM: feeling great. Start wave goes. Body feels amazing.
