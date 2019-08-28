@@ -1,6 +1,6 @@
 Title: PBP: A diary of discomfort
 Date: 2019-08-26 08:00
-Category: Paris-Brest-Paris
+Category: PBP2019
 
 Sunday 7:30 PM: feeling great. Start wave goes. Body feels amazing.
 
@@ -33,3 +33,5 @@ Wednesday 3 AM: leaving the Mortagne Airbnb, I start developing a pulsing headac
 Wednesday 11 AM: the finish. Nothing is terribly painful, but nothing feels great either. Contact points (butt, hands, feet), joints (knees, ankles), supporting tissues and small muscles (neck, Achilles) are all straining from nearly 90 hours of continuous effort. We are elated to have finished successfully, and all ignore the aches and pains in the glow of the finish.
 
 Thursday 8 AM: the aftermath. The worst after-effects are chapped lips and sores/abrasions in my mouth and tongue, which make it hard to eat. Of course legs and butt are sore. Not about to jump on the bike again today, but after 1200 km of riding, I’m pleasantly surprised at how good I feel. I can sense the randonnesia setting in, and thoughts begin to form in my head — what might a 2023 ride look like?
+
+[Home]({category}PBP2019)

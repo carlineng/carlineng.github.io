@@ -1,6 +1,6 @@
 Title: PBP: Sounds
 Date: 2019-08-26 10:00
-Category: Paris-Brest-Paris
+Category: PBP2019
 
 What does it sound like when 6000+ riders from every country on earth attempt to ride 1200 km?
 
@@ -14,3 +14,5 @@ What does it sound like when 6000+ riders from every country on earth attempt to
 * Constant chirping from Garmins, Wahoos, or other bike computers, alerting their owners to who knows what.
 * The clopping of bike cleats on asphalt and tile floors.
 * A cacophony of every language on Earth. French, German, English, Italian, Hindi, Korean, Japanese, Portuguese, Spanish, Chinese and more.
+
+[Next]({filename}/pbp-tastes.md)
