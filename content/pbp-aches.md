@@ -22,7 +22,7 @@ Tuesday 9 PM: Right knee decently swollen and left knee still feeling moderate p
 
 Wednesday 2 AM: wake up in the hotel, and everything is stiff as hell. Open my mouth to yawn and immediately yelp in pain due to chapped lips. Tongue and mouth are raw and abraded from constantly chewing crusty baguettes. Legs feel moderately better, but can tell that knees still won’t be happy back on the bike. 450 km to go. How will I manage?
 
-Wednesday 10 AM: the heat of the day is driving me crazy, and still bothersome knee pain means I’m moving super slowly. Leaving the control at Tinténiac, everyone rolls solo. Ian up ahead, ben, me, then Irving behind. After an hour, I catch Ben, then Irving catches us. Look back and a huge group of cyclists is coming up on us fast. I can’t resist the temptation, and jump on the train and start hammering to keep up with them. Japanese power couple pull us all the way to Villaine. Wait a second, knee suddenly feels great...
+Wednesday 10 AM: the heat of the day is driving me crazy, and still bothersome knee pain means I’m moving super slowly. After 3 hours of crawling, I look back and a huge group of cyclists is coming up on us fast. I can’t resist the temptation, and jump on the train and start hammering to keep up with them. Japanese power couple pulls us all the way to Villaine. Wait a second, knee suddenly feels great...
 
 Wednesday 4 PM: Decide my knee only feels good when I’m hammering. The last two days of riding slowly means my legs have a good deal of snap left. Passing a continuous stream of riders, and begin collecting a decent sized train of riders in my slipstream. Get swept up by a group of twelve or so serious 84-hour riders and tuck in. This is some of the most fun I’ve ever had on a bike.
 
