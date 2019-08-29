@@ -9,13 +9,14 @@
 */
 
 /* Imports */
-@import url("reset.css");
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif&display=swap');
 
 /***** Global *****/
 /* Body */
 body {
-    background: #f0ead6;
+    background: #f6f6f0;
     color: #000305;
+	font-family: "Noto Serif", serif;
     line-height: 1.429;
     margin: 0;
     padding: 0;
@@ -59,7 +60,7 @@ em, i {font-style: italic;}
 /* Lists */
 ul {
 	list-style: outside disc;
-	margin: 0em 0 0 1.5em;
+	margin: 0.2em 0 0 1.5em;
 }
 
 ol {
@@ -252,7 +253,7 @@ div.figure p.caption, figure p.caption { /* margin provided by figure */
 	Body
 *****************/
 #content {
-	background: #f0ead6;
+	background: #f6f6f0;
 	margin-bottom: 2em;
 	overflow: hidden;
 	padding: 20px 20px;
@@ -339,7 +340,7 @@ div.figure p.caption, figure p.caption { /* margin provided by figure */
 	About
 *****************/
 #about {
-	background: #f0ead6;
+	background: #f6f6f0;
 	font-style: normal;
 	margin-bottom: 2em;
 	overflow: hidden;
@@ -378,7 +379,7 @@ div.figure p.caption, figure p.caption { /* margin provided by figure */
 li:last-child .hentry, #content > .hentry {border: 0; margin: 0;}
 #content > .hentry {padding: 1em 0;}
 .hentry img{display : none ;}
-.entry-title {font-size: 3em; margin-bottom: 10px; margin-top: 0;}
+.entry-title {font-size: 2em; margin-bottom: 10px; margin-top: 0;}
 .entry-title a:link, .entry-title a:visited {text-decoration: none; color: #333;}
 .entry-title a:visited {background-color: #fff;}
 
@@ -390,7 +391,7 @@ li:last-child .hentry, #content > .hentry {border: 0; margin: 0;}
 	#posts-list footer address {display: block;}
 
 	/* Blog Index */
-	#posts-list {list-style: none; margin: 0;}
+	/* #posts-list {list-style: none; margin: 0;}*/
 	#posts-list .hentry {padding-left: 10px; position: relative;}
 
 	#posts-list footer {
