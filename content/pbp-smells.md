@@ -1,8 +1,0 @@
-Title: PBP: Smells
-Date: 2019-08-26 11:00
-Category: PBP2019
-
-At our first stop in the town of Mortagne-au-Perche, my first remark was “this whole town smells like brie.” Our evening start meant that for the first part of the ride, the French countryside was completely cloaked in darkness. Without visual stimulation aside from the lights of the other riders, my primary sensory experience was that of smell. Rain from the previous day had moistened the ground, and every forest, farm, and town that we sped through was an explosion of odors. Four primary smells left a major impression on me, and all but one I think was best described by a different type of cheese: brie, feta, and chèvre. The fourth was manure with some sour notes. Though none were unpleasant by any means, 770 miles of riding incurred fatigue in every part of my body, nose included. The occasional whiff of wild lavender was always a welcome reprieve, and early morning towns with boulangeries baking fresh croissants and baguettes were absolutely divine. Many US brevets travel on roads with moderate to heavy auto traffic, so I’m mostly accustomed to the smells of gasoline and diesel exhaust while I ride. I will take the smells of livestock, wildflowers, and pastries any day.
-
-
-[Next]({filename}/pbp-scenery.md)
