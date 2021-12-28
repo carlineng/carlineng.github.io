@@ -211,11 +211,17 @@ textarea {
     inset -1px -1px 0 rgba(0, 0, 0, 0.04);
 }
 
-/* Inline footnotes */
+/* Blog styling */
+#blog p {
+  max-width: 60ch; /* Limit line-length to 60 characters */
+  margin-bottom: 0.6em;
+  margin-top: 0.6em;
+}
 
 label.post-title {
   font-size: 1.1em;
   vertical-align: middle;
+  font-weight: 700;
 }
 
 label.post-title:before {
@@ -226,13 +232,16 @@ label.post-title:after {
   content: "";
 }
 
-label.post-title + input {
+#blog input,
+#blog input ~ p {
   display: none;
 }
 
-label.post-title + input:checked + p {
+#blog input:checked ~ p {
   display: block;
 }
+
+/* Inline footnotes */
 
 label {
   cursor: pointer;
