@@ -76,6 +76,10 @@ nav a:not(:last-of-type) {
 
 /* ------- General ------- */
 
+#social {
+  transition: all 0.5s;
+}
+
 a {
   text-decoration: none;
   color: var(--highlight);
@@ -281,7 +285,7 @@ a[href*="//"]:after
 {
   font-weight: 300;
   font-size: 0.85em;
-  content: "\2197"; /* top right arrow: ↗ */
+  /* content: "\2197"; /* top right arrow: ↗ */
   color: var(--textcolor);
   opacity: 0.25;
 }

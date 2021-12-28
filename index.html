@@ -18,6 +18,7 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -42,8 +43,24 @@
         </a>
       </figure>
 
-      <p>You've found Carlin's homepage</p>
-      <div id="emoji-carousel"></div>
+      <p>
+        Former Data Engineer and Engineering Manager at <a href='https://strava.com/'>Strava</a>; then spent two years
+        as a Sales Engineer and
+        Data Scientist at <a href='https://www.snowflake.com/'>Snowflake</a>. Currently Head of Data Engineering at <a
+          href='https://www.geteppo.com/'>Eppo</a>. Avid cyclist, and proud member of the Dolphin Club in San Francisco,
+        California.
+      </p>
+
+      <div style="position: absolute; bottom: 5%; font-size: .8em; color: #949494">
+        Made with
+        <span id="emoji-carousel">🚴‍♂️</span>
+        by Carlin Eng <br />
+        <div id="social">
+          <a href="https://www.facebook.com/carlin.eng/" class="fa fa-facebook"></a>
+          <a href="https://twitter.com/carlineng" class="fa fa-twitter"></a>
+          <a href="https://www.linkedin.com/in/carlineng/" class="fa fa-linkedin"></a>
+        </div>
+      </div>
     </section>
 
     <section id="blog">
@@ -367,6 +384,39 @@
 
       <script>
 
+        // Social iccon mover
+        const socials = document.querySelector('#social')
+        socials.addEventListener('mouseover', (e) => {
+          socials.style.transform = `translate(${e.offsetX - 30}px, ${e.offsetY + 40}px)`;
+        });
+
+        socials.addEventListener('mouseleave', (e) => {
+          socials.style.transform = '';
+        });
+
+        // Emoji carousel
+
+        function randn() {
+          var u = 0, v = 0;
+          while (u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+          while (v === 0) v = Math.random();
+          return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        const carousel = document.querySelector('#emoji-carousel');
+
+        const emojis = ['☕', '🚴‍♂️', '🍜', '🥟', '😵‍💫', '❤️'];
+
+        function switchEmoji() {
+          if (randn() > 0.92) {
+            const emoji = emojis[Math.round(Math.random() * 100) % (emojis.length)];
+            carousel.textContent = emoji;
+          }
+        }
+
+        setInterval(switchEmoji, 1000);
+
+        // Controls for PBP Discomfort section
         const backButton = document.querySelector('#discomforts .previous');
         const nextButton = document.querySelector('#discomforts .next');
 
@@ -413,7 +463,7 @@
 
         window.addEventListener('keyup', e => {
           const curTarget = document.querySelector(':target');
-          if (curTarget.id === "pbp") {
+          if (curTarget && curTarget.id === "pbp") {
             if (e.key === 'ArrowRight') {
               nextEntry();
             } else if (e.key === 'ArrowLeft') {
