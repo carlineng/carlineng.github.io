@@ -233,11 +233,11 @@ label.post-title:after {
 }
 
 #blog input,
-#blog input ~ p {
+#blog input + .post-body {
   display: none;
 }
 
-#blog input:checked ~ p {
+#blog input:checked + .post-body {
   display: block;
 }
 
@@ -360,7 +360,7 @@ a[href$=".png"]:before {
 /* ------- News ------- */
 
 article + article {
-  margin-top: 4.5em;
+  margin-top: 2.5em;
 }
 
 article h2 {
