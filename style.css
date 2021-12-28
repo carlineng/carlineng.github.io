@@ -213,6 +213,27 @@ textarea {
 
 /* Inline footnotes */
 
+label.post-title {
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+
+label.post-title:before {
+  content: "";
+}
+
+label.post-title:after {
+  content: "";
+}
+
+label.post-title + input {
+  display: none;
+}
+
+label.post-title + input:checked + p {
+  display: block;
+}
+
 label {
   cursor: pointer;
   vertical-align: super;
