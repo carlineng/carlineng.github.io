@@ -395,7 +395,7 @@ article time {
   padding: 0 5vw;
   margin: 0;
   display: grid;
-  place-items: center;
+  place-items: normal start;
   align-content: center;
   scroll-snap-align: center;
 }
@@ -415,6 +415,16 @@ article time {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+}
+
+.slides #discomforts {
+  transition: all 0.2s;
+}
+
+.slides #discomforts .hidden {
+  height: 0;
+  visibility: hidden;
+  margin-bottom: 0px;
 }
 
 /* ------- Lightbox ------- */

@@ -2,270 +2,441 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Site title</title>
-    <meta name="description" content="Site description" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <!-- Recommended minimum -->
-    <meta property="og:title" content="Homepage of Carlin Eng" />
-    <meta property="og:description" content="Homepage of Carlin Eng" />
-    <meta property="og:image" content="img/site-image.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
+  <title>Carlin Eng</title>
+  <meta name="Carlin Eng" content="Homepage of Carlin Eng" />
 
-    <!-- You could also inline the stylesheet -->
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>
-        <a href="#home">Site title</a>
-      </h1>
-      <nav>
-        <a href="#about">About</a>
-        <a href="#news">News</a>
-        <a href="#photos">Photos</a>
-        <a href="#portfolio">Portfolio</a>
-      </nav>
-    </header>
+  <!-- Recommended minimum -->
+  <meta property="og:title" content="Carlin Eng" />
+  <meta property="og:description" content="Homepage of Carlin Eng" />
+  <meta property="og:image" content="img/site-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
 
-    <main>
-      <section id="home">
-        <!-- HOME -->
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-        <p>This is the homepage, displayed by default.</p>
-      </section>
+<body>
+  <header>
+    <h1>
+      <a href="#home">Carlin Eng</a>
+    </h1>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#blog">Blog</a>
+      <a href="#pbp">PBP 2019 🚴‍♂️</a>
+    </nav>
+  </header>
 
-      <section id="about">
-        <!-- ABOUT -->
+  <main>
+    <section id="home">
+      <!-- HOME -->
 
+      <figure>
+        <a href="#img-home">
+          <img loading="lazy" alt="" src="./img/site-image.jpg" style="max-width:50%" />
+        </a>
+      </figure>
+
+      <p>You've found Carlin's homepage</p>
+      <div id="emoji-carousel"></div>
+    </section>
+
+    <section id="blog">
+      <!-- BLOG -->
+
+      <article>
+        <h2>
+          Blogging with Joe Bloggs
+          <time datetime="2020-10-10">10.10.2020</time>
+        </h2>
         <p>
-          This is the about page.
-          <a href="#another-page">This is a link to another page</a>.
+          One <em>could</em> use this setup to write <s>a blog</s> short
+          updates. For images make sure to use the
+          <code>loading="lazy"</code> attribute, so they get loaded only when
+          needed.<label for="lazy">1</label><input type="checkbox" id="lazy" /><small>
+            You might be able to use it for <code>iframe</code> embeds too(?),
+            but maybe just write a link to the Youtube video instead.
+          </small>
         </p>
+      </article>
+
+      <article>
+        <h2>
+          <a href="https://example.com">Why Your Cat Bites You</a>
+          <time datetime="2004-12-12">12.12.2004</time>
+        </h2>
+        <p>Honestly you don't want to know.</p>
+      </article>
+    </section>
+
+    <section id="pbp">
+      <!-- PORTFOLIO -->
+
+      <div class="slides">
+        <figure>
+          <h1>Paris-Brest-Paris 2019 Ride Report</h1>
+          <p>
+            Paris-Brest-Paris has a credible claim to being the greatest
+            cycling event in the world. If this is true, it’s not because the
+            route is the most beautiful or the most challenging (though it has
+            its fair share of both), but because of the sheer number of people
+            participating. Over 6,000 riders attempt the 1200 km course, and
+            the drama, triumph, and despair of each individual ride is on full
+            display to onlookers.
+          </p>
+          <p>
+            No ride report can accurately recreate the experience of the ride,
+            so rather than a play-by-play account, I’ll instead tell a series
+            of vignettes about my sensory experiences — the sights, sounds,
+            smells, tastes, and aches of my 88 hours on the bike. It’s a
+            terribly incomplete picture, but telling the full story is an
+            impossible task. Paris-Brest-Paris is something you have to ride
+            to truly understand.
+          </p>
+          <p style="margin-top: 1em">🚴‍♂️🚴‍♀️🚴🏽🚴🏼‍♂️🚴</p>
+        </figure>
+
+        <figure style="background: #00233f; color: #fdcb39">
+          <h1>Lights</h1>
+          <p>
+            Riding PBP means riding at all times of day, including the dead of
+            night. My wave rolled at 7:30pm, with the sun hanging inches above
+            the horizon. The chaos and the rush of the start made it tough to
+            appreciate the sunset, but night fell around us and my jitters
+            calmed. We began to catch riders in prior start waves, and the
+            infinite trail of red tail lights ahead looked like
+            <span style="color: red">glowing coals</span>
+            marking the way to Brest. Every now and then I’d be tempted to
+            look back, but it was always a mistake. Modern headlights are
+            <em>viciously bright</em>. Even a brief glance would make my eyes
+            wince in pain and leave spots in my vision. I had to glean
+            whatever information about the situation behind me by watching the
+            shadows dance. When the lines of my shadow sharpened, it meant
+            someone was approaching from behind. As they
+            <span style="filter: blur(0.66px)">faded</span>, it meant we were
+            separating.
+          </p>
+          <p>
+            Three hours into the ride, I stopped on the side of the road to
+            relieve myself. As I stretched my back and neck, I looked up at
+            the sky and for the first time noticed the half-moon and the stars
+            of the Milky Way above. I took a few extra seconds to soak in the
+            beauty of the moment — red lights marching on ahead, white lights
+            slowly approaching from behind, and the cosmos above, twinkling
+            softly like any other night. I remounted my bike and rejoined the
+            endless stream of red and white making its way west.
+          </p>
+          <p style="margin-top: 1em">🚴‍♂️🚴‍♀️🚴🏽🚴🏼‍♂️🚴</p>
+        </figure>
 
         <figure>
-          <a href="#img-about">
-            <img
-              loading="lazy"
-              alt=""
-              src="//dummyimage.com/1200x600/ddd/bbb"
-              width="1200"
-              height="600"
-            />
-          </a>
-          <figcaption>
-            Example of an image with a link to a larger version.
-          </figcaption>
-        </figure>
-      </section>
-
-      <section id="news">
-        <!-- NEWS -->
-
-        <article>
-          <h2>
-            Blogging with Joe Bloggs
-            <time datetime="2020-10-10">10.10.2020</time>
-          </h2>
+          <h1>Smells</h1>
           <p>
-            One <em>could</em> use this setup to write <s>a blog</s> short
-            updates. For images make sure to use the
-            <code>loading="lazy"</code> attribute, so they get loaded only when
-            needed.<label for="lazy">1</label
-            ><input type="checkbox" id="lazy" /><small>
-              You might be able to use it for <code>iframe</code> embeds too(?),
-              but maybe just write a link to the Youtube video instead.
-            </small>
+            At our first stop in the town of Mortagne-au-Perche, my first
+            remark was “this whole town smells like brie.” Our evening start
+            meant that for the first part of the ride, the French countryside
+            was completely cloaked in darkness. Without visual stimulation
+            aside from the lights of the other riders, my primary sensory
+            experience was that of smell.
           </p>
-        </article>
 
-        <article>
-          <h2>
-            <a href="https://example.com">Why Your Cat Bites You</a>
-            <time datetime="2004-12-12">12.12.2004</time>
-          </h2>
-          <p>Honestly you don't want to know.</p>
-        </article>
-      </section>
+          <p>
+            Rain from the previous day had moistened the ground, and every
+            forest, farm, and town that we sped through was an explosion of
+            odors. Four primary smells left a major impression on me, and all
+            but one I think was best described by a different type of cheese:
+            brie, feta, and chèvre. The fourth was manure with some sour
+            notes. Though none were unpleasant by any means, 770 miles of
+            riding incurred fatigue in every part of my body, nose included.
+            The occasional whiff of wild lavender was always a welcome
+            reprieve, and early morning towns with boulangeries baking fresh
+            croissants and baguettes were absolutely divine.
+          </p>
 
-      <section id="photos">
-        <!-- PHOTOS -->
+          <p>
+            Many US brevets travel on roads with moderate to heavy auto
+            traffic, so I’m mostly accustomed to the smells of gasoline and
+            diesel exhaust while I ride. I will take the smells of livestock,
+            wildflowers, and pastries any day.
+          </p>
 
-        <p>An example of a photo gallery with a lightbox.</p>
+          <p style="margin-top: 1em">🚴‍♂️🚴‍♀️🚴🏽🚴🏼‍♂️🚴</p>
+        </figure>
 
-        <!-- You can use this grid of images in any page -->
+        <figure>
+          <h1>Scenery</h1>
+          <p>
+            The PBP course rolls up and down through the tiny villages of
+            Normandy and Brittany. The scenery, while at times quite lovely,
+            can also become tiresome. The following pattern repeats endlessly:
+            ride through a flat stretch lined with either cow pastures or corn
+            fields. Turn into a small climb through a deciduous forest, and
+            descend until you reach the outskirts of town. The road pitches up
+            again, and cobblestone houses begin to appear, getting denser and
+            denser until you reach the top of the hill, invariably marked by a
+            large church. Begin the descent through the center of town over
+            cobbled roads, past the boulangerie and the pharmacy, and before
+            you know it, you’re back in the corn fields. Quédillac, Médréac,
+            Merléac, Rétéac, Loudéac. Rinse and repeat.
+          </p>
+          <img loading="lazy" alt="Sunflowers on the return leg, near Louvigny" src="./img/pbp_scenery.jpg"
+            style="max-width: 25%" />
+          <figcaption>Sunflowers on the return leg, near Louvigny</figcaption>
 
-        <div class="grid">
-          <a href="#img-01"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x300/ddd/bbb"
-          /></a>
-          <a href="#img-02"
-            ><img loading="lazy" alt="" src="//dummyimage.com/400x300/ddd/bbb"
-          /></a>
-          <a href="#img-03"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x400/ddd/bbb"
-          /></a>
-          <a href="#img-04"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x300/ddd/bbb"
-          /></a>
-          <a href="#img-05"
-            ><img loading="lazy" alt="" src="//dummyimage.com/400x300/ddd/bbb"
-          /></a>
-          <a href="#img-06"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x400/ddd/bbb"
-          /></a>
-          <a href="#img-07"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x300/ddd/bbb"
-          /></a>
-          <a href="#img-08"
-            ><img loading="lazy" alt="" src="//dummyimage.com/400x300/ddd/bbb"
-          /></a>
-          <a href="#img-09"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x400/ddd/bbb"
-          /></a>
-          <a href="#img-10"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x300/ddd/bbb"
-          /></a>
-          <a href="#img-11"
-            ><img loading="lazy" alt="" src="//dummyimage.com/400x300/ddd/bbb"
-          /></a>
-          <a href="#img-12"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x400/ddd/bbb"
-          /></a>
-          <a href="#img-13"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x300/ddd/bbb"
-          /></a>
-          <a href="#img-14"
-            ><img loading="lazy" alt="" src="//dummyimage.com/400x300/ddd/bbb"
-          /></a>
-          <a href="#img-15"
-            ><img loading="lazy" alt="" src="//dummyimage.com/300x400/ddd/bbb"
-          /></a>
-        </div>
-      </section>
+          <p style="margin-top: 1em">🚴‍♂️🚴‍♀️🚴🏽🚴🏼‍♂️🚴</p>
+        </figure>
 
-      <section id="portfolio">
-        <!-- PORTFOLIO -->
+        <figure>
+          <h1>Sounds</h1>
+          <p>What does it sound like when 6000+ riders from every country on earth attempt to ride 1200 km?
+          <ul style="font-size: 0.8em">
+            <li>
+              The steady whirring of my bike’s drivetrain
+            </li>
+            <li>
+              The creaks, squeaks, and rattles of the bikes owned by 6000 people who all have wildly varying bike
+              maintenance standards
+            </li>
+            <li>
+              The low rumble of an approaching peloton moving twice my speed. I nervously anticipate the rush of wind as
+              they blow past
+            </li>
+            <li>
+              Heavy labored breathing as we grind up the endless rolling hills on our way to Brest
+            </li>
+            <li>
+              The sound of Ian’s voice up ahead as he chatters happily away with one of our many friends on the ride
+            </li>
+            <li>
+              Cheers of “Bonne route!” and “Bon courage!” from spectating French villagers
+            </li>
+            <li>
+              Crinkling of space blankets as riders toss and turn, trying to steal a few precious minutes of sleep on
+              the floor of a control point
+            </li>
+            <li>
+              Constant chirping from Garmins, Wahoos, or other bike computers, alerting their owners to who knows what
+            </li>
+            <li>
+              The clopping of bike cleats on asphalt and tile floors
+            </li>
+            <li>
+              A cacophony of every language on Earth. French, German, English, Italian, Hindi, Korean, Japanese,
+              Portuguese, Spanish, Chinese and more
+            </li>
+          </ul>
+          </p>
+        </figure>
 
-        <div class="slides">
-          <figure>
-            <img
-              loading="lazy"
-              alt=""
-              src="//dummyimage.com/4000x3000/ddd/bbb"
-            />
-          </figure>
-          <figure>
-            <img
-              loading="lazy"
-              alt=""
-              src="//dummyimage.com/3000x4000/ddd/bbb"
-            />
-          </figure>
-          <figure>
-            <img
-              loading="lazy"
-              alt=""
-              src="//dummyimage.com/4000x3000/ddd/bbb"
-            />
-          </figure>
-          <figure>
-            <p>You could also have text over here…</p>
-          </figure>
-          <figure>
-            <img
-              loading="lazy"
-              alt=""
-              src="//dummyimage.com/1000x1000/ddd/bbb"
-            />
-            <figcaption>…or image captions</figcaption>
-          </figure>
-          <figure style="background: #fdcb39">
-            <img
-              loading="lazy"
-              alt=""
-              src="//dummyimage.com/3000x4000/ddd/bbb"
-            />
-            <figcaption>add a solid background</figcaption>
-          </figure>
-          <figure class="cover">
-            <img
-              loading="lazy"
-              alt=""
-              src="https://64.media.tumblr.com/7904066936b9324571738bbbeeb082e9/tumblr_myopxy8uJI1qz4vi0o1_1280.jpg"
-            />
-            <p style="color: #fff">or go full bleed</p>
-          </figure>
-        </div>
-      </section>
+        <figure id="discomforts">
+          <h1>Discomforts</h1>
 
-      <section id="another-page">
-        <!-- ANOTHER PAGE -->
+          <p><span class="previous">🛑</span> <span class="next">⏭️</span></p>
 
-        <p>This page is not referenced in the menu, yet it exists.</p>
-        <p><a href="#about">← back</a></p>
-      </section>
-    </main>
+          <p class="active entry">
+            <b>Sunday 7:30 PM:</b> Feeling great. Start wave goes. Body feels amazing.
+          </p>
 
-    <!-- ----------
+          <p class="hidden entry">
+            <b>Sunday 10 PM:</b> riding in same position for awhile in a fast group. Feel the typical aches associated
+            with riding bikes. Some soreness in the saddle and a bit of numbness in toes, but nothing unusual. Knees
+            holding up great. Finally catch up to Irving, Ian and Ben who started 30 minutes before me. Grateful for the
+            chance to sit up and ride with them and stave off any potential muscle soreness from hammering with this
+            group.
+          </p>
+
+          <p class="hidden entry">
+            <b>Monday 4 AM:</b> rolling out of the control point at Villaine-ah-Juhel. We made the 200k mark in under 8
+            hours and in celebration I over-ate. Bolognese topped with gruyere. Stomach not happy. Burps taste like
+            gruyere.
+          </p>
+
+          <p class="hidden entry">
+            <b>Monday 11 PM:</b> a few hours of sleep at the hotel in Loudéac. Getting up and I am stiff in the legs,
+            but a few minutes on the bike and I’m feeling good again. 450 km in, knee is holding up.
+          </p>
+
+          <p class="hidden entry">
+            <b>Tuesday 6 AM:</b> descending in freezing fog down into the town of Sizun. Cold air
+            rushing over exposed skin is
+            painful, but my time swimming in the SF bay with the Dolphin Club has made me far more tolerant of cold.
+            Espresso and croissant in Sizun, and it’s off to Brest.
+          </p>
+
+          <p class="hidden entry">
+            <b>Tuesday 10 AM:</b> we reach Brest and I am ecstatic. 600 km in, and no physical
+            problems, just fatigue and
+            hunger.
+          </p>
+
+          <p class="hidden entry">
+            <b>Tuesday 1 PM:</b> left knee starts acting up. Haven’t had issues with this one
+            before, so am getting worried. I
+            stop, stretch out my legs, and attempt to manage the pain by easing back on the pace and trying different
+            pedaling positions. Eventually start riding much slower, and with more emphasis on the right leg.
+          </p>
+
+          <p class="hidden entry">
+            <b>Tuesday 6 PM:</b> left knee pain persists, but isn’t getting too much worse from
+            stop to stop. As expected,
+            pedaling asymmetrically also starts to cause problems for my right knee. IT band begins to tighten up and
+            generate soreness on my right side. Start limping at controls and having trouble walking down stairs.
+          </p>
+
+          <p class="hidden entry">
+            <b>Tuesday 9 PM:</b> Right knee decently swollen and left knee still feeling moderate
+            pain. Riding slowly has
+            taken a huge toll on me. Without the rush of physical exertion, staying focused on the road takes an
+            enormous amount of mental energy, leading to boredom and frustration. I swear up and down that I am never
+            doing this, ever again. To stay awake and alert I fall back on caffeinated gels, which make me nervous and
+            jittery. In a bout of frustration, just as we are hitting Loudéac for the second time, I turn up the gas.
+            For a solid 15 minutes, I’m flying. Lots of pent up energy from the gels and caffeine. Passing dozens of
+            riders like they are standing still, and momentarily the joy of riding returns. I stop briefly at a town
+            corner and notice that even though I am not feeling tired or breathing heavily, my heart is absolutely
+            racing. I stop, take thirty deep breaths, and try to down-regulate both my heart rate and my exhilaration.
+            Oddly enough, both knees felt fine. Take a mental note of that, but fully expect this foolishness to put
+            my
+            knees further into a hole.
+          </p>
+
+          <p class="hidden entry">
+            <b>Wednesday 2 AM:</b> wake up in the hotel, and everything is stiff as hell. Open my
+            mouth to yawn and
+            immediately yelp in pain due to chapped lips. Tongue and mouth are raw and abraded from constantly chewing
+            crusty baguettes. Legs feel moderately better, but can tell that knees still won’t be happy back on the
+            bike. 450 km to go. How will I manage?
+          </p>
+
+          <p class="hidden entry">
+            <b>Wednesday 10 AM:</b> the heat of the day is driving me crazy, and still bothersome knee pain means I’m
+            moving super slowly. After 3 hours of crawling, I look back and a huge group of cyclists is coming up on us
+            fast. I can’t resist the temptation, and jump on the train and start hammering to keep up with them.
+            Japanese power couple pulls us all the way to Villaine. Wait a second, knee suddenly feels great...
+          </p>
+
+          <p class="hidden entry">
+            <b>Wednesday 4 PM:</b> Decide my knee only feels good when I’m hammering. The last two
+            days of riding slowly means
+            my legs have a good deal of snap left. Passing a continuous stream of riders, and begin collecting a
+            decent
+            sized train of riders in my slipstream. Get swept up by a group of twelve or so serious 84-hour riders and
+            tuck in. This is some of the most fun I’ve ever had on a bike.
+          </p>
+
+          <p class="hidden entry">
+            <b>Wednesday 11 PM:</b> arrive in Mortagne-au-Perche. Legs start to ache from the
+            effort, but knees feel decent,
+            especially after completing a regular regimen of hip and hamstring stretches. My renewed focus on riding
+            hard means I’m paying less attention to my hands, and at this control I start to notice some of my fingers
+            going numb, a classic symptom of ulner nerve compression. I’ll take that any day over knee pain.
+          </p>
+
+          <p class="hidden entry">
+            <b>Wednesday 3 AM:</b> leaving the Mortagne Airbnb, I start developing a pulsing
+            headache, which I suspect is from
+            not drinking enough water before going to sleep. Both knees still ache slightly, but somehow in a way that
+            doesn’t concern me.
+          </p>
+
+          <p class="hidden entry">
+            <b>Wednesday 11 AM:</b> the finish. Nothing is terribly painful, but nothing feels
+            great either. Contact points
+            (butt, hands, feet), joints (knees, ankles), supporting tissues and small muscles (neck, Achilles) are all
+            straining from nearly 90 hours of continuous effort. We are elated to have finished successfully, and all
+            ignore the aches and pains in the glow of the finish.
+          </p>
+
+          <p class="hidden entry">
+            <b>Thursday 8 AM:</b> the aftermath. The worst after-effects are chapped lips and
+            sores/abrasions in my mouth and
+            tongue, which make it hard to eat. Of course legs and butt are sore. Not about to jump on the bike again
+            today, but after 1200 km of riding, I’m pleasantly surprised at how good I feel. I can sense the
+            randonnesia
+            setting in, and thoughts begin to form in my head — what might a 2023 ride look like?
+          </p>
+        </figure>
+
+      </div>
+
+      <script>
+
+        const backButton = document.querySelector('#discomforts .previous');
+        const nextButton = document.querySelector('#discomforts .next');
+
+        function previousEntry() {
+          const cur = document.querySelector('#discomforts .active.entry');
+          const prev = cur.previousElementSibling;
+          if (prev.classList.contains('entry')) {
+            cur.classList.remove('active');
+            cur.classList.add('hidden');
+
+            prev.classList.remove('hidden');
+            prev.classList.add('active');
+
+            nextButton.textContent = '⏭';
+            if (prev.previousElementSibling && prev.previousElementSibling.classList.contains('entry')) {
+              backButton.textContent = '⏮';
+            } else {
+              backButton.textContent = '🛑';
+            }
+          }
+        }
+
+        function nextEntry() {
+          const cur = document.querySelector("#discomforts .active.entry");
+          const next = cur.nextElementSibling;
+          if (next && next.classList.contains('entry')) {
+            cur.classList.remove('active');
+            cur.classList.add('hidden');
+
+            next.classList.remove('hidden');
+            next.classList.add('active');
+
+            backButton.textContent = '⏮';
+            if (next.nextElementSibling && next.nextElementSibling.classList.contains('entry')) {
+              nextButton.textContent = '⏭';
+            } else {
+              nextButton.textContent = '🛑';
+            }
+          }
+        }
+
+        backButton.addEventListener('click', previousEntry);
+        nextButton.addEventListener('click', nextEntry);
+
+        window.addEventListener('keyup', e => {
+          const curTarget = document.querySelector(':target');
+          if (curTarget.id === "pbp") {
+            if (e.key === 'ArrowRight') {
+              nextEntry();
+            } else if (e.key === 'ArrowLeft') {
+              previousEntry();
+            }
+          }
+        });
+
+      </script>
+    </section>
+
+    <section id="another-page">
+      <!-- ANOTHER PAGE -->
+
+      <p>This page is not referenced in the menu, yet it exists.</p>
+      <p><a href="#about">← back</a></p>
+    </section>
+  </main>
+
+  <!-- ----------
     LIGHTBOX IMAGES
     ----------- -->
 
-    <!-- PHOTOS grid -->
+  <!-- Other images -->
 
-    <a href="#photos" class="lightbox" id="img-01"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-02"
-      ><img loading="lazy" alt="" src="//dummyimage.com/4000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-03"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x4000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-04"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-05"
-      ><img loading="lazy" alt="" src="//dummyimage.com/4000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-06"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x4000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-07"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-08"
-      ><img loading="lazy" alt="" src="//dummyimage.com/4000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-09"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x4000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-10"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-11"
-      ><img loading="lazy" alt="" src="//dummyimage.com/4000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-12"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x4000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-13"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-14"
-      ><img loading="lazy" alt="" src="//dummyimage.com/4000x3000/ddd/bbb"
-    /></a>
-    <a href="#photos" class="lightbox" id="img-15"
-      ><img loading="lazy" alt="" src="//dummyimage.com/3000x4000/ddd/bbb"
-    /></a>
+  <a href="#about" class="lightbox" id="img-about"><img loading="lazy" alt="" src="./img/profile.png" /></a>
+</body>
 
-    <!-- Other images -->
-
-    <a href="#about" class="lightbox" id="img-about"
-      ><img loading="lazy" alt="" src="//dummyimage.com/2400x1200/ddd/bbb"
-    /></a>
-  </body>
 </html>
