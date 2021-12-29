@@ -577,7 +577,6 @@
           const topEdge = e.target.previousElementSibling.getBoundingClientRect().bottom;
           const { bottom: bottom, left: left, top: top } = e.target.getBoundingClientRect();
           if (bottom >= window.innerHeight * 0.98 || top <= (topEdge - 1)) {
-            console.log('snapping back')
             socials.style.transform = '';
             return;
           }
