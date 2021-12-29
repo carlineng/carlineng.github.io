@@ -55,7 +55,7 @@
         Made with
         <span id="emoji-carousel">🚴‍♂️</span>
         by Carlin Eng <br />
-        <div id="social" style="width: fit-content;">
+        <div id="social" style="width: fit-content; padding: 5px">
           <a href="https://www.facebook.com/carlin.eng/" class="fa fa-facebook"></a>
           <a href="https://twitter.com/carlineng" class="fa fa-twitter"></a>
           <a href="https://www.linkedin.com/in/carlineng/" class="fa fa-linkedin"></a>
@@ -566,10 +566,43 @@
           }
         }
 
-        // Social icon mover
-        const socials = document.querySelector('#social')
+        // Social Icon mover
+        const socials = document.querySelector('div#social')
         socials.addEventListener('mouseover', (e) => {
-          socials.style.transform = `translate(${e.offsetX - 30}px, ${e.offsetY + 40}px)`;
+          if (e.target !== e.currentTarget) {
+            return;
+          }
+
+          // Snap element back if it gets close to bottom
+          const topEdge = e.target.previousElementSibling.getBoundingClientRect().bottom;
+          const { bottom: bottom, left: left, top: top } = e.target.getBoundingClientRect();
+          if (bottom >= window.innerHeight * 0.98 || top <= (topEdge - 1)) {
+            console.log('snapping back')
+            socials.style.transform = '';
+            return;
+          }
+
+          const { offsetWidth: width, offsetHeight: height } = e.target;
+          const { offsetX: x, offsetY: y } = e;
+
+          const enterRight = 1 - ((width - x) / width);
+          const enterLeft = (width - x) / width;
+          const enterTop = 1 - ((height - y) / height);
+          const enterBottom = (height - y) / height;
+
+          let [pushX, pushY] = [0, 0];
+
+          if (enterRight < enterLeft && enterRight < enterTop && enterRight < enterBottom) {
+            pushX = 80;
+          } else if (enterLeft < enterRight && enterLeft < enterTop && enterLeft < enterBottom) {
+            pushX = -80;
+          } else if (enterTop < enterLeft && enterTop < enterRight && enterTop < enterBottom) {
+            pushY = 40;
+          } else if (enterBottom < enterLeft && enterBottom < enterRight && enterBottom < enterTop) {
+            pushY = -40;
+          }
+
+          socials.style.transform = `translate(${e.offsetX + pushX}px, ${e.offsetY + pushY}px)`;
         });
 
         socials.addEventListener('mouseleave', (e) => {
