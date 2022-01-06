@@ -432,6 +432,7 @@ article time {
   place-items: normal start;
   align-content: center;
   scroll-snap-align: center;
+  justify-content: center;
 }
 
 .slides figure img {
