@@ -115,7 +115,7 @@
             table, a row, or a scalar will not work. When is a <code>SELECT</code> statement a table-expression, a
             column-expression, a row-expression or a scalar-expression? The language itself provides no guidance here,
             and it is wholly dependent on the query itself; e.g.: </p>
-          <p> <code>SELECT a FROM tablename;</code> </p>
+          <p><code><pre>SELECT a FROM tablename;</pre></code> </p>
           <p> is a column-expression, but </p>
           <p>
             <code><pre>SELECT a,b FROM tablename;</pre></code>
@@ -146,27 +146,21 @@
             purchases for an ecommerce website, and want to retrieve (1) the total amount spent for each customer, and
             (2) the average spend across all customers. SQL[1983] could not solve this in a single statement. SQL[2022]
             can solve it with the use of CTEs:</p>
-          <p>
-            <code>
-  <pre>
+          <p><code><pre>
   WITH spend_per_customer AS (
     SELECT
       SUM(amount) AS customer_total
     FROM purchases
     GROUP BY customer
   )
-  SELECT AVG(customer_total) FROM spend_per_customer</pre>
-  </code>
+  SELECT AVG(customer_total) FROM spend_per_customer</pre></code>
           </p>
           <p>However, the following (arguably more natural) statement is not allowed:</p>
-          <p>
-            <code>
-  <pre>
+          <p><code><pre>
   SELECT
     AVG(
         SELECT SUM(amount) FROM purchases GROUP BY customer
-    )</pre>
-  </code>
+    )</pre></code>
           </p>
           <p>In the above query, the inner <code>SELECT</code> is a column-expression (<code>SELECT</code> statement
             returning a single column), and <code>AVG</code> is a function that takes a single column; however, the
