@@ -60,6 +60,297 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+        <label for="sql-critique" class="post-title">A Critique of SQL, 40 Years Later</label>
+        <time datetime="2022-08-11">08.11.2022</time>
+        <input type="checkbox" id="sql-critique" />
+        <div class="post-body">
+          <p>The SQL language made its first appearance in 1974, as part of IBM’s System R database. It is now over 50
+            years later, and SQL is the de facto language for operating the majority of industrial grade databases. Its
+            usage has bifurcated into two domains – application programming and data analysis. The majority of my 12
+            year career (data engineer and data scientist) has been concerned with the latter, and SQL is by far the
+            language that I have used the most. I love SQL for the productivity it has afforded me, but over time I’ve
+            also become aware of its many flaws and idiosyncrasies. My perspective is primarily from a practitioner’s
+            standpoint, and I have always been curious if those “real world” issues have more fundamental or theoretical
+            underpinnings. This brought me to <a
+              href='https://courses.cs.duke.edu/compsci516/cps216/spring03/papers/date-1983.pdf'>A Critique of the SQL
+              Database Language</a>, by mathematician and computer scientist CJ Date. Date was a former IBM employee, a
+            well known database researcher, and friend of EF Codd. The SQL standard has received many major updates
+            since this critique was first published, but which of those critiques are still valid today? </p>
+          <p> A Critique of the SQL Database Language was first published in November 1984 in The ACM SIGMOD Record. It
+            examines the dialect of SQL implemented by several IBM systems (SQL/DS, DB2, and QMF) which provided the
+            basis for the initial SQL standard. Having no direct experience with any of these systems, reading the SQL
+            examples from the paper is a bit like trying to read 17th century English – it has a stilting, unfamiliar
+            cadence that requires an extra bit of effort to understand. In the examples below, I’ll use the terms
+            SQL[1983] and SQL[2022] to distinguish between the older dialect, and what is available today. Use of the
+            unqualified term “SQL” means my comment could apply to both. </p>
+          <p> The paper consists of eight sections, each one describing a different category of criticism: lack of
+            orthogonality in expressions, lack of orthogonality in functions, miscellaneous lack of orthogonality,
+            formal definition, mismatch with host language, missing functions, mistakes, and missing aspects of the
+            relational model. In the rest of this post, I’ll go through each of those sections, describe the critique in
+            informal terms, and give my interpretation on whether the critique is still relevant. </p>
+          <h3>Lack of Orthogonality: Expressions</h3>
+          <p> Orthogonality with respect to programming languages means roughly that the constructs of the language are
+            like Lego blocks – a small number of basic pieces can be recombined in simple and intuitive ways. Lack of
+            orthogonality (again, informally speaking) means the language has lots of special cases and exceptions in
+            how the components can be put together, which make it complex to learn and unintuitive to use. </p>
+          <p> This section begins with a definition of table-expression, column-expression, row-expression, and
+            scalar-expression. Respectively, these are expressions in SQL that return a table, column, row, and scalar
+            value. In SQL[1983], the <code>FROM</code> clause of a <code>SELECT</code> statement was restricted to only
+            specifying table or view names, and not general table-expressions, i.e., subqueries or common-table
+            expressions (CTE). This made constructing nested expressions, one of the key features of Relational Algebra,
+            nearly impossible. Modern SQL provides the capability to reference a CTE or subquery in a <code>FROM</code>
+            clause, so this concern is mostly irrelevant today; however, the idea that a table-expression can take the
+            form of “tablename” in some contexts, but must be <code>SELECT * FROM tablename</code> in others is
+            interesting.</p>
+          <p>For example, why not allow the following expression as a legal statement:</p>
+          <p><code><pre>tablename;</pre></code></p>
+          <p>which would return identical results to:</p>
+          <p><code><pre>SELECT * FROM tablename;</pre></code></p>
+          <p>Both are table-expressions (statements that return a table), and thus should be allowed anywhere that
+            accepts a table-expression, e.g., the <code>FROM</code> clause of a <code>SELECT</code> statement, or a
+            statement itself. </p>
+          <p> While <code>SELECT</code> statements in SQL[1983] are not allowed in the <code>FROM</code> clause, they
+            are required as an argument to an <code>EXISTS</code> clause. Furthermore, the <code>SELECT</code> statement
+            here is required to be a column-expression (selecting only a single column) – a statement that returns a
+            table, a row, or a scalar will not work. When is a <code>SELECT</code> statement a table-expression, a
+            column-expression, a row-expression or a scalar-expression? The language itself provides no guidance here,
+            and it is wholly dependent on the query itself; e.g.: </p>
+          <p> <code>SELECT a FROM tablename;</code> </p>
+          <p> is a column-expression, but </p>
+          <p>
+            <code><pre>SELECT a,b FROM tablename;</pre></code>
+          </p>
+          <p> is a table-expression. This bit of arbitrariness still exists in SQL[2022]. </p>
+          <h3>Lack of Orthogonality: Functions</h3>
+          <p>While some of the concerns in this section are mitigated by the introduction of subqueries and CTEs, a lot
+            of them still hold true today. Column functions in SQL take a column of scalars as input, and return either
+            a column of scalar values (e.g., the MD5 function or a type-casting function), or a single scalar (e.g.,
+            aggregate functions like <code>SUM</code>). The author argues here that since column functions take a column
+            of scalar values as input, any valid column-expression should be allowed. An example where this is not the
+            case is as follows:</p>
+          <p><code><pre>SELECT SUM(val) FROM tbl</pre></code></p>
+          <p>is allowed, but </p>
+          <p><code><pre>SELECT SUM( SELECT val FROM tbl )</pre></code></p>
+          <p>is not, even though “SELECT val FROM tbl” is a valid column-expression – it returns a single column, val,
+            from table tbl.</p>
+          <p>The key problem here is that the input to the SUM function in the first example is a column name, but that
+            column name alone does not define the column-expression. Instead, we must look at the context (i.e., the
+            full query) to understand that the “val” column comes from “table”. Said another way, in SQL, F(X) is not
+            dependent only on X, but on contextual information surrounding F:</p>
+          <p><code><pre>SELECT SUM(amount) FROM purchases;</pre></code></p>
+          <p>and</p>
+          <p><code><pre>SELECT SUM(amount) FROM purchases WHERE 1 = 0;</pre></code></p>
+          <p>Are two very different queries, even though the column-function invocation <code>SUM(amount)</code> is
+            identical.</p>
+          <p>This also makes it difficult to nest aggregations. Consider the following example: we have a database of
+            purchases for an ecommerce website, and want to retrieve (1) the total amount spent for each customer, and
+            (2) the average spend across all customers. SQL[1983] could not solve this in a single statement. SQL[2022]
+            can solve it with the use of CTEs:</p>
+          <p>
+            <code>
+  <pre>
+  WITH spend_per_customer AS (
+    SELECT
+      SUM(amount) AS customer_total
+    FROM purchases
+    GROUP BY customer
+  )
+  SELECT AVG(customer_total) FROM spend_per_customer</pre>
+  </code>
+          </p>
+          <p>However, the following (arguably more natural) statement is not allowed:</p>
+          <p>
+            <code>
+  <pre>
+  SELECT
+    AVG(
+        SELECT SUM(amount) FROM purchases GROUP BY customer
+    )</pre>
+  </code>
+          </p>
+          <p>In the above query, the inner <code>SELECT</code> is a column-expression (<code>SELECT</code> statement
+            returning a single column), and <code>AVG</code> is a function that takes a single column; however, the
+            above statement does not work in most databases. In Snowflake, the above query responds with the error
+            message “Single-row subquery returns more than one row”, which I find confusing, since the <code>AVG</code>
+            function clearly expects input of more than one row. </p>
+          <p>Another interesting consequence here is the necessity of the <code>HAVING</code> clause. The
+            <code>HAVING</code> clause is a favorite “gotcha” of SQL interviewers everywhere. Why and how is it
+            different from a <code>WHERE</code> clause? The answer is not immediately obvious to someone looking at SQL
+            for the first time. Specialized knowledge like this certainly serves a purpose as an indicator for
+            experience, but it can just as easily be seen as a deficiency of the SQL language. The <code>HAVING</code>
+            clause provides a scoping hint to a column-function to indicate that the function input must make use of the
+            <code>GROUP BY</code> clause. The author does not mince words here: “The <code>HAVING</code> clause and the
+            <code>GROUP BY</code> clause are needed in SQL only as a consequence of the column-function argument scoping
+            rules.”</p>
+          <p>The author also describes table-functions (functions that take a table as input, rather than just a
+            column), and laments several instances of arbitrary and non-orthogonal syntax. First, the
+            <code>EXISTS</code> function (takes a table-expression, returns a scalar) can only be used in a
+            <code>WHERE</code> clause, whereas orthogonality would dictate that it should be allowed anywhere that the
+            language accepts a scalar. Second, the <code>UNION</code> function is represented by an in-fix operator, and
+            since SQL[1983] did not allow arbitrary table-expressions in <code>FROM</code> clauses, it was impossible to
+            compute a column-function over a <code>UNION</code> of two tables. This problem is solved in SQL[2022], as
+            the following syntax is now legal:</p>
+          <p>
+            <code>
+  <pre>
+  SELECT
+    SUM(val)
+  FROM (
+    SELECT val FROM instore_purchases
+    UNION ALL
+    SELECT val FROM online_purchases
+  )</pre>
+  </code>
+          </p>
+          <h3>Lack of Orthogonality: Miscellaneous Items</h3>
+          <p>This section contains a grab-bag of items related to functionality and implementation details of the
+            underlying systems – host/indicator variables, cursors, “long” fields (e.g., character fields with length
+            greater than 254). Some of the limitations are indeed very frightening (a “long” field could not be
+            referenced in a <code>WHERE</code> or <code>GROUP BY</code> clause!), but modern database systems are no
+            longer subject to these restrictions. Other items in this section have been addressed by updates to the SQL
+            standard. In no particular order, the following limitations are no longer applicable: </p>
+          <ul>
+            <li> Only simple expressions (column names) allowed in <code>GROUP BY</code></li>
+            <li>NULL literal could not be used in places where a scalar constant was expected</li>
+            <li>No concept of <code>UNION ALL</code></li>
+            <li>Only possible to aggregate at one level with the <code>GROUP BY</code> construct</li>
+          </ul>
+          <p> While much of the discussion here is no longer relevant, the discussion of <code>NULL</code> values
+            remains as scary today as it ever was. Inconsistency in <code>NULL</code> handling gives rise to some truly
+            unexpected and frightening results, most notably in aggregate functions. Aggregate functions ignore
+            <code>NULL</code> values, leading to the unfortunate fact that for a column X with values
+            <code>x1, x2, …, xn</code>, <code><pre>x1 + x2 + … + xn != SUM(X)</pre></code>and
+            <code><pre>(X1 + X2) != SUM(X1) + SUM(X2)</pre></code>See the <a
+              href="https://www.db-fiddle.com/f/hUeLXcYP38eEqZmvLbdumZ/1">following example</a> in Postgres:</p>
+          <p><code><pre>
+  WITH v AS (
+    SELECT * FROM ( 
+        VALUES 
+          (1, 5),
+          (null, 10) 
+      ) AS t (column1, column2) 
+  )
+  SELECT 
+    SUM(column1 + column2) AS sum_of_addition 
+    , SUM(column1) + SUM(column2) AS addition_of_sum 
+  FROM v;</pre>
+          </code></p>
+          <p>which outputs</p>
+          <p><code><pre>
+    sum_of_addition | addition_of_sum 
+   -----------------+-----------------
+                  6 |              16
+   (1 row)
+          </pre></code></p>
+          <h3>Formal Definition, Mismatch with Host Language, and Missing Functions</h3>
+          <p>These three sections are taken together, as I found none of them to be of particular relevance to modern
+            databases, modern SQL, or analytical query processing.</p>
+          <p><em><b>Formal Definition: </b></em>This section highlights areas where the developing SQL[1983] standard
+            either disagreed with the IBM implementation, or was not precise enough – cursor positioning, lock
+            statements, alias scoping rules, and more. I understand this section more to be a critique of the standard,
+            as opposed to the language itself. Furthermore, many of these issues (cursors, locks) are not as relevant to
+            analytical processing, and are thus not as interesting to me personally.</p>
+          <p><em><b>Mismatch with Host Language: </b></em>Similar to the previous section, I found this one mostly
+            irrelevant. The author points out many differences between SQL and the host language (e.g., IBM PL/I) that
+            cause friction for the programmer. Today, there are so many potential host languages (Python, Ruby,
+            Javascript. Java just to name a few), each with their own idiosyncrasies, that it would be impossible for
+            SQL to conform to all of them. Technologies like <a
+              href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/">LINQ</a> aim to
+            address some of these concerns, but as with above, these primarily target application programming use cases.
+          </p>
+          <p><em><b>Missing Functions: </b></em>Most of the bullet points here are related to cursors and locking, which
+            I view as implementation-specific details related to underlying systems.</p>
+          <h3>Mistakes</h3>
+          <p>This section describes several things that the author views as simply a mistake in the language design.
+            Here again, <code>NULL</code> is the prime example:</p>
+          <blockquote>
+            <p>In my opinion the null value concept is far more trouble than it is worth… The system should never
+              produce a (spuriously) precise answer to a query when the data involved in that query is itself imprecise.
+              At least the system should offer the user the explicit option either to ignore nulls or to treat their
+              presence as an exception</p>
+          </blockquote>
+          <p>It is interesting to note that this was far from the consensus view, even amongst the original developers
+            of the relational model. EF Codd himself sanctioned the use of <code>NULL</code> in his <a
+              href="https://en.wikipedia.org/wiki/Codd%27s_12_rules">12 Rules</a> (rule no. 3).</p>
+          <p>Other "mistakes" included are:</p>
+          <ul>
+            <li>Primary Key is specified as part of an Index as opposed to at table creation time.<ul>
+                <li>The reasoning here is that a Primary Key is really a logical property of a table, and should not be
+                  intermingled with an index, which deals primarily with the physical access path of that data. Today,
+                  most databases allow a <code>CREATE TABLE</code> statement to include a Primary Key, so this concern
+                  has largely been rectified. </li>
+              </ul>
+            </li>
+            <li> <code>SELECT *</code> is undoubtedly convenient for interactive querying, but extremely prone to errors
+              when used in programs. <ul>
+                <li>Date argues that <code>SELECT *</code> should only be allowed in interactive sessions. I largely
+                  agree with this sentiment, but defining “interactive session” is by no means a trivial problem.</li>
+              </ul>
+            </li>
+          </ul>
+          <h3>Aspects of the Relational Model Not Supported</h3>
+          <p>This section is another list of miscellaneous items, unified by the fact that each of them prevented
+            SQL[1983] from truly being “relational”.</p>
+          <p><em><b>Primary Keys and Foreign Keys:</b></em> Primary Keys could easily be ignored by SQL[1983] and
+            Foreign Keys did not even exist. While SQL[2022] does allow for Foreign Keys, and many databases enforce
+            referential integrity, SQL[2022] still does not fully understand the semantics of Primary Keys and Foreign
+            Keys. Two examples:</p>
+          <ul>
+            <li>When performing a <code>GROUP BY</code> on the Primary Key of a table, and including other columns from
+              that table, because the Primary Key guarantees uniqueness, it is guaranteed that those other columns will
+              also be unique; however, SQL requires that those columns also be included in the <code>GROUP BY</code>.
+            </li>
+            <li>A join between a Foreign Key and its corresponding Primary Key could easily be implicit, but SQL still
+              requires the join condition to be explicitly written out.</li>
+          </ul>
+          <p><em><b>Domains:</b> </em>Domain is another word for “type”. Type systems in SQL[1983] only permitted
+            primitive types (int, char, float, etc.). Today, Postgres provides support for user-defined types of
+            arbitrary complexity, as well as check-constraints that allow users to restrict primitive types to
+            acceptable values. Unfortunately, most OLAP data warehouses don’t support user-defined types, and SQL itself
+            doesn’t have much to say on the topic.</p>
+          <p>To take a simple example of how this can be dangerous, many databases in the wild have tables with integer
+            Primary Key ID columns. Clearly not all of the operations that are legal for integers should be allowed on
+            Primary Key columns – what does it mean to add, multiply, or divide two PK IDs? SQL, and most databases,
+            will happily let you perform these operations.</p>
+          <p>
+            <em><b>Relation Assignment: </b></em>The critique here is a single sentence –
+          </p>
+          <blockquote>
+            <p>A limited form of relation assignment is supported via <code>INSERT ... SELECT</code>, but that operation
+              does not overwrite the previous content of the target table, and the source of the assignment cannot be an
+              arbitrary algebraic expression (or <code>SELECT</code> equivalent).</p>
+          </blockquote>
+          <p>This is no longer true. Relation assignment can be done via <code>CREATE OR REPLACE TABLE AS</code>. With
+            subqueries and CTEs, the source can be any arbitrary algebraic expression.</p>
+          <p><em><b>Explicit <code>JOIN</code>, <code>INTERSECT</code>, and <code>DIFFERENCE</code> operators:</b></em>
+            SQL[1983] did not support these. SQL[2022] does. JOIN was added to the SQL92 standard.
+            <code>INTERSECT</code> and <code>MINUS</code> are supported by most databases, and even if they aren’t, the
+            operators have semantically identical equivalents using <code>JOIN</code>.</p>
+          <h3>Summary</h3>
+          <p>While many of the critiques of SQL have been fixed by updates to the ANSI standard, many are still present.
+            Lack of orthogonality in many places still exists, which makes SQL clunky to learn and use; however, I
+            suspect the learning curve here is not actually all that high, judging by the number of people out there who
+            can write SQL. By contrast, missing components of the relational model and issues arising from
+            <code>NULL</code> values are likely the cause of many queries that look correct but provide wrong answers,
+            especially by folks who are confident in their ability to write queries, but unfamiliar with some of the
+            nastier traps.</p>
+          <p>Despite the improvements listed above, in a <a
+              href="https://www.red-gate.com/simple-talk/opinion/opinion-pieces/chris-date-and-the-relational-model/">2014
+              interview</a>, CJ Date said “we didn’t realize how truly awful SQL was or would turn out to be (note that
+            it’s much worse now than it was then, though it was pretty bad right from the outset).” This quote leaves me
+            wondering – if Date himself were to write an updated critique, what would it look like? My best guess is
+            most of his criticism would revolve around further departures of SQL from the relational model, but specific
+            examples escape me.</p>
+          <p>SQL’s market dominance means every DBMS vendor is strongly incentivized to implement a SQL interface, and
+            every aspiring programmer must learn it. So does this mean that despite all its problems, we’re stuck with
+            SQL for good? I think SQL will continue to live on in some form for a very long time, probably even as the
+            dominant query language; however, I strongly believe there’s still room for the development of new query
+            languages that have learned the lessons of the past. Furthermore, I think the time is now better than ever
+            for such a language to succeed. My reasons for believing so are beyond the scope of this essay, perhaps a
+            good topic for the next one.</p>
+        </div>
+      </article>
+      <article>
         <label for="post1" class="post-title">My Time on the Job Market as a Data Engineer</label>
         <time datetime="2019-04-17">04.17.2019</time>
         <input type="checkbox" id="post1" />
@@ -406,6 +697,7 @@
       <script>
 
         // Allow for links directly to specific blog posts
+        // e.g., https://carlineng.com/?postid=post1#blog
         const urlQueryString = window.location.search;
 
         if (urlQueryString) {
