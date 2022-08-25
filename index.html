@@ -64,7 +64,9 @@
         <time datetime="2022-08-11">08.11.2022</time>
         <input type="checkbox" id="sql-critique" />
         <div class="post-body">
-          <p>The SQL language made its first appearance in 1974, as part of IBM’s System R database. It is now over 50
+          <p><i>Author's note: this post has found it's way to the front-page of Hacker News -- follow along with the <a
+                href="https://news.ycombinator.com/item?id=32578725">discussion there</a>.</i></p>
+          <p>The SQL language made its first appearance in 1974, as part of IBM’s System R database. It is now nearly 50
             years later, and SQL is the de facto language for operating the majority of industrial grade databases. Its
             usage has bifurcated into two domains – application programming and data analysis. The majority of my 12
             year career (data engineer and data scientist) has been concerned with the latter, and SQL is by far the
@@ -131,12 +133,12 @@
           <p><code><pre>SELECT SUM(val) FROM tbl</pre></code></p>
           <p>is allowed, but </p>
           <p><code><pre>SELECT SUM( SELECT val FROM tbl )</pre></code></p>
-          <p>is not, even though “SELECT val FROM tbl” is a valid column-expression – it returns a single column, val,
-            from table tbl.</p>
-          <p>The key problem here is that the input to the SUM function in the first example is a column name, but that
-            column name alone does not define the column-expression. Instead, we must look at the context (i.e., the
-            full query) to understand that the “val” column comes from “table”. Said another way, in SQL, F(X) is not
-            dependent only on X, but on contextual information surrounding F:</p>
+          <p>is not, even though <code>SELECT val FROM tbl</code> is a valid column-expression – it returns a single
+            column, <code>val</code>, from table <code>tbl</code>.</p>
+          <p>The key problem here is that the input to the <code>SUM</code> function in the first example is a column
+            name, but that column name alone does not define the column-expression. Instead, we must look at the context
+            (i.e., the full query) to understand that the “val” column comes from “table”. Said another way, in SQL,
+            F(X) is not dependent only on X, but on contextual information surrounding F:</p>
           <p><code><pre>SELECT SUM(amount) FROM purchases;</pre></code></p>
           <p>and</p>
           <p><code><pre>SELECT SUM(amount) FROM purchases WHERE 1 = 0;</pre></code></p>
