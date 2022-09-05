@@ -60,6 +60,175 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+        <label for="malloy-intro" class="post-title">A Sequel to SQL? An introduction to Malloy</label>
+        <time datetime="2022-09-05">09.05.2022</time>
+        <input type="checkbox" id="malloy-intro" />
+        <div class="post-body">
+          <p>The foundations of SQL were laid at the dawn of the relational database. Back then, there was no such thing
+            as a data warehouse, no such thing as a BI tool, and certainly no such thing as an <a
+              href="https://www.getdbt.com/what-is-analytics-engineering/">Analytics Engineer</a>. And yet, SQL is still
+            the primary user interface by which most data professionals interact with their raw materials. The
+            underlying technologies have improved immeasurably, but aside from a handful of updates to the ANSI
+            standard, the core of the language remains untouched. It’s practically a miracle that after 40+ years of use
+            by countless data professionals, our interface to data is effectively the same. </p>
+          <p>Since its inception, many computer scientists and database researchers have expressed their disdain for
+            SQL, and their critiques are usually well-founded; however, every serious attempt to replace it as the
+            de-facto standard has failed. Most attempts to replace SQL primarily address the language’s awkward syntax;
+            for example putting the <code>FROM</code> clause first or removing the need for <code>HAVING</code> and
+            <code>QUALIFY</code> clauses. Unfortunately, the reality is that SQL is “good enough” for most use cases,
+            and according to <a href="https://youtu.be/IVlMB9akD1A?t=420">Aiken’s Law</a>, programmer training is the
+            dominant cost for a programming language. It seems that syntactic sugar is simply not enough to overcome
+            SQL’s entrenchment. </p>
+          <p>This brings me to <a href="https://github.com/looker-open-source/malloy">Malloy</a>, a new query language
+            for data analysis currently being developed by <a href="https://twitter.com/lloydtabb">Lloyd Tabb</a>,
+            founder and former CTO of <a href="https://www.looker.com/">Looker</a>. Malloy addresses many of the
+            aesthetic concerns that plague SQL, but far more interesting in my opinion is its integration of a query
+            language and a semantic layer into a single language. But what is a semantic layer, and why is it important?
+          </p>
+          <h3>Semantic Layers</h3>
+          <p>A semantic layer’s purpose is to codify domain-specific logic on top of database tables, and to prevent
+            users from issuing queries that are syntactically valid, but semantically meaningless. For example, what
+            happens if you write a join between two tables with incorrect keys? In most relational databases, primary
+            and foreign keys are just strings or numbers. Some databases may enforce referential integrity, but most
+            will not complain if you attempt to join, say, <code>CUSTOMER_ID</code> with <code>ORDER_ID</code>. As
+            another example, it’s often the case that primary key columns are integers, and databases will happily let
+            you use them as inputs to any aggregate function that takes a number input, like <code>SUM</code> or
+            <code>AVG</code>, even though the result is nonsense. Lastly, every organization has special rules that must
+            be applied to their datasets in order to correctly calculate key metrics. For example, what inputs and
+            adjustments go into calculating the revenue that Investor Relations reports out to Wall Street? Someone with
+            access only to the raw data, but not the requisite domain-specific knowledge will not be able to accurately
+            reproduce these metrics. The semantic layer provides a place to set these rules and require queries to abide
+            by them; e.g., which joins are valid, which columns can be grouped on, or what inputs go into a particular
+            aggregate function. </p>
+          <p>A semantic layer usually takes the form of an application that sits on top of the database, along with
+            configuration files that define the rules described above. Examples of products on the market today include
+            SAP’s <a
+              href="https://help.sap.com/docs/SAP_BUSINESSOBJECTS_BUSINESS_INTELLIGENCE_PLATFORM/3d4f417fd0764f909c0ef7931e19fe1a/e4af1c39d2b94ca5bc8a991b4ff26f5f.html?locale=en-US">Business
+              Objects Universe</a>, Looker’s <a href="https://cloud.google.com/looker/docs/what-is-lookml">LookML</a>
+            and <a href="https://cube.dev/">Cube</a>. I was an early user of Looker, and that experience left a strong
+            impression. LookML allowed me to define the logic necessary to package all of our data sources together as a
+            cohesive single source of truth. Our data warehouse turned from a tangled mess of tables that only a skilled
+            data scientist could operate, into a trusted repository that the typical PM or business partner could pull
+            insights from. </p>
+          <p>Despite the huge value we got out of Looker and LookML, the analytics and data science group never loved it
+            as much as I did. In comparison with <a href="https://www.tableau.com/">Tableau</a>, Looker’s interactive
+            data exploration and analysis capabilities are relatively limited, and most data scientists saw exploration
+            and analysis as their primary activity. They viewed writing LookML configuration as a chore, and the user
+            experience did not help. To add a new dimension or measure, a data scientist would have to edit a YAML
+            configuration file, check their changes into source control, and reload their configuration before they
+            could view any results. A simple workflow that could take 2 seconds in Tableau might take over a minute in
+            Looker. When trying to explore a dataset, the ability to iterate “at the speed of thought” is critical, and
+            that extra latency was a source of frustration for many. As a result, data modeling and data exploration
+            were viewed as two entirely separate disciplines. Data scientists greatly preferred tools that aided the
+            latter, much to the detriment of everyone who was NOT a data scientist. </p>
+          <h3>Malloy</h3>
+          <p>So finally we return to Malloy. As I mentioned previously, Malloy is a query language that compiles to SQL,
+            and looks very familiar to anyone who has used SQL. The team has also built a VSCode extension that allows
+            users to connect to a database and start writing queries, currently with support for BigQuery, DuckDB and
+            Postgres. The semantic layer within Malloy is accessed via writing Sources. From the <a
+              href="https://looker-open-source.github.io/malloy/documentation/language/source.html#sources">docs</a>:
+          </p>
+          <blockquote>
+            <p>A source can be thought of as a table and a collection of computations and relationships which are
+              relevant to that table. These computations can consist of measures (aggregate functions), dimensions
+              (scalar calculations) and query definitions; joins are relationships between sources.</p>
+          </blockquote>
+          <p> Let’s take a look at an example Source from the <a
+              href="https://github.com/looker-open-source/malloy/blob/2135a51c46f3076f9d28c2136f9d8ca4cf9a101b/samples/duckdb/faa/2_flights.malloy#L8-L32">Malloy
+              Github repo</a>, looking at a database of flights.: </p>
+          <p><code>
+<pre>source: flights is table('duckdb:data/flights.parquet') + {
+  primary_key: id2
+
+  // rename some fields as from their physical names
+  rename: origin_code is origin
+  rename: destination_code is destination
+
+  // join all the data sources
+  join_one: carriers with carrier
+  join_one: origin is airports with origin_code
+  join_one: destination is airports with destination_code
+  join_one: aircraft with tail_num
+
+  // declare some resusable aggregate calculations
+  measure:
+    flight_count is count()
+    total_distance is sum(distance)
+  }
+}</pre></code>
+          </p>
+          <p>This Source has a few key components: the name of a table in the database, the primary key of the table,
+            which tables can be joined to it and via which columns, and which aggregations (aka measures) are valid.
+            Within the VSCode extension, I can use this source as the starting point for data exploration or analysis
+            simply by writing a query referencing it, and hitting the “Run” CodeLens button: </p>
+          <p>
+            <img loading="lazy" alt="" src="./img/malloy_src.png" style="max-width: 100%" />
+          </p>
+          <p>The VSCode extension compiles the Malloy query to SQL, issues it against the database, and renders the
+            results in another window. </p>
+          <p>That exploration may spur me to update the Source in some way, which I can do from right within the IDE,
+            and immediately re-execute the query. This sort of read-eval-print loop enables fast iteration in a way that
+            simply isn’t possible with LookML or any other semantic layer that requires both SQL and YAML for
+            configuration (and even worse, oftentimes a separate API for actually querying the data). Malloy’s semantic
+            layer marries two separate but intricately related disciplines – exploring data and codifying rules around
+            it. This not only removes the overhead of context switching between the two tasks, but it actually improves
+            the individual experience of each. Implementing a data model actively improves the data exploration
+            experience, and vice versa. </p>
+          <p>While the semantic layer is the main attraction for me, there are many other noteworthy features. One
+            particularly nice feature is its handling of nested data. Rollup queries with nested subtotals can be
+            painful to write in SQL, and the
+            <code><a
+              href="https://docs.snowflake.com/en/sql-reference/constructs/group-by-rollup.html">GROUP BY ROLLUP</a></code> function in most SQL
+            dialects produces awkward output that is very difficult to work with. Malloy’s nest clause makes this
+            trivial. The previous query simply counts the number of flights by month. Let’s say I now want to compute
+            the top 3 destination airports for each month: </p>
+          <p>
+            <img loading="lazy" alt="" src="./img/malloy_nest.png" style="max-width: 100%" />
+          </p>
+          <p>For each row in the original by-month query, there’s a new column that contains a nested table with flight
+            counts by destination. Note also that since the original flights Source has pre-defined the join with
+            destination, accessing fields from the destination table is as simple as referencing them with dot notation:
+            destination.name in the above example. Getting this same information in a single SQL query is quite a bit
+            more verbose and requires either a window function or a self-join: </p>
+          <p><code>
+<pre>WITH flights_by_destination_and_month AS (
+  SELECT
+    DATE_TRUNC(‘month’, dep_time) AS dep_month,
+    d.name AS destination_name,
+    COUNT(*) AS flight_count
+  FROM flights f
+  LEFT JOIN destination d
+  GROUP BY 1,2
+),
+SELECT
+  dep_month,
+  destination_name,
+  SUM(flight_count) OVER (PARTITION BY dep_month) 
+    AS flight_count_by_month,
+  flight_count AS flight_count_by_dest_and_month,
+FROM flights_by_destination_and_month
+QUALIFY ROW_NUMBER() OVER (
+  PARTITION BY dep_month ORDER BY flight_count DESC
+) <= 3
+ORDER BY 1,2
+</pre></code>
+          </p>
+          <p> There’s a lot more to Malloy than what I’ve shared here, so I encourage you to take a look at the <a
+              href="https://github.com/looker-open-source/malloy">Github repository</a> and the <a
+              href="https://looker-open-source.github.io/malloy/documentation/language/basic.html">documentation</a>.
+          </p>
+          <h3>Summary</h3>
+          <p> Could Malloy finally be the language that replaces SQL? It’s a nigh impossible task, but I am very much
+            hoping that it succeeds. Unlike other projects that only seek to improve on the aesthetics of the language,
+            Malloy takes a more ambitious approach and tackles a critical missing piece of the stack. Its marriage of
+            query language and semantic layer has the potential to radically change the disciplines of analytics and
+            business intelligence for the better. Other trends, such as the rise and dominance of a few data platform
+            products, namely BigQuery and Snowflake, mean that for Malloy to really succeed, there are relatively few
+            database targets that it must support. It’s still very early days for the project, and who knows where it
+            will go from here, but this is one that I’ll be keeping a very close eye on. </p>
+        </div>
+      </article>
+      <article>
         <label for="sql-critique" class="post-title">A Critique of SQL, 40 Years Later</label>
         <time datetime="2022-08-11">08.11.2022</time>
         <input type="checkbox" id="sql-critique" />
