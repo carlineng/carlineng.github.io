@@ -164,7 +164,8 @@
             Within the VSCode extension, I can use this source as the starting point for data exploration or analysis
             simply by writing a query referencing it, and hitting the “Run” CodeLens button: </p>
           <p>
-            <img loading="lazy" alt="" src="./img/malloy_src.png" style="max-width: 100%" />
+            <a href="#img-malloy-src"><img loading="lazy" alt="" src="./img/malloy_src.png"
+                style="max-width: 100%" /></a>
           </p>
           <p>The VSCode extension compiles the Malloy query to SQL, issues it against the database, and renders the
             results in another window. </p>
@@ -185,7 +186,8 @@
             trivial. The previous query simply counts the number of flights by month. Let’s say I now want to compute
             the top 3 destination airports for each month: </p>
           <p>
-            <img loading="lazy" alt="" src="./img/malloy_nest.png" style="max-width: 100%" />
+            <a href="#img-malloy-nest">
+              <img loading="lazy" alt="" src="./img/malloy_nest.png" style="max-width: 100%" /></a>
           </p>
           <p>For each row in the original by-month query, there’s a new column that contains a nested table with flight
             counts by destination. Note also that since the original flights Source has pre-defined the join with
@@ -1010,7 +1012,11 @@ ORDER BY 1,2
     LIGHTBOX IMAGES
     ----------- -->
   <!-- Other images -->
-  <a href="#about" class="lightbox" id="img-about"><img loading="lazy" alt="" src="./img/profile.png" /></a>
+  <a href="#home" class="lightbox" id="img-home"><img loading="lazy" alt="" src="./img/site-image.jpg" /></a>
+  <a href="?postid=malloy-intro#blog" class="lightbox" id="img-malloy-src"><img loading="lazy" alt=""
+      src="./img/malloy_src.png" /></a>
+  <a href="?postid=malloy-intro#blog" class="lightbox" id="img-malloy-nest"><img loading="lazy" alt=""
+      src="./img/malloy_nest.png" /></a>
 </body>
 
 </html>
