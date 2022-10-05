@@ -164,7 +164,7 @@
             Within the VSCode extension, I can use this source as the starting point for data exploration or analysis
             simply by writing a query referencing it, and hitting the “Run” CodeLens button: </p>
           <p>
-            <a href="#img-malloy-src"><img loading="lazy" alt="" src="./img/malloy_src.png"
+            <a href="#img-malloy-src"><img loading="lazy" alt="" id="malloy-src" src="./img/malloy_src.png"
                 style="max-width: 100%" /></a>
           </p>
           <p>The VSCode extension compiles the Malloy query to SQL, issues it against the database, and renders the
@@ -187,7 +187,7 @@
             the top 3 destination airports for each month: </p>
           <p>
             <a href="#img-malloy-nest">
-              <img loading="lazy" alt="" src="./img/malloy_nest.png" style="max-width: 100%" /></a>
+              <img loading="lazy" alt="" id="malloy-nest" src="./img/malloy_nest.png" style="max-width: 100%" /></a>
           </p>
           <p>For each row in the original by-month query, there’s a new column that contains a nested table with flight
             counts by destination. Note also that since the original flights Source has pre-defined the join with
@@ -878,6 +878,20 @@ ORDER BY 1,2
               linkedBlog.checked = true;
             }
           }
+
+          // Help the Lightbox return to a particular point in a post
+          // Provide a `scrollto` parameter in the Lightbox return link --
+          const scrollto = urlParams.get('scrollto');
+          if (scrollto) {
+            const elem = document.querySelector(`#${scrollto}`);
+            setTimeout(() => {
+              elem.scrollIntoView({ block: "center", inline: "nearest" });
+              const newUrl = window.location.pathname
+                + (postId ? `?postid=${postId}` : '')
+                + window.location.hash;
+              window.history.replaceState(null, null, newUrl)
+            }, 100);
+          }
         }
 
         // Social Icon mover
@@ -1013,10 +1027,10 @@ ORDER BY 1,2
     ----------- -->
   <!-- Other images -->
   <a href="#home" class="lightbox" id="img-home"><img loading="lazy" alt="" src="./img/site-image.jpg" /></a>
-  <a href="?postid=malloy-intro#blog" class="lightbox" id="img-malloy-src"><img loading="lazy" alt=""
-      src="./img/malloy_src.png" /></a>
-  <a href="?postid=malloy-intro#blog" class="lightbox" id="img-malloy-nest"><img loading="lazy" alt=""
-      src="./img/malloy_nest.png" /></a>
+  <a href="?postid=malloy-intro&scrollto=malloy-src#blog" class="lightbox" id="img-malloy-src"><img loading="lazy"
+      alt="" src="./img/malloy_src.png" /></a>
+  <a href="?postid=malloy-intro&scrollto=malloy-nest#blog" class="lightbox" id="img-malloy-nest"><img loading="lazy"
+      alt="" src="./img/malloy_nest.png" /></a>
 </body>
 
 </html>
