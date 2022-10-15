@@ -1,0 +1,8 @@
+[
+  {
+    "name": "RUSA",
+    "dataTables": ["event_results.parquet", "events.parquet", "riders.parquet", "routes.parquet"],
+    "modelPath": "./rusa.malloy",
+    "queryPath": "./rusa-queries.malloy"
+  }
+]

@@ -1,0 +1,69 @@
+source: routes is table('duckdb:routes.parquet') {
+  primary_key: rtid
+}
+
+source: riders is table('duckdb:riders.parquet') {
+  primary_key: rusa
+}
+
+source: events is table('duckdb:events.parquet') {
+  primary_key: eid
+
+  declare:
+    event_year is year(event_date)
+
+  measure:
+    total_signups is sum(dnfs + finishers)
+    total_finishers is sum(finishers)
+    total_dnfs is sum(dnfs)
+    dnf_rate is total_dnfs / total_finishers
+
+  join_one: routes with rtid
+}
+
+source: event_results is table('duckdb:event_results.parquet') {
+  primary_key: cert
+
+  join_one: riders with rusa
+  join_one: events with eid
+
+  declare:
+    hours_to_finish is floor(total_minutes / 60) + (mod(total_minutes, 60) / 60.0)
+    finish_bucket is round(hours_to_finish) + ROUND((4 * (hours_to_finish - round(hours_to_finish))))/4
+
+  measure:
+    avg_finish_time_hrs is avg(hours_to_finish)
+    num_riders is riders.count()
+    num_routes is events.routes.count()
+
+  query: results_histogram is {
+    group_by:
+      events.routes.club
+      events.routes.route
+    aggregate:
+      num_riders
+      avg_finish_time_hrs
+      events.dnf_rate
+
+    nest: finish_time_bar_chart is {
+      group_by: finish_bucket
+      aggregate: num_riders
+      order_by: finish_bucket
+    }
+
+    order_by: num_riders desc
+    limit: 25
+  }
+
+  query: club_results_histogram is results_histogram + {
+    where:
+      events.routes.club ~ r'San Francisco'
+      and events.event_date ? '2011-01-01' to '2022-01-01'
+  }
+
+  query: distance_results_histogram is results_histogram + {
+    where:
+      events.routes.distance = 600
+      and events.event_date ? '2011-01-01' to '2022-01-01'
+  }
+}
