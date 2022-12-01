@@ -1,8 +1,34 @@
 [
   {
-    "name": "RUSA",
-    "dataTables": ["event_results.parquet", "events.parquet", "riders.parquet", "routes.parquet"],
-    "modelPath": "./rusa.malloy",
-    "queryPath": "./rusa-queries.malloy"
+    "name": "TPC-DS",
+    "dataTables": [
+        "call_center.parquet",
+        "catalog_page.parquet",
+        "catalog_returns.parquet",
+        "catalog_sales.parquet",
+        "customer.parquet",
+        "customer_address.parquet",
+        "customer_demographics.parquet",
+        "dater_dim.parquet",
+        "dbgen_version.parquet",
+        "household_demographics.parquet",
+        "income_band.parquet",
+        "inventory.parquet",
+        "item.parquet",
+        "promotion.parquet",
+        "reason.parquet",
+        "ship_mode.parquet",
+        "store.parquet",
+        "store_returns.parquet",
+        "store_sales.parquet",
+        "time_dim.parquet",
+        "warehouse.parquet",
+        "web_page.parquet",
+        "web_returns.parquet",
+        "web_sales.parquet",
+        "web_site.parquet"
+    ],
+    "modelPath": "./tpcds.malloy",
+    "queryPath": "./tpcds-queries.malloy"
   }
 ]

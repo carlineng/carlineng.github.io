@@ -1,0 +1,64 @@
+import "./tpcds.malloy"
+
+// --
+// Name: Query 01
+query: store_returns -> {
+  group_by:
+    sr_customer_sk
+    sr_store_sk
+    customer.c_customer_id
+  aggregate: 
+    customer_total_returns
+    avg_store_return is all(customer_total_returns / count(distinct sr_customer_sk), sr_store_sk)
+  where:
+    date_dim.d_year = 2000
+    and store.s_state = 'TN'
+    and sr_return_amt != null
+} -> {
+  project:
+    c_customer_id
+  where: 
+    customer_total_returns > avg_store_return * 1.2
+  order_by:
+    c_customer_id
+  limit: 100
+}
+
+
+// --
+// Name: Query 02
+query: yoy_weekly_sales -> {
+  group_by: 
+    d_week_seq
+    r_sun is sun_sales / weekly_sales.sun_sales
+    r_mon is mon_sales / weekly_sales.mon_sales
+    r_tue is tue_sales / weekly_sales.tue_sales
+    r_wed is wed_sales / weekly_sales.wed_sales
+    r_thu is thu_sales / weekly_sales.thu_sales
+    r_fri is fri_sales / weekly_sales.fri_sales
+    r_sat is sat_sales / weekly_sales.sat_sales
+  
+  where: date_dim.d_year = 2001
+  order_by: d_week_seq
+}
+
+
+// --
+// Name: Query 03
+query: store_sales -> {
+  group_by: 
+    d_year is date_dim.d_year
+    brand_id is item.i_brand_id
+    brand is item.i_brand
+
+  aggregate:
+    total_sales_price
+
+  where:
+    item.i_manufact_id = 128
+    and date_dim.d_moy = 11
+  
+  order_by: d_year, total_sales_price DESC, brand_id
+  limit: 100
+}
+

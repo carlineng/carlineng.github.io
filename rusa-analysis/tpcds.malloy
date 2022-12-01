@@ -1,0 +1,98 @@
+// Dimensions
+
+source: customer is table('duckdb:../data/customer.parquet') {
+  primary_key: c_customer_sk
+}
+
+source: customer_address is table('duckdb:../data/customer_address.parquet') {
+  primary_key: ca_address_sk
+}
+
+source: customer_demographics is table('duckdb:../data/customer_demographics.parquet') {
+  primary_key: cd_demo_sk
+}
+
+source: date_dim is table('duckdb:../data/date_dim.parquet') {
+  primary_key: d_date_sk
+}
+
+source: household_demographics is table('duckdb:../data/household_demographics.parquet') {
+  primary_key: hd_demo_sk
+}
+
+source: item is table('duckdb:../data/item.parquet') {
+  primary_key: i_item_sk
+}
+
+source: reason is table('duckdb:../data/reason.parquet') {
+  primary_key: r_reason_sk
+}
+
+source: store is table('duckdb:../data/store.parquet') {
+  primary_key: s_store_sk
+}
+
+source: time_dim is table('duckdb:../data/time_dim.parquet') {
+  primary_key: t_time_sk
+}
+
+// Facts
+
+source: store_returns is table('duckdb:../data/store_returns.parquet') {
+  join_one: date_dim on sr_returned_date_sk = date_dim.d_date_sk
+  join_one: store on sr_store_sk = store.s_store_sk
+  join_one: customer on sr_customer_sk = customer.c_customer_sk
+
+  measure: customer_total_returns is sum(sr_return_amt)
+  measure: avg_returns is avg(sr_return_amt)
+}
+
+source: store_sales is table('duckdb:../data/store_sales.parquet') {
+  join_one: date_dim on ss_sold_date_sk = date_dim.d_date_sk
+  join_one: item on ss_item_sk = item.i_item_sk
+
+  measure: total_sales_price is sum(ss_ext_sales_price)
+}
+
+sql: web_catalog_sales_qry is || 
+  SELECT
+    ws_sold_date_sk as sold_date_sk,
+    ws_ext_sales_price as sales_price
+  FROM read_parquet('../data/web_sales.parquet')
+
+  UNION all
+
+  SELECT
+    cs_sold_date_sk as sold_date_sk,
+    cs_ext_sales_price as sales_price
+  FROM read_parquet('../data/catalog_sales.parquet')
+  ;;
+  on "duckdb"
+  
+source: web_catalog_sales is from_sql(web_catalog_sales_qry) {
+  join_one: date_dim on sold_date_sk = date_dim.d_date_sk
+}
+
+source: weekly_sales is from(
+  web_catalog_sales -> {
+    group_by:
+      date_dim.d_week_seq
+
+    aggregate:
+      sun_sales is sum(sales_price) { where: date_dim.d_day_name = 'Sunday' }
+      mon_sales is sum(sales_price) { where: date_dim.d_day_name = 'Monday' }
+      tue_sales is sum(sales_price) { where: date_dim.d_day_name = 'Tuesday' }
+      wed_sales is sum(sales_price) { where: date_dim.d_day_name = 'Wednesday' }
+      thu_sales is sum(sales_price) { where: date_dim.d_day_name = 'Thursday' }
+      fri_sales is sum(sales_price) { where: date_dim.d_day_name = 'Friday' }
+      sat_sales is sum(sales_price) { where: date_dim.d_day_name = 'Saturday' }
+  }
+) {
+  primary_key: d_week_seq
+}
+
+source: yoy_weekly_sales is weekly_sales {
+  join_many: date_dim on d_week_seq = date_dim.d_week_seq
+  join_one: weekly_sales on d_week_seq = weekly_sales.d_week_seq - 53
+}
+
