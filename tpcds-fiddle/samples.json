@@ -9,7 +9,7 @@
         "customer.parquet",
         "customer_address.parquet",
         "customer_demographics.parquet",
-        "dater_dim.parquet",
+        "date_dim.parquet",
         "dbgen_version.parquet",
         "household_demographics.parquet",
         "income_band.parquet",
