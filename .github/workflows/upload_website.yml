@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: jakejarvis/s3-sync-action@master
       with:
-        args: --follow-symlinks --delete --exclude '.git/*' --exclude '.github/*' --exclude '.nojekyll' --exclude '.gitignore'
+        args: --follow-symlinks --delete --exclude '.git/*' --exclude '.github/*' --exclude '.nojekyll' --exclude '.gitignore' --exclude 'rusa-analysis/*' --exclude 'tpcds-fiddle/*'
       env:
         AWS_S3_BUCKET: 'carlineng.com'
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
