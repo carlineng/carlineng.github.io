@@ -126,7 +126,7 @@
             src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_nulls.markdown"></script>
           <p>Values aggregated at different grains are all contained in the <code>total_sales</code> column. Whether
             it's a yearly aggregate or a monthly aggregate depends on the values of other columns. Here again, running
-            <code>SUM(total_sales)</code> is a very dangerous operation.</p>
+            <code>SUM(total_sales)</code> is potentially a very dangerous operation.</p>
           <p>In all of these cases, the resulting “sales” columns can no longer be used as inputs to aggregate functions
             or other downstream transformations, since the rows contain duplicated information. If this table is
             consumed by downstream queries, those queries must take extreme care to apply the appropriate filters or
