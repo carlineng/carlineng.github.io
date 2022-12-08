@@ -60,6 +60,112 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+        <label for="sql-bad-syntax" class="post-title">SQL and the Pernicious Effect of Awkward Syntax</label>
+        <time datetime="2022-12-07">12.07.2022</time>
+        <input type="checkbox" id="sql-bad-syntax" />
+        <div class="post-body">
+          <p>In a <a href="https://carlineng.com/?postid=malloy-intro#blog">previous blog post</a>, I wrote about
+            Malloy, a new language for querying analytical databases. My main argument was that the killer feature of
+            Malloy is its integration of a semantic layer inside an interactive query language. The <a
+              href="https://news.ycombinator.com/item?id=32738874">discussion on Hacker News</a> was, as expected, quite
+            lively, and provided great food for thought. This post is a response to some of those comments, an
+            exploration of some of the deficiencies of SQL's syntax, and a demonstration of how Malloy gets it right.
+          </p>
+          <p>A lot of those comments were along the lines of: </p>
+          <blockquote>
+            <p><a href="https://news.ycombinator.com/item?id=32738874#32744949"> SQL + recursive queries is Turing
+                complete. Thus every arrangement and selection of data is reachable by a query. Therefore there is
+                nothing Malloy can do that SQL can't (I'm absolutely sure of it).</a></p>
+          </blockquote> and: <blockquote>
+            <p><a href="https://news.ycombinator.com/item?id=32738874#32744378">I don't see much value in this. This is
+                not aesthetically better than SQL. It's also not semantically better. This is just a different syntax
+                that would parse to the same AST.</a></p>
+          </blockquote>
+          <p> Both of these comments dismiss Malloy, pointing out that one can write semantically equivalent queries in
+            SQL. While they are technically correct that Malloy queries all have semantically equivalent SQL queries,
+            this misses a critical point: <b>the syntax of a language has a profound impact on what users of that
+              language choose to express.</b> As the saying goes, “first we shape our tools, then our tools shape us”.
+          </p>
+          <p>After over a decade of using SQL nearly every day for data analysis, I’ve developed a strong conviction
+            that SQL’s syntax is not just awkward and annoying, but actively harmful. By making certain types of queries
+            difficult to write and interpret, it trains users to avoid asking those questions. In <a
+              href="https://news.ycombinator.com/item?id=32738874#32746468">this thread</a>, some commenters take on the
+            challenge of implementing a SQL equivalent to a Malloy query. However, I think the relevant question is not
+            “can you write a SQL query that answers question X?”, but rather “would you have thought to ask question X
+            in the first place?” </p>
+          <p> This speaks more broadly to a common <a
+              href="https://ryxcommar.com/2022/11/27/goodbye-data-science/">dissatisfaction I see amongst analysts and
+              data scientists</a>. Many analytics jobs are essentially writing SQL queries to answer questions from
+            higher-ups. Data lies at the bottom of a mystical lake, and only the analyst knows how to mutter the right
+            SQL incantations to retrieve it. However, when the time comes for the analyst to ask their own questions,
+            the first ideas that will likely come to mind are ideas that are easy to express, and not necessarily those
+            that are most impactful or creative. I suspect this is especially true in cases where the analyst does not
+            have deep domain expertise, and operates in a centralized “ticket-taking” support model. The syntax of SQL
+            subtly guides a user’s mindset towards answering particular types of questions, and avoid answering others.
+          </p>
+          <h3>A Simple Example: Nested Analysis</h3>
+          <p>A concrete example of something difficult in SQL is any kind of nested analysis, such as computing
+            subtotals and percent of total in a hierarchical dimension. For example, suppose we have a table of daily
+            sales, and we want to roll up total sales simultaneously at the monthly and yearly level: </p>
+          <script
+            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=sales_by_date.markdown"></script>
+          <p> This is typically done in SQL with one of three approaches: (1) computing multiple subqueries and joining
+            the results together, (2) using a window function to aggregate at different levels, or (3) using a GROUP BY
+            ROLLUP clause, if supported by the database. The queries for each of these approaches is below: </p>
+          <script src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=queries.sql"></script>
+          <p> Each of these three options produces a correct answer, but presented in a seriously flawed way. A query
+            like this requires the data to be aggregated along multiple grains (year and month, in this case); however,
+            a typical SQL query is only capable of naturally representing data in two dimensions (rows and columns),
+            which corresponds to one level of granularity. To represent more than one level of granularity, a query must
+            resort to unnatural representations that are difficult to interpret and use. This is tough to explain in
+            words, but hopefully the following examples are more clear. In approaches (1) and (2) above, the SQL results
+            contain duplicate data for the coarser grain (yearly sales):</p>
+          <script
+            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_duplicates.md"></script>
+          <p> The <code>yearly_sales</code> column above contains duplicate data for each month's row. Doing a naive
+            <code>SUM(yearly_sales)</code> aggregation on this table is a dangerous operation that will lead to
+            incorrect results without the appropriate filters.
+          <p>In approach (3), yearly aggregates are represented as rows where the finer-grained column (month) contains
+            <code>NULL</code> values: </p>
+          <script
+            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_nulls.markdown"></script>
+          <p>Values aggregated at different grains are all contained in the <code>total_sales</code> column. Whether
+            it's a yearly aggregate or a monthly aggregate depends on the values of other columns. Here again, running
+            <code>SUM(total_sales)</code> is potentially a very dangerous operation.</p>
+          <p>In all of these cases, the resulting “sales” columns can no longer be used as inputs to aggregate functions
+            or other downstream transformations, since the rows contain duplicated information. If this table is
+            consumed by downstream queries, those queries must take extreme care to apply the appropriate filters or
+            transformations to prevent duplicates from entering the calculations.</p>
+          <h3>The Malloy Way</h3>
+          <p>The <a href="https://malloydata.github.io/malloy/documentation/language/nesting.html">nesting
+              functionality</a> in Malloy allows you to write a subquery within an aggregation. This will produce a
+            sub-table for each row in the GROUP BY clause. It feels much more natural to write the query this way, since
+            the query is now written in a way that matches the hierarchical logic that’s being performed:</p>
+          <script
+            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=query.malloy"></script>
+          <p>The output is presented in a way that respects the hierarchical relationship of the data. Every aggregate
+            column contains data at a single level of granularity, and we no longer see duplicate values for data at the
+            coarser grain.</p>
+          <a href="#img-malloy-nest-result"><img loading="lazy" alt="" id="malloy-nest-result"
+              src="./img/malloy_nest_result.png" style="max-width: 100%" /></a>
+          <p>This is possible because the <code>by_month</code> column in the result set of this query is of type <a
+              href="https://duckdb.org/docs/sql/data_types/struct.html"><code>struct</code></a>, which effectively
+            contains a sub-table. The Malloy VSCode extension renders this <code>struct</code> data as if it were just
+            another table. This is easier to write, easier to interpret, and avoids all the pitfalls of the equivalent
+            SQL implementation. The output of this query can be used naturally by any downstream queries or analyses
+            without having to worry about hidden traps.</p>
+          <p>It’s a pretty simple example, but I think it illustrates the point nicely. In my career as a SQL monkey,
+            I’ve <b>*been asked*</b> to do analysis like this many times in the past, and its always been possible. But
+            when looking at a dataset on my own, its rare that these are the first questions that <b>*I will ask on my
+              own.*</b> I’m convinced that these syntactic improvements offer more than just enhanced productivity for
+            the user, but enhanced creativity as well. To see what’s possible with more sophisticated examples, I highly
+            recommend checking out some of the <a
+              href="https://malloydata.github.io/malloy/documentation/examples/ecommerce.html">examples on the Malloy
+              documentation site</a>, or playing with the <a href="http://malloy.lloydtabb.com/"> Composer application
+            </a>, a web app built on top of Malloy. </p>
+        </div>
+      </article>
+      <article>
         <label for="malloy-intro" class="post-title">A Sequel to SQL? An introduction to Malloy</label>
         <time datetime="2022-09-05">09.05.2022</time>
         <input type="checkbox" id="malloy-intro" />
@@ -1031,6 +1137,8 @@ ORDER BY 1,2
       alt="" src="./img/malloy_src.png" /></a>
   <a href="?postid=malloy-intro&scrollto=malloy-nest#blog" class="lightbox" id="img-malloy-nest"><img loading="lazy"
       alt="" src="./img/malloy_nest.png" /></a>
+  <a href="?postid=sql-bad-syntax&scrollto=malloy-nest-result#blog" class="lightbox" id="img-malloy-nest-result"><img
+      loading="lazy" alt="" src="./img/malloy_nest_result.png" /></a>
 </body>
 
 </html>
