@@ -117,9 +117,9 @@
             contain duplicate data for the coarser grain (yearly sales):</p>
           <script
             src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_duplicates.md"></script>
-          <p> The <code>yearly_sales</code> column above contains duplicate data for each month's row. Doing a
+          <p> The <code>yearly_sales</code> column above contains duplicate data for each month's row. Doing a naive
             <code>SUM(yearly_sales)</code> aggregation on this table is a dangerous operation that will lead to
-            incorrect results.
+            incorrect results without the appropriate filters.
           <p>In approach (3), yearly aggregates are represented as rows where the finer-grained column (month) contains
             <code>NULL</code> values: </p>
           <script
