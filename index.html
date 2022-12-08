@@ -143,11 +143,12 @@
             coarser grain.</p>
           <a href="#img-malloy-nest-result"><img loading="lazy" alt="" id="malloy-nest-result"
               src="./img/malloy_nest_result.png" style="max-width: 100%" /></a>
-          <p>This is possible because the <code>by_month</code> column in the result set is of type <code>struct</code>,
-            and is effectively embedding a sub-table within that column. The Malloy VSCode extension renders this
-            <code>struct</code> data as if it were just another table. This is easier to write, easier to interpret, and
-            avoids all the pitfalls of the equivalent SQL implementation. The output of this query can be used naturally
-            by any downstream queries or analyses without having to worry about hidden traps.</p>
+          <p>This is possible because the <code>by_month</code> column in the result set of this query is of type <a
+              href="https://duckdb.org/docs/sql/data_types/struct.html"><code>struct</code></a>, which effectively
+            contains a sub-table. The Malloy VSCode extension renders this <code>struct</code> data as if it were just
+            another table. This is easier to write, easier to interpret, and avoids all the pitfalls of the equivalent
+            SQL implementation. The output of this query can be used naturally by any downstream queries or analyses
+            without having to worry about hidden traps.</p>
           <p>It’s a pretty simple example, but I think it illustrates the point nicely. In my career as a SQL monkey,
             I’ve <b>*been asked*</b> to do analysis like this many times in the past, and its always been possible. But
             when looking at a dataset on my own, its rare that these are the first questions that <b>*I will ask on my
