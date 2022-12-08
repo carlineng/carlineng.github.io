@@ -66,15 +66,19 @@
         <div class="post-body">
           <p>In a previous blog post, I wrote about Malloy, a new language for querying analytical databases. My main
             argument was that the killer feature of Malloy is its integration of a semantic layer inside an interactive
-            query language: a modeling layer that enables the encoding of data relationships and re-usable components.
-            The <a href="https://news.ycombinator.com/item?id=32738874">discussion on Hacker News</a> was, as expected,
-            quite lively. Some of the comments were along the lines of: </p>
+            query language. The <a href="https://news.ycombinator.com/item?id=32738874">discussion on Hacker News</a>
+            was, as expected, quite lively, and provided great food for thought. This post is a response to some of
+            those comments, an exploration of some of the deficiencies of SQL's syntax, and a demonstration of how
+            Malloy gets it right.</p>
+          <p>A lot of those comments were along the lines of: </p>
           <blockquote>
-            <p>SQL + recursive queries is Turing complete. Thus every arrangement and selection of data is reachable by
-              a query. Therefore there is nothing Malloy can do that SQL can't (I'm absolutely sure of it).</p>
+            <p><a href="https://news.ycombinator.com/item?id=32738874#32744949"> SQL + recursive queries is Turing
+                complete. Thus every arrangement and selection of data is reachable by a query. Therefore there is
+                nothing Malloy can do that SQL can't (I'm absolutely sure of it).</a></p>
           </blockquote> and: <blockquote>
-            <p>I don't see much value in this. This is not aesthetically better than SQL. It's also not semantically
-              better. This is just a different syntax that would parse to the same AST.</p>
+            <p><a href="https://news.ycombinator.com/item?id=32738874#32744378">I don't see much value in this. This is
+                not aesthetically better than SQL. It's also not semantically better. This is just a different syntax
+                that would parse to the same AST.</a></p>
           </blockquote>
           <p> Both of these comments dismiss Malloy, pointing out that one can write semantically equivalent queries in
             SQL. While they are technically correct that Malloy queries all have semantically equivalent SQL queries,
@@ -84,7 +88,7 @@
           <p>After over a decade of using SQL nearly every day for data analysis, I’ve developed a strong conviction
             that SQL’s syntax is not just awkward and annoying, but actively harmful. By making certain types of queries
             difficult to write and interpret, it trains users to avoid asking those questions. In <a
-              href="https://news.ycombinator.com/item?id=32738874#32744378">this thread</a>, some commenters take on the
+              href="https://news.ycombinator.com/item?id=32738874#32746468">this thread</a>, some commenters take on the
             challenge of implementing a SQL equivalent to a Malloy query. However, I think the relevant question is not
             “can you write a SQL query that answers question X?”, but rather “would you have thought to ask question X
             in the first place?” </p>
