@@ -12,16 +12,6 @@
   --codebgcolor: rgba(255, 255, 100, 0.075);
 }
 
-@media (prefers-color-scheme: dark) {
-  * {
-    --textcolor: #dadada;
-    --bgcolor: #141414;
-    --highlight: #ffc400;
-    --linkcolor: #2749c9;
-    --codebgcolor: rgba(255, 255, 100, 0.075);
-  }
-}
-
 body {
   font-size: 18px;
   font-family: system-ui, sans-serif;
