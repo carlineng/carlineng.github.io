@@ -8,8 +8,8 @@ query: store_returns -> {
     sr_store_sk
     customer.c_customer_id
   aggregate: 
-    customer_total_returns
-    avg_store_return is all(customer_total_returns / count(distinct sr_customer_sk), sr_store_sk)
+    customer_total_returns is total_returns
+    avg_store_return is all(total_returns / count(distinct sr_customer_sk), sr_store_sk)
   where:
     date_dim.d_year = 2000
     and store.s_state = 'TN'
@@ -24,10 +24,12 @@ query: store_returns -> {
   limit: 100
 }
 
-
 // --
 // Name: Query 02
-query: yoy_weekly_sales -> {
+query: yoy_weekly_sales is weekly_sales {
+  join_many: date_dim on d_week_seq = date_dim.d_week_seq
+  join_one: weekly_sales on d_week_seq = weekly_sales.d_week_seq - 53
+} -> {
   group_by: 
     d_week_seq
     r_sun is sun_sales / weekly_sales.sun_sales
@@ -42,7 +44,6 @@ query: yoy_weekly_sales -> {
   order_by: d_week_seq
 }
 
-
 // --
 // Name: Query 03
 query: store_sales -> {
@@ -52,26 +53,26 @@ query: store_sales -> {
     brand is item.i_brand
 
   aggregate:
-    total_sales_price
+    total_ext_sales
 
   where:
     item.i_manufact_id = 128
     and date_dim.d_moy = 11
   
-  order_by: d_year, total_sales_price DESC, brand_id
+  order_by: d_year, total_ext_sales DESC, brand_id
   limit: 100
 }
 
 // --
 // Name: Query 04
 query: all_sales -> {
-  declare: 
-    catalog_total_sales_2001 is total_sales { where: date_dim.d_year = 2001 and sale_type = 'c'}
-    catalog_total_sales_2002 is total_sales { where: date_dim.d_year = 2002 and sale_type = 'c'}
-    web_total_sales_2001 is total_sales { where: date_dim.d_year = 2001 and sale_type = 'w'}
-    web_total_sales_2002 is total_sales { where: date_dim.d_year = 2002 and sale_type = 'w'}
-    store_total_sales_2001 is total_sales { where: date_dim.d_year = 2001 and sale_type = 's'}
-    store_total_sales_2002 is total_sales { where: date_dim.d_year = 2002 and sale_type = 's'}
+  declare:
+    catalog_total_sales_2001 is total_sales { where: date_dim.d_year = 2001 and channel_category = 'catalog channel'}
+    catalog_total_sales_2002 is total_sales { where: date_dim.d_year = 2002 and channel_category = 'catalog channel'}
+    web_total_sales_2001 is total_sales { where: date_dim.d_year = 2001 and channel_category = 'web channel'}
+    web_total_sales_2002 is total_sales { where: date_dim.d_year = 2002 and channel_category = 'web channel'}
+    store_total_sales_2001 is total_sales { where: date_dim.d_year = 2001 and channel_category = 'store channel'}
+    store_total_sales_2002 is total_sales { where: date_dim.d_year = 2002 and channel_category = 'store channel'}
 
     catalog_yoy is catalog_total_sales_2002 / catalog_total_sales_2001
     store_yoy is store_total_sales_2002 / store_total_sales_2001
@@ -98,4 +99,22 @@ query: all_sales -> {
     c_first_name 
     c_last_name 
     c_preferred_cust_flag 
+}
+
+// --
+// Name: Query 05
+query: daily_profit_loss -> {
+
+  aggregate:
+    total_sales
+    total_returns
+    net_profit
+
+  nest: by_category + {
+    nest: by_channel_id
+    order_by: channel_category
+  }
+
+  where:
+    d_date >= '2000-08-23' and d_date <= '2000-09-06'
 }
