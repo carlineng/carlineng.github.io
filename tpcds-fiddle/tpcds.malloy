@@ -395,16 +395,6 @@ source: daily_profit_loss is from_sql(daily_profit_loss_sql) {
   }
 }
 
-source: category_avg is from(
-  item -> {
-    group_by:
-      i_category
-
-    aggregate:
-      avg_category_price is avg(i_current_price)
-  }
-) {}
-
 source: preferred_customer_zip is from(
   customer -> {
     declare:
