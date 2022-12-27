@@ -228,3 +228,237 @@ query: store_sales -> {
     bucket5 is pick bucket5_avg_discount when bucket5_count > 165306
                else bucket5_avg_net_paid
 }
+
+// --
+// Name: Query 10
+query: all_sales -> {
+  group_by:
+    customer.customer_demographics.cd_gender
+    customer.customer_demographics.cd_marital_status
+    customer.customer_demographics.cd_education_status
+    customer.customer_demographics.cd_purchase_estimate
+    customer.customer_demographics.cd_credit_rating
+    customer.customer_demographics.cd_dep_count
+    customer.customer_demographics.cd_dep_employed_count
+    customer.customer_demographics.cd_dep_college_count
+
+  aggregate:
+    customer_count is count(distinct customer_sk)
+
+  where:
+    date_dim.d_year = 2002
+    and date_dim.d_moy >= 1
+    and date_dim.d_moy <= 4
+    and (
+      customer.customer_address.ca_county = 'Rush County'
+      or customer.customer_address.ca_county = 'Toole County'
+      or customer.customer_address.ca_county = 'Jefferson County'
+      or customer.customer_address.ca_county = 'Dona Ana County'
+      or customer.customer_address.ca_county = 'La Porte County'
+    )
+    and customer.customer_demographics.cd_gender != null
+  
+  having:
+    count_store_sales > 0
+    and (
+      count_web_sales > 0
+      or count_catalog_sales > 0
+    )
+  
+  order_by: 
+    cd_gender
+    cd_marital_status
+    cd_education_status
+    cd_purchase_estimate
+    cd_credit_rating
+    cd_dep_count
+    cd_dep_employed_count
+    cd_dep_college_count
+}
+
+// --
+// Name: Query 11
+query: all_sales -> {
+  declare:
+    web_total_sales_2001 is total_list_minus_discount { where: date_dim.d_year = 2001 and channel_category = 'web channel'}
+    web_total_sales_2002 is total_list_minus_discount { where: date_dim.d_year = 2002 and channel_category = 'web channel'}
+    store_total_sales_2001 is total_list_minus_discount { where: date_dim.d_year = 2001 and channel_category = 'store channel'}
+    store_total_sales_2002 is total_list_minus_discount { where: date_dim.d_year = 2002 and channel_category = 'store channel'}
+
+    store_yoy is store_total_sales_2002 / store_total_sales_2001
+    web_yoy is web_total_sales_2002 / web_total_sales_2001
+
+  group_by:
+    customer.c_customer_id
+    customer.c_first_name
+    customer.c_last_name
+    customer.c_preferred_cust_flag
+
+  having:
+    store_total_sales_2001 > 0
+    and store_total_sales_2002 > 0
+    and web_total_sales_2001 > 0
+    and web_total_sales_2002 > 0
+    and web_total_sales_2002 / web_total_sales_2001 > store_total_sales_2002 / store_total_sales_2001
+
+  order_by:
+    c_customer_id 
+    c_first_name 
+    c_last_name 
+    c_preferred_cust_flag 
+
+  limit: 100
+}
+
+// --
+// Name: Query 12
+query: web_sales -> {
+  group_by:
+    item.i_item_id
+    item.i_item_desc
+    item.i_category
+    item.i_class
+    item.i_current_price
+
+  declare:
+    item_class_revenue is all(sum(ws_ext_sales_price), i_class)
+
+  aggregate:
+    total_ext_sales
+    revenueratio is 100.0 * total_ext_sales / item_class_revenue
+
+  where:
+    (
+      item.i_category = 'Sports'
+      or item.i_category = 'Books'
+      or item.i_category = 'Home'
+    )
+    and date_dim.d_date >= '1999-02-22'
+    and date_dim.d_date <= '1999-03-24'
+
+  order_by:
+    i_category
+    i_class
+    i_item_id
+    i_item_desc
+    revenueratio
+
+  limit: 100
+}
+
+// --
+// Name: Query 13
+query: store_sales -> {
+  aggregate:
+    avg1 is avg(ss_quantity)
+    avg2 is avg(ss_ext_sales_price)
+    avg3 is avg(ss_ext_wholesale_cost)
+    sum1 is sum(ss_ext_wholesale_cost)
+
+  where:
+    date_dim.d_year = 2001
+    and (
+      (
+        customer_demographics.cd_marital_status = 'M'
+        and customer_demographics.cd_education_status = 'Advanced Degree'
+        and ss_sales_price >= 100.0
+        and ss_sales_price <= 150.0
+        and household_demographics.hd_dep_count = 3
+      )
+      OR (
+        customer_demographics.cd_marital_status = 'S'
+        and customer_demographics.cd_education_status = 'College'
+        and ss_sales_price >= 50.0
+        and ss_sales_price <= 100.0
+        and household_demographics.hd_dep_count = 1
+      )
+      OR (
+        customer_demographics.cd_marital_status = 'W'
+        and customer_demographics.cd_education_status = '2 yr Degree'
+        and ss_sales_price >= 150.0
+        and ss_sales_price <= 200.0
+        and household_demographics.hd_dep_count = 1
+      )
+    )
+    and (
+      (
+        customer_address.ca_country = 'United States'
+        and (
+          customer_address.ca_state = 'TX'
+          or customer_address.ca_state = 'OH'
+          or customer_address.ca_state = 'TX'
+        )
+        and ss_net_profit >= 100
+        and ss_net_profit <= 200
+      )
+      or (
+        customer_address.ca_country = 'United States'
+        and (
+          customer_address.ca_state = 'OR'
+          or customer_address.ca_state = 'NM'
+          or customer_address.ca_state = 'KY'
+        )
+        and ss_net_profit >= 150
+        and ss_net_profit <= 300
+      )
+      or (
+        customer_address.ca_country = 'United States'
+        and (
+          customer_address.ca_state = 'VA'
+          or customer_address.ca_state = 'TX'
+          or customer_address.ca_state = 'MS'
+        )
+        and ss_net_profit >= 50
+        and ss_net_profit <= 250
+      )
+    )
+}
+
+// --
+// Name: Query 14
+query: all_sales + {
+  join_one: relevant_items with item_sk
+  join_one: avg_sales on true
+} -> {
+  declare:
+    sales is sum(quantity * list_price)
+    number_sales is count(*)
+
+  aggregate:
+    sales
+    number_sales
+
+  nest: by_channel is {
+    group_by: channel_category
+    aggregate:
+      sales
+      number_sales
+
+    nest: by_brand is {
+      group_by: item.i_brand_id
+      aggregate:
+        sales
+        number_sales
+
+      nest: by_class is {
+        group_by: item.i_class_id
+        aggregate:
+          sales
+          number_sales
+
+        nest: by_category_id is {
+          group_by: item.i_category_id
+          aggregate:
+            sales
+            number_sales
+        }
+      }
+    }
+  }
+
+  where: relevant_items.item_sk != null
+    and date_dim.d_year = 2001
+    and date_dim.d_moy = 11
+
+  having: sum(quantity * list_price) > max(avg_sales.average_sales)
+}

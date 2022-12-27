@@ -58,6 +58,9 @@ source: store_sales is table('duckdb:store_sales.parquet') {
   join_one: customer with ss_customer_sk
   join_one: item with ss_item_sk
   join_one: promotion with ss_promo_sk
+  join_one: household_demographics with ss_hdemo_sk
+  join_one: customer_demographics with ss_cdemo_sk
+  join_one: customer_address with ss_addr_sk
 
 
   dimension: channel_category is 'store channel'
@@ -189,6 +192,7 @@ source: web_sales is table('duckdb:web_sales.parquet') {
   join_one: date_dim with ws_sold_date_sk
   join_one: customer with ws_bill_customer_sk
   join_one: web_site with ws_web_site_sk
+  join_one: item with ws_item_sk
 
   dimension: channel_category is 'web channel'
   dimension: channel_id is concat('web_site', web_site.web_site_id)
@@ -285,6 +289,10 @@ source: all_sales is from_sql(all_sales_sql) {
   measure: avg_list_price is avg(list_price)
   measure: avg_coupon_amt is avg(coupon_amt)
   measure: avg_sales_price is avg(sales_price)
+  measure: count_store_sales is count(*) { where: channel_category = 'store channel' }
+  measure: count_web_sales is count(*) { where: channel_category = 'web channel' }
+  measure: count_catalog_sales is count(*) { where: channel_category = 'catalog channel' }
+  measure: total_list_minus_discount is sum(ext_list_price - ext_discount_amt)
 
   query: daily_profit_loss is {
     group_by:
@@ -818,3 +826,51 @@ source: preferred_customer_zip is from(
 ) {
   primary_key: ca_zip
 }
+
+source: item_properties is from(
+  all_sales -> {
+    group_by:
+      item.i_brand_id
+      item.i_class_id
+      item.i_category_id
+
+    where:
+      date_dim.d_year >= 1999
+      and date_dim.d_year <= 2001
+    
+    having:
+      count_store_sales > 0
+      and count_web_sales > 0
+      and count_catalog_sales > 0
+
+    order_by:
+      i_brand_id
+      i_class_id
+      i_category_id
+  }
+)
+
+source: relevant_items is from(
+  item + {
+    join_one: item_properties 
+      on i_brand_id = item_properties.i_brand_id
+      and i_class_id = item_properties.i_class_id
+      and i_category_id = item_properties.i_category_id
+  } -> {
+    group_by: item_sk is i_item_sk
+    where: 
+      item_properties.i_brand_id != null
+      and item_properties.i_class_id != null
+      and item_properties.i_category_id != null
+  }
+) {
+  primary_key: item_sk
+}
+
+source: avg_sales is from(
+  all_sales -> {
+    aggregate: 
+      average_sales is avg(quantity * list_price)
+    where: date_dim.d_year >= 1999 and date_dim.d_year <= 2001
+  }
+)
