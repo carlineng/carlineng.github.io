@@ -251,13 +251,29 @@
               researchers have discussed this idea of "relation-valued attributes" <a
                 href="https://www.sciencedirect.com/science/article/abs/pii/0306437986900037">since at least 1986</a>,
               but no relational database on the market supports them natively. </p>
+            <p>I described the following example in depth in my <a href="index.html?postid=sql-bad-syntax#blog">previous
+                post</a>, but to quickly go over it again, the following SQL query generates a result aggregated at both
+              the yearly and monthly level.</p>
+            <script src="https://gist.github.com/carlineng/7fe9b23a2137e08bc6f8f8751125df7c.js"></script>
+            <script
+              src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_duplicates.md"></script>
+            <p>Note that data aggregated at the yearly level is duplicated in every row. This column is now "unsafe" for
+              use by downstream queries. Summing the <code>yearly_sales</code> column will result in values that are
+              wildly incorrect.</p>
+            <p>Compare this to the equivalent Malloy query:</p>
+            <script
+              src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=query.malloy"></script>
+            <p>The <code>by_month</code> column contains a nested table, with its own rows and columns, and we no longer
+              have duplicated data for yearly sales.</p>
+            <a href="#img-malloy-nest-result-2"><img loading="lazy" alt="" id="malloy-nest-result-2"
+                src="./img/malloy_nest_result.png" style="max-width: 100%" /></a>
             <p>This is more than just an aesthetic improvement. From a practical standpoint, any Malloy result can be
               plugged into downstream computations without worrying about the necessity of arbitrary filters or falling
               into the <a href="https://stackoverflow.com/questions/14328319/fan-trap-and-chasm-trap-database">fan/chasm
                 traps</a>. The importance of this cannot be overstated! Writing a query the "obvious" way in SQL will
               oftentimes result in something that is syntactically valid, but semantically meaningless. I believe this
               is a major deficiency of the tools we use. The "obvious" way should be the correct way, and anything less
-              is a serious design flaw.</p> >>>>>>> e3a0968 (continue art post)
+              is a serious design flaw.</p>
           </div>
       </article>
       <article>
