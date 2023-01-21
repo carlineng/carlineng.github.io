@@ -60,6 +60,7 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+<<<<<<< HEAD
         <label for="sql-renaissance" class="post-title">SQL, Malloy, and the Art of the Renaissance</label>
         <time datetime="2023-02-05">02.05.2023</time>
         <input type="checkbox" id="sql-renaissance" />
@@ -180,6 +181,83 @@
           <a href="#img-cimabue"><img loading="lazy" alt="" id="renaissance-cimabue" src="./img/cimabue-mary.jpeg"
               style="max-width: 100%" /></a>
           <p></p>
+=======
+        <label for="sql-renaissance" class="post-title">SQL and Renaissance Art</label>
+        <time datetime="2023-01-20">01.20.2023</time>
+        <input type="checkbox" id="sql-renaissance" />
+        <div class="post-body">
+          <p> This post is a bit different from past posts that were more technically oriented. Indulge me as I go on a
+            brief tour of Western European art from the Gothic period to the Renaissance, and attempt to make a
+            connection to our little world of SQL and analytical query languages. </p>
+          <p>Lloyd Tabb, former Looker CTO and co-creator of the Malloy programming language, recently wrote a post
+            entitled <a href="https://lloydtabb.substack.com/p/data-is-rectangular-and-other-limiting">Data is
+              Rectangular and Other Limiting Misconceptions</a>. If you haven’t read it yet, go check it out now — it
+            very neatly lays out a fundamental flaw in the SQL’s perspective of data, and how the Malloy language does
+            better. In particular, SQL resultsets can only naturally represent data in two dimensions: rows and columns.
+            However, data in the real world is NOT two-dimensional. This mismatch results in awkwardness in both writing
+            SQL queries and interpreting SQL results. As I was reading the post, it sparked a memory of a recent trip I
+            took to the Uffizi art gallery in Florence, Italy. </p>
+          <p> The Uffizi is the former administrative office of the powerful Medici family that ruled Florence during
+            the 15th century. It currently houses one of the world’s largest collections of Gothic and Renaissance art,
+            spanning from the 12th to the 16th century in Western Europe. I personally have minimal knowledge of art and
+            art history, but the tour we took highlighted some fascinating aspects of technological advancement during
+            this time. </p>
+          <h3>Gothic Art</h3>
+          <p> Gothic paintings such as this <a
+              href="https://www.uffizi.it/en/artworks/virgin-and-child-enthroned-and-prophets-santa-trinita-maesta">
+              depiction of the of the Virgin Mary</a>, attributed to Florentine painter Cimabue circa 1290-1300, were
+            flat scenes with close-up figures in the foreground. The notion of perspective had not yet been developed,
+            and rather than attempt to create images with depth, many paintings filled the background with gold leaf,
+            which served as a representation of heaven.</p>
+          <a href="#img-cimabue"><img loading="lazy" alt="" id="renaissance-cimabue" src="./img/cimabue-mary.jpeg"
+              style="max-width: 100%; height: 400px" /></a>
+          <h3>Transitioning to the Renaissance</h3>
+          <p>The transition from the Gothic to the Renaissance period was marked, among other things, by a growing
+            understanding of perspective — the ability to accurately represent three-dimensional scenes on a flat
+            canvas. <a href="https://www.uffizi.it/en/artworks/battle-of-san-romano">The Battle of San Romano</a> by
+            Paolo Uccello (circa 1435-1440) is a great example from this transition period. A fierce battle rages in the
+            foreground, while scenes from life in the Italian countryside play out in the background. In painting the
+            background, Uccello clearly understood that far away objects in the background must be smaller than those in
+            the foreground. But just how much smaller hadn’t been fully worked out yet. Look at the hunting scene in the
+            background — the hunters and hares upon would be massively tall if brought to the foreground. </p>
+          <a href="#img-uccello"><img loading="lazy" alt="" id="renaissance-uccello"
+              src="./img/uccello-battle-of-san-romano.jpeg" style="max-width: 100%" /></a>
+          <h3>The Renaissance</h3>
+          <p>Finally we arrived at <a href="https://www.uffizi.it/en/artworks/annunciation">The Annunciation by Leonardo
+              da Vinci</a>, painted around 1472-1476. Here, the lines of the building behind Mary clearly converge into
+            a well-defined <a href="https://en.wikipedia.org/wiki/Vanishing_point">vanishing point</a> in the
+            background, and the mountains, ships, and trees look realistically distant. This was as much a technological
+            advancement as an artistic one. Da Vinci applied his knowledge of mathematics to represent the
+            three-dimensional world in only two dimensions. </p>
+          <a href="#img-davinci"><img loading="lazy" alt="" id="renaissance-davinci"
+              src="./img/davinci-annunciation.jpeg" style="max-width: 100%" /></a>
+          <h3>SQL: The Gothic Art of Query Languages</h3>
+          <p> A SQL resultset is a two-dimensional canvas with rows on one axis and columns on the other. The typical
+            star-schema data model contains hundreds of dimensions which can be used to slice, dice, and aggregate data.
+            Because a SQL resultset can only naturally represent two dimensions, any single projection of the
+            star-schema model can only naturally represent the data in two dimensions. A query that aggregates along a
+            single level of granularity is like the Gothic painting above -- a flat scene representing two dimensions,
+            without any notion of depth. Queries that require aggregation at different levels of granularity (like the
+            hierarchical subtotals of my <a href="index.html?postid=sql-bad-syntax#blog">last post</a>) are possible,
+            but fit awkwardly into the two-dimensional output of the query. Looking at the resultset of a <code>GROUP BY
+            ROLLUP</code> query is akin to looking at the Battle of San Romano. The point comes across, but the image
+            is contorted and unnatural. </p>
+          <h3>Malloy: A Query Language Renaissance?</h3>
+          <p> Malloy’s approach breaks free of the two-dimensional constraints of rows and columns by allowing columns
+            to take a “table” type. This means sub-tables can be nested within a single column, and hierarchies can be
+            preserved. By allowing sub-tables within resultsets, Malloy results are able to faithfully represent the
+            true dimensionality of the underlying data. The idea of nested tables is not a new one. Database researchers
+            have discussed this idea of "relation-valued attributes" <a
+              href="https://www.sciencedirect.com/science/article/abs/pii/0306437986900037">since at least 1986</a>, but
+            no relational database on the market supports them natively. </p>
+          <p>This is more than just an aesthetic improvement. From a practical standpoint, any Malloy result can be
+            plugged into downstream computations without worrying about the necessity of arbitrary filters or falling
+            into the <a href="https://stackoverflow.com/questions/14328319/fan-trap-and-chasm-trap-database">fan/chasm
+              traps</a>. The importance of this cannot be overstated! Writing a query the "obvious" way in SQL will
+            oftentimes result in something that is syntactically valid, but semantically meaningless. I believe this is
+            a major deficiency of the tools we use. The "obvious" way should be the correct way, and anything less is a
+            serious design flaw.</p>
+>>>>>>> e3a0968 (continue art post)
         </div>
       </article>
       <article>
@@ -1262,8 +1340,11 @@ ORDER BY 1,2
       alt="" src="./img/malloy_nest.png" /></a>
   <a href="?postid=sql-bad-syntax&scrollto=malloy-nest-result#blog" class="lightbox" id="img-malloy-nest-result"><img
       loading="lazy" alt="" src="./img/malloy_nest_result.png" /></a>
+<<<<<<< HEAD
   <a href="?postid=sql-renaissance&scrollto=malloy-nest-result-2#blog" class="lightbox"
     id="img-malloy-nest-result-2"><img loading="lazy" alt="" src="./img/malloy_nest_result.png" /></a>
+=======
+>>>>>>> e3a0968 (continue art post)
   <a href="?postid=sql-renaissance&scrollto=renaissance-cimabue#blog" class="lightbox" id="img-cimabue"><img
       loading="lazy" alt="" src="./img/cimabue-mary.jpeg" /></a>
   <a href="?postid=sql-renaissance&scrollto=renaissance-uccello#blog" class="lightbox" id="img-uccello"><img
