@@ -60,38 +60,81 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
-        <label for="sql-bad-syntax" class="post-title">Why SQL syntax sucks, and why it matters</label>
-        <time datetime="2022-12-07">12.07.2022</time>
+        <label for="sql-renaissance" class="post-title">SQL and Renaissance Art</label>
+        <time datetime="2023-01-20">01.20.2023</time>
         <input type="checkbox" id="sql-renaissance" />
         <div class="post-body">
-          <p>
-            Lloyd Tabb, former Looker CTO and co-creator of the Malloy programming language, recently wrote a post
-            entitled “data is not rectangular”. If you haven’t read it yet, go check it out now — it very neatly lays
-            out a fundamental flaw in SQL’s perspective, and how the Malloy language does better. As I was reading the
-            post, it sparked a memory of a recent trip I took to the Uffizi art gallery in Florence, Italy. Indulge me
-            as I go on a brief tour of European art through the ages, and try to make the connection to the world of
-            query languages.
-          </p>
-          <h3>Art in the Uffizi</h3>
-          <p>
-            The Uffizi is the former administrative office of the powerful Medici family. It currently houses one of the
-            world’s largest collections of Gothic and Renaissance art, spanning from the 12th to the 16th century in
-            Western Europe. I personally have minimal knowledge of art and art history, but the tour we took highlighted
-            some fascinating aspects of technological advancement during the transition from the Gothic period to the
-            Renaissance.
-          </p>
+          <p> This post is a bit different from past posts that were more technically oriented. Indulge me as I go on a
+            brief tour of Western European art from the Gothic period to the Renaissance, and attempt to make a
+            connection to our little world of SQL and analytical query languages. </p>
+          <p>Lloyd Tabb, former Looker CTO and co-creator of the Malloy programming language, recently wrote a post
+            entitled <a href="https://lloydtabb.substack.com/p/data-is-rectangular-and-other-limiting">Data is
+              Rectangular and Other Limiting Misconceptions</a>. If you haven’t read it yet, go check it out now — it
+            very neatly lays out a fundamental flaw in the SQL’s perspective of data, and how the Malloy language does
+            better. In particular, SQL resultsets can only naturally represent data in two dimensions: rows and columns.
+            However, data in the real world is NOT two-dimensional. This mismatch results in awkwardness in both writing
+            SQL queries and interpreting SQL results. As I was reading the post, it sparked a memory of a recent trip I
+            took to the Uffizi art gallery in Florence, Italy. </p>
+          <p> The Uffizi is the former administrative office of the powerful Medici family that ruled Florence during
+            the 15th century. It currently houses one of the world’s largest collections of Gothic and Renaissance art,
+            spanning from the 12th to the 16th century in Western Europe. I personally have minimal knowledge of art and
+            art history, but the tour we took highlighted some fascinating aspects of technological advancement during
+            this time. </p>
+          <h3>Gothic Art</h3>
+          <p> Gothic paintings such as this <a
+              href="https://www.uffizi.it/en/artworks/virgin-and-child-enthroned-and-prophets-santa-trinita-maesta">
+              depiction of the of the Virgin Mary</a>, attributed to Florentine painter Cimabue circa 1290-1300, were
+            flat scenes with close-up figures in the foreground. The notion of perspective had not yet been developed,
+            and rather than attempt to create images with depth, many paintings filled the background with gold leaf,
+            which served as a representation of heaven.</p>
+          <a href="#img-cimabue"><img loading="lazy" alt="" id="renaissance-cimabue" src="./img/cimabue-mary.jpeg"
+              style="max-width: 100%; height: 400px" /></a>
+          <h3>Transitioning to the Renaissance</h3>
           <p>The transition from the Gothic to the Renaissance period was marked, among other things, by a growing
             understanding of perspective — the ability to accurately represent three-dimensional scenes on a flat
-            canvas. Gothic paintings such as this <a
-              href="https://www.uffizi.it/en/artworks/virgin-and-child-enthroned-and-prophets-santa-trinita-maesta">
-              depiction of the of the Virgin Mary</a> attributed to Florentine painter Cimabue around 1290-1300 were
-            relatively
-            flat scenes, with close-up figures in the foreground, and gold leaf in the background.
-          </p>
-          <a href="#img-cimabue"><img loading="lazy" alt="" id="renaissance-cimabue" src="./img/cimabue-mary.jpeg"
-              style="max-width: 100%" /></a>
-          <p></p>
-
+            canvas. <a href="https://www.uffizi.it/en/artworks/battle-of-san-romano">The Battle of San Romano</a> by
+            Paolo Uccello (circa 1435-1440) is a great example from this transition period. A fierce battle rages in the
+            foreground, while scenes from life in the Italian countryside play out in the background. In painting the
+            background, Uccello clearly understood that far away objects in the background must be smaller than those in
+            the foreground. But just how much smaller hadn’t been fully worked out yet. Look at the hunting scene in the
+            background — the hunters and hares upon would be massively tall if brought to the foreground. </p>
+          <a href="#img-uccello"><img loading="lazy" alt="" id="renaissance-uccello"
+              src="./img/uccello-battle-of-san-romano.jpeg" style="max-width: 100%" /></a>
+          <h3>The Renaissance</h3>
+          <p>Finally we arrived at <a href="https://www.uffizi.it/en/artworks/annunciation">The Annunciation by Leonardo
+              da Vinci</a>, painted around 1472-1476. Here, the lines of the building behind Mary clearly converge into
+            a well-defined <a href="https://en.wikipedia.org/wiki/Vanishing_point">vanishing point</a> in the
+            background, and the mountains, ships, and trees look realistically distant. This was as much a technological
+            advancement as an artistic one. Da Vinci applied his knowledge of mathematics to represent the
+            three-dimensional world in only two dimensions. </p>
+          <a href="#img-davinci"><img loading="lazy" alt="" id="renaissance-davinci"
+              src="./img/davinci-annunciation.jpeg" style="max-width: 100%" /></a>
+          <h3>SQL: The Gothic Art of Query Languages</h3>
+          <p> A SQL resultset is a two-dimensional canvas with rows on one axis and columns on the other. The typical
+            star-schema data model contains hundreds of dimensions which can be used to slice, dice, and aggregate data.
+            Because a SQL resultset can only naturally represent two dimensions, any single projection of the
+            star-schema model can only naturally represent the data in two dimensions. A query that aggregates along a
+            single level of granularity is like the Gothic painting above -- a flat scene representing two dimensions,
+            without any notion of depth. Queries that require aggregation at different levels of granularity (like the
+            hierarchical subtotals of my <a href="index.html?postid=sql-bad-syntax#blog">last post</a>) are possible,
+            but fit awkwardly into the two-dimensional output of the query. Looking at the resultset of a <code>GROUP BY
+            ROLLUP</code> query is akin to looking at the Battle of San Romano. The point comes across, but the image
+            is contorted and unnatural. </p>
+          <h3>Malloy: A Query Language Renaissance?</h3>
+          <p> Malloy’s approach breaks free of the two-dimensional constraints of rows and columns by allowing columns
+            to take a “table” type. This means sub-tables can be nested within a single column, and hierarchies can be
+            preserved. By allowing sub-tables within resultsets, Malloy results are able to faithfully represent the
+            true dimensionality of the underlying data. The idea of nested tables is not a new one. Database researchers
+            have discussed this idea of "relation-valued attributes" <a
+              href="https://www.sciencedirect.com/science/article/abs/pii/0306437986900037">since at least 1986</a>, but
+            no relational database on the market supports them natively. </p>
+          <p>This is more than just an aesthetic improvement. From a practical standpoint, any Malloy result can be
+            plugged into downstream computations without worrying about the necessity of arbitrary filters or falling
+            into the <a href="https://stackoverflow.com/questions/14328319/fan-trap-and-chasm-trap-database">fan/chasm
+              traps</a>. The importance of this cannot be overstated! Writing a query the "obvious" way in SQL will
+            oftentimes result in something that is syntactically valid, but semantically meaningless. I believe this is
+            a major deficiency of the tools we use. The "obvious" way should be the correct way, and anything less is a
+            serious design flaw.</p>
         </div>
       </article>
       <article>
@@ -161,14 +204,12 @@
             <code>SUM(yearly_sales)</code> aggregation on this table is a dangerous operation that will lead to
             incorrect results without the appropriate filters.
           <p>In approach (3), yearly aggregates are represented as rows where the finer-grained column (month) contains
-            <code>NULL</code> values:
-          </p>
+            <code>NULL</code> values: </p>
           <script
             src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_nulls.markdown"></script>
           <p>Values aggregated at different grains are all contained in the <code>total_sales</code> column. Whether
             it's a yearly aggregate or a monthly aggregate depends on the values of other columns. Here again, running
-            <code>SUM(total_sales)</code> is potentially a very dangerous operation.
-          </p>
+            <code>SUM(total_sales)</code> is potentially a very dangerous operation. </p>
           <p>In all of these cases, the resulting “sales” columns can no longer be used as inputs to aggregate functions
             or other downstream transformations, since the rows contain duplicated information. If this table is
             consumed by downstream queries, those queries must take extreme care to apply the appropriate filters or
@@ -223,8 +264,7 @@
             <code>QUALIFY</code> clauses. Unfortunately, the reality is that SQL is “good enough” for most use cases,
             and according to <a href="https://youtu.be/IVlMB9akD1A?t=420">Aiken’s Law</a>, programmer training is the
             dominant cost for a programming language. It seems that syntactic sugar is simply not enough to overcome
-            SQL’s entrenchment.
-          </p>
+            SQL’s entrenchment. </p>
           <p>This brings me to <a href="https://github.com/looker-open-source/malloy">Malloy</a>, a new query language
             for data analysis currently being developed by <a href="https://twitter.com/lloydtabb">Lloyd Tabb</a>,
             founder and former CTO of <a href="https://www.looker.com/">Looker</a>. Malloy addresses many of the
@@ -245,8 +285,7 @@
             access only to the raw data, but not the requisite domain-specific knowledge will not be able to accurately
             reproduce these metrics. The semantic layer provides a place to set these rules and require queries to abide
             by them; e.g., which joins are valid, which columns can be grouped on, or what inputs go into a particular
-            aggregate function.
-          </p>
+            aggregate function. </p>
           <p>A semantic layer usually takes the form of an application that sits on top of the database, along with
             configuration files that define the rules described above. Examples of products on the market today include
             SAP’s <a
@@ -326,12 +365,10 @@
             particularly nice feature is its handling of nested data. Rollup queries with nested subtotals can be
             painful to write in SQL, and the
             <code><a
-              href="https://docs.snowflake.com/en/sql-reference/constructs/group-by-rollup.html">GROUP BY ROLLUP</a></code>
-            function in most SQL
+              href="https://docs.snowflake.com/en/sql-reference/constructs/group-by-rollup.html">GROUP BY ROLLUP</a></code> function in most SQL
             dialects produces awkward output that is very difficult to work with. Malloy’s nest clause makes this
             trivial. The previous query simply counts the number of flights by month. Let’s say I now want to compute
-            the top 3 destination airports for each month:
-          </p>
+            the top 3 destination airports for each month: </p>
           <p>
             <a href="#img-malloy-nest">
               <img loading="lazy" alt="" id="malloy-nest" src="./img/malloy_nest.png" style="max-width: 100%" /></a>
@@ -497,8 +534,7 @@ ORDER BY 1,2
             clause provides a scoping hint to a column-function to indicate that the function input must make use of the
             <code>GROUP BY</code> clause. The author does not mince words here: “The <code>HAVING</code> clause and the
             <code>GROUP BY</code> clause are needed in SQL only as a consequence of the column-function argument scoping
-            rules.”
-          </p>
+            rules.” </p>
           <p>The author also describes table-functions (functions that take a table as input, rather than just a
             column), and laments several instances of arbitrary and non-orthogonal syntax. First, the
             <code>EXISTS</code> function (takes a table-expression, returns a scalar) can only be used in a
@@ -506,8 +542,7 @@ ORDER BY 1,2
             language accepts a scalar. Second, the <code>UNION</code> function is represented by an in-fix operator, and
             since SQL[1983] did not allow arbitrary table-expressions in <code>FROM</code> clauses, it was impossible to
             compute a column-function over a <code>UNION</code> of two tables. This problem is solved in SQL[2022], as
-            the following syntax is now legal:
-          </p>
+            the following syntax is now legal: </p>
           <p>
             <code>
   <pre>
@@ -539,8 +574,7 @@ ORDER BY 1,2
             <code>NULL</code> values, leading to the unfortunate fact that for a column X with values
             <code>x1, x2, …, xn</code>, <code><pre>x1 + x2 + … + xn != SUM(X)</pre></code>and
             <code><pre>(X1 + X2) != SUM(X1) + SUM(X2)</pre></code>See the <a
-              href="https://www.db-fiddle.com/f/hUeLXcYP38eEqZmvLbdumZ/1">following example</a> in Postgres:
-          </p>
+              href="https://www.db-fiddle.com/f/hUeLXcYP38eEqZmvLbdumZ/1">following example</a> in Postgres: </p>
           <p><code><pre>
   WITH v AS (
     SELECT * FROM ( 
@@ -644,8 +678,7 @@ ORDER BY 1,2
           <p><em><b>Explicit <code>JOIN</code>, <code>INTERSECT</code>, and <code>DIFFERENCE</code> operators:</b></em>
             SQL[1983] did not support these. SQL[2022] does. JOIN was added to the SQL92 standard.
             <code>INTERSECT</code> and <code>MINUS</code> are supported by most databases, and even if they aren’t, the
-            operators have semantically identical equivalents using <code>JOIN</code>.
-          </p>
+            operators have semantically identical equivalents using <code>JOIN</code>. </p>
           <h3>Summary</h3>
           <p>While many of the critiques of SQL have been fixed by updates to the ANSI standard, many are still present.
             Lack of orthogonality in many places still exists, which makes SQL clunky to learn and use; however, I
@@ -653,8 +686,7 @@ ORDER BY 1,2
             can write SQL. By contrast, missing components of the relational model and issues arising from
             <code>NULL</code> values are likely the cause of many queries that look correct but provide wrong answers,
             especially by folks who are confident in their ability to write queries, but unfamiliar with some of the
-            nastier traps.
-          </p>
+            nastier traps. </p>
           <p>Despite the improvements listed above, in a <a
               href="https://www.red-gate.com/simple-talk/opinion/opinion-pieces/chris-date-and-the-relational-model/">2014
               interview</a>, CJ Date said “we didn’t realize how truly awful SQL was or would turn out to be (note that
@@ -819,8 +851,7 @@ ORDER BY 1,2
             and meyer lemon/cherry/almond -- did wonders for my mood. From Wild Flour, I’m a skip, hop and a jump away
             from San Francisco on familiar roads. I developed some pain in my right knee right after Pt Reyes Station
             (mile 330), but at that point, I felt so close to home that spirits were high, even limping along at a
-            severely diminished pace.
-          </p>
+            severely diminished pace. </p>
           <p> I rolled into the finish at Crissy Field just before 4 PM, greeted by a small crew of volunteers holding
             down the fort on a windy day at the shore. Too tired to socialize much, I grabbed a quick bite to eat,
             remounted my bike, and rode the final few miles back to my apartment. </p>
@@ -853,8 +884,7 @@ ORDER BY 1,2
             Modern headlights are <em>viciously bright</em>. Even a brief glance would make my eyes wince in pain and
             leave spots in my vision. I had to glean whatever information about the situation behind me by watching the
             shadows dance. When the lines of my shadow sharpened, it meant someone was approaching from behind. As they
-            <span style="filter: blur(0.66px)">faded</span>, it meant we were separating.
-          </p>
+            <span style="filter: blur(0.66px)">faded</span>, it meant we were separating. </p>
           <p> Three hours into the ride, I stopped on the side of the road to relieve myself. As I stretched my back and
             neck, I looked up at the sky and for the first time noticed the half-moon and the stars of the Milky Way
             above. I took a few extra seconds to soak in the beauty of the moment — red lights marching on ahead, white
@@ -1187,8 +1217,12 @@ ORDER BY 1,2
       alt="" src="./img/malloy_nest.png" /></a>
   <a href="?postid=sql-bad-syntax&scrollto=malloy-nest-result#blog" class="lightbox" id="img-malloy-nest-result"><img
       loading="lazy" alt="" src="./img/malloy_nest_result.png" /></a>
-  <a href="?postid=sql-renaissance&scrollto=#renaissance-cimabue#blog" class="lightbox" id="img-cimabue"><img
+  <a href="?postid=sql-renaissance&scrollto=renaissance-cimabue#blog" class="lightbox" id="img-cimabue"><img
       loading="lazy" alt="" src="./img/cimabue-mary.jpeg" /></a>
+  <a href="?postid=sql-renaissance&scrollto=renaissance-uccello#blog" class="lightbox" id="img-uccello"><img
+      loading="lazy" alt="" src="./img/uccello-battle-of-san-romano.jpeg" /></a>
+  <a href="?postid=sql-renaissance&scrollto=renaissance-davinci#blog" class="lightbox" id="img-davinci"><img
+      loading="lazy" alt="" src="./img/davinci-annunciation.jpeg" /></a>
 </body>
 
 </html>
