@@ -1,5 +1,9 @@
 // Dimensions
 
+source: call_center is table('duckdb:call_center.parquet') {
+  primary_key: cc_call_center_sk
+}
+
 source: catalog_page is table('duckdb:catalog_page.parquet') {
   primary_key: cp_catalog_page_sk
 }
@@ -50,6 +54,10 @@ source: web_site is table('duckdb:web_site.parquet') {
   primary_key: web_site_sk
 }
 
+source: warehouse is table('duckdb:warehouse.parquet') {
+  primary_key: w_warehouse_sk
+}
+
 // Facts
 
 source: store_sales is table('duckdb:store_sales.parquet') {
@@ -77,6 +85,7 @@ source: store_sales is table('duckdb:store_sales.parquet') {
       sold_time_sk is ss_sold_time_sk
       item_sk is ss_item_sk
       customer_sk is ss_customer_sk 
+      addr_sk is ss_addr_sk
       cdemo_sk is ss_cdemo_sk
       promo_sk is ss_promo_sk
       quantity is ss_quantity
@@ -123,45 +132,6 @@ source: store_returns is table('duckdb:store_returns.parquet') {
   }
 }
 
-source: catalog_sales is table('duckdb:catalog_sales.parquet') {
-  join_one: date_dim with cs_sold_date_sk
-  join_one: catalog_page with cs_catalog_page_sk
-  join_one: customer with cs_bill_customer_sk
-
-  dimension: channel_category is 'catalog channel'
-  dimension: channel_id is concat('catalog_page', catalog_page.cp_catalog_page_id)
-
-  measure: total_ext_sales is sum(cs_ext_sales_price)
-  measure: total_profit is sum(cs_net_profit)
-
-  query: projection is {
-    project:
-      channel_category
-      channel_id
-      sold_date_sk is cs_sold_date_sk
-      sold_time_sk is cs_sold_time_sk
-      item_sk is cs_item_sk
-      customer_sk is cs_bill_customer_sk 
-      cdemo_sk is cs_bill_cdemo_sk
-      promo_sk is cs_promo_sk
-      quantity is cs_quantity
-      ext_sales_price is cs_ext_sales_price
-      wholesale_cost is cs_wholesale_cost
-      list_price is cs_list_price
-      sales_price is cs_sales_price
-      ext_discount_amt is cs_ext_discount_amt
-      ext_wholesale_cost is cs_ext_wholesale_cost
-      ext_list_price is cs_ext_list_price
-      ext_tax is cs_ext_tax
-      coupon_amt is cs_coupon_amt
-      net_paid is cs_net_paid
-      net_paid_inc_tax is cs_net_paid_inc_tax
-      net_profit is cs_net_profit
-
-    where: catalog_page.cp_catalog_page_id != null
-  }
-}
-
 source: catalog_returns is table('duckdb:catalog_returns.parquet') {
   join_one: date_dim with cr_returned_date_sk
   join_one: catalog_page with cr_catalog_page_sk
@@ -185,7 +155,55 @@ source: catalog_returns is table('duckdb:catalog_returns.parquet') {
 
     where: catalog_page.cp_catalog_page_id != null
   }
+}
 
+source: catalog_sales is table('duckdb:catalog_sales.parquet') {
+  join_one: date_dim with cs_sold_date_sk
+  join_one: catalog_page with cs_catalog_page_sk
+  join_one: customer with cs_bill_customer_sk
+  join_one: ship_address is customer_address with cs_ship_addr_sk
+  join_one: ship_date is date_dim with cs_ship_date_sk
+  join_one: call_center with cs_call_center_sk
+  join_one: catalog_returns 
+    on cs_order_number = catalog_returns.cr_order_number 
+    and cs_item_sk = catalog_returns.cr_item_sk
+  join_one: customer_demographics with cs_bill_cdemo_sk
+  join_one: item with cs_item_sk
+  join_one: warehouse with cs_warehouse_sk
+
+  dimension: channel_category is 'catalog channel'
+  dimension: channel_id is concat('catalog_page', catalog_page.cp_catalog_page_id)
+
+  measure: total_ext_sales is sum(cs_ext_sales_price)
+  measure: total_profit is sum(cs_net_profit)
+
+  query: projection is {
+    project:
+      channel_category
+      channel_id
+      sold_date_sk is cs_sold_date_sk
+      sold_time_sk is cs_sold_time_sk
+      item_sk is cs_item_sk
+      customer_sk is cs_bill_customer_sk 
+      addr_sk is cs_bill_addr_sk
+      cdemo_sk is cs_bill_cdemo_sk
+      promo_sk is cs_promo_sk
+      quantity is cs_quantity
+      ext_sales_price is cs_ext_sales_price
+      wholesale_cost is cs_wholesale_cost
+      list_price is cs_list_price
+      sales_price is cs_sales_price
+      ext_discount_amt is cs_ext_discount_amt
+      ext_wholesale_cost is cs_ext_wholesale_cost
+      ext_list_price is cs_ext_list_price
+      ext_tax is cs_ext_tax
+      coupon_amt is cs_coupon_amt
+      net_paid is cs_net_paid
+      net_paid_inc_tax is cs_net_paid_inc_tax
+      net_profit is cs_net_profit
+
+    where: catalog_page.cp_catalog_page_id != null
+  }
 }
 
 source: web_sales is table('duckdb:web_sales.parquet') {
@@ -208,6 +226,7 @@ source: web_sales is table('duckdb:web_sales.parquet') {
       sold_time_sk is ws_sold_time_sk
       item_sk is ws_item_sk
       customer_sk is ws_bill_customer_sk 
+      addr_sk is ws_bill_addr_sk
       cdemo_sk is ws_bill_cdemo_sk
       promo_sk is ws_promo_sk
       quantity is ws_quantity
@@ -838,10 +857,9 @@ source: item_properties is from(
       date_dim.d_year >= 1999
       and date_dim.d_year <= 2001
     
-    having:
-      count_store_sales > 0
-      and count_web_sales > 0
-      and count_catalog_sales > 0
+    having: count_store_sales > 0
+    having: count_web_sales > 0
+    having: count_catalog_sales > 0
 
     order_by:
       i_brand_id
