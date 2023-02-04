@@ -462,6 +462,939 @@ query: all_sales + {
   having: sum(quantity * list_price) > max(avg_sales.average_sales)
 }
 
+// --
+// Name: Query 15
+query: catalog_sales -> {
+  declare: 
+    zip is substring(customer.customer_address.ca_zip, 1, 5)
+    state is customer.customer_address.ca_state
+
+  group_by: customer.customer_address.ca_zip
+  aggregate: price_sum is sum(cs_sales_price)
+  where:
+    date_dim.d_qoy = 2
+    and date_dim.d_year = 2001
+    and (
+      zip = '85669'
+      or zip = '86197'
+      or zip = '88274'
+      or zip = '83405'
+      or zip = '86475'
+      or zip = '85392'
+      or zip = '85460'
+      or zip = '80348'
+      or zip = '81792'
+      or (
+        state = 'CA'
+        or state = 'WA'
+        or state = 'GA'
+      )
+      or cs_sales_price > 500
+    )
+
+  order_by: ca_zip
+  limit: 100
+}
+
+// --
+// Name: Query 16
+query: cs1 is catalog_sales + {
+  join_many: cs2 is catalog_sales on cs_order_number = cs2.cs_order_number
+} -> {
+  aggregate:
+    order_count is count(distinct cs_order_number)
+    total_shipping_cost is sum(cs_ext_ship_cost)
+    total_net_profit is sum(cs_net_profit)
+
+  where:
+    ship_date.d_date >= '2002-02-01'
+    and ship_date.d_date <= '2002-04-02'
+    and ship_address.ca_state = 'GA'
+    and call_center.cc_county = 'Williamson County'
+    and cs_warehouse_sk != cs2.cs_warehouse_sk
+    and catalog_returns.cr_order_number = null
+}
+
+// --
+// Name: Query 17
+query: store_sales + {
+  join_one: sr is store_returns on
+    ss_customer_sk = sr.sr_customer_sk
+    and ss_item_sk = sr.sr_item_sk
+    and ss_ticket_number = sr.sr_ticket_number
+
+  join_one: cs is catalog_sales on
+    sr.sr_customer_sk = cs.cs_bill_customer_sk
+    and sr.sr_item_sk = cs.cs_item_sk
+
+  join_one: d2 is date_dim on 
+    d2.d_date_sk = sr.sr_returned_date_sk
+
+  join_one: d3 is date_dim on
+    d3.d_date_sk = cs.cs_sold_date_sk
+} -> {
+  group_by:
+    item.i_item_id
+    item.i_item_desc
+    store.s_state
+
+  aggregate:
+    store_sales_quantitycount is count(*) { where: ss_quantity != null }
+    store_sales_quantityave is avg(ss_quantity)
+    store_sales_quantity_stddev is sum(0) + stddev_samp(ss_quantity)
+    store_sales_quantitycov is sum(0) + stddev_samp(ss_quantity) / avg(ss_quantity)
+
+    store_returns_quantitycount is count(*) { where: sr.sr_return_quantity != null }
+    store_returns_quantityave is avg(sr.sr_return_quantity)
+    store_returns_quantity_stddev is sum(0) + stddev_samp(sr.sr_return_quantity)
+    store_returns_quantitycov is sum(0) + stddev_samp(sr.sr_return_quantity) / avg(sr.sr_return_quantity)
+
+    catalog_sales_quantitycount is count(*) { where: cs.cs_bill_customer_sk != null }
+    catalog_sales_quantity_ave is avg(cs.cs_quantity)
+    catalog_sales_quantity_stddev is sum(0) + stddev_samp(cs.cs_quantity)
+    catalog_sales_quantitycov is sum(0) + stddev_samp(cs.cs_quantity) / avg(cs.cs_quantity)
+
+  where:
+    sr.sr_customer_sk != null
+    and cs.cs_bill_customer_sk != null
+    and date_dim.d_quarter_name = '2001Q1'
+    and (
+      d2.d_quarter_name = '2001Q1'
+      or d2.d_quarter_name = '2001Q2'
+      or d2.d_quarter_name = '2001Q3'
+    )
+    and (
+      d3.d_quarter_name = '2001Q1'
+      or d3.d_quarter_name = '2001Q2'
+      or d3.d_quarter_name = '2001Q3'
+    )
+
+  order_by:
+    i_item_id
+    i_item_desc
+    s_state
+}
+
+// --
+// Name: Query 18
+
+query: cs is catalog_sales + {
+  query: aggregations is {
+    aggregate:
+      agg1 is avg(cs_quantity)
+      agg2 is avg(cs_list_price)
+      agg3 is avg(cs_coupon_amt)
+      agg4 is avg(cs_sales_price)
+      agg5 is avg(cs_net_profit)
+      agg6 is avg(customer.c_birth_year)
+      agg7 is avg(customer_demographics.cd_dep_count)
+  }
+} -> {
+  nest:
+    aggregations
+
+  nest: by_item is {
+    group_by: item.i_item_id
+    nest: aggregations
+    nest: by_country is {
+      group_by: customer.customer_address.ca_country
+      nest: aggregations
+      nest: by_state is {
+        group_by: customer.customer_address.ca_state
+        nest: aggregations
+        nest: by_county is {
+          group_by: customer.customer_address.ca_county
+          nest: aggregations
+          order_by: ca_county
+        }
+        order_by: ca_state
+      }
+      order_by: ca_country
+    }
+    order_by: i_item_id
+    limit: 100
+  }
+
+  where:
+    customer_demographics.cd_gender = 'F'
+    and customer_demographics.cd_education_status = 'Unknown'
+    and (
+      customer.c_birth_month = 1
+      or customer.c_birth_month = 6
+      or customer.c_birth_month = 8
+      or customer.c_birth_month = 9
+      or customer.c_birth_month = 12
+      or customer.c_birth_month = 2
+    )
+    and date_dim.d_year = 1998
+    and (
+      customer.customer_address.ca_state = 'MS'
+      or customer.customer_address.ca_state = 'IN'
+      or customer.customer_address.ca_state = 'ND'
+      or customer.customer_address.ca_state = 'OK'
+      or customer.customer_address.ca_state = 'NM'
+      or customer.customer_address.ca_state = 'VA'
+      or customer.customer_address.ca_state = 'MS'
+    )
+    and item.i_item_sk != null
+}
+
+// --
+// Name: Query 19
+query: store_sales -> {
+  group_by:
+    item.i_brand_id
+    item.i_brand
+    item.i_manufact_id
+    item.i_manufact
+
+  aggregate:
+    total_ext_sales
+
+  where:
+    item.i_manager_id = 8
+    and date_dim.d_moy = 11
+    and date_dim.d_year = 1998
+    and substring(customer.customer_address.ca_zip, 1, 5) != substring(store.s_zip, 1, 5)
+
+  order_by: 
+    total_ext_sales desc 
+    i_brand
+    i_brand_id
+    i_manufact_id
+    i_manufact
+  
+  limit: 100
+}
+
+// --
+// Name: Query 20
+query: catalog_sales -> {
+  declare:
+    item_class_revenue is all(sum(cs_ext_sales_price), i_class)
+
+  group_by: 
+    item.i_item_id
+    item.i_item_desc
+    item.i_category
+    item.i_class
+    item.i_current_price
+
+  aggregate:
+    itemrevenue is sum(cs_ext_sales_price)
+    revenueratio is 100.0 * sum(cs_ext_sales_price) / item_class_revenue
+
+  where:
+    (
+      item.i_category = 'Sports'
+      or item.i_category = 'Books'
+      or item.i_category = 'Home'
+    )
+    and date_dim.d_date >= '1999-02-22'
+    and date_dim.d_date <= '1999-03-24'
+
+  order_by: 
+    i_category
+    i_class
+    i_item_id
+    i_item_desc
+    revenueratio
+
+  limit: 100
+}
+
+// --
+// Name: Query 21
+query: inventory -> {
+  declare: 
+    inv_before is sum(inv_quantity_on_hand) { where: date_dim.d_date < '2000-03-11' }
+    inv_after is sum(inv_quantity_on_hand) { where: date_dim.d_date >= '2000-03-11' }
+
+  group_by:
+    warehouse.w_warehouse_name
+    item.i_item_id
+
+  aggregate:
+    inv_before
+    inv_after
+
+  where:
+    date_dim.d_date >= '2000-02-10'
+    and date_dim.d_date <= '2000-04-10'
+    and item.i_current_price >= 0.99
+    and item.i_current_price <= 1.49
+
+  having:
+    inv_before > 0
+    & inv_after / inv_before >= 2.0 / 3.0
+    & inv_after / inv_before <= 3.0 / 2.0
+
+  order_by:
+    w_warehouse_name
+    i_item_id
+
+  limit: 100
+}
+
+// --
+// Name: Query 22
+query: inventory -> {
+  declare: qoh is avg(inv_quantity_on_hand)
+
+  aggregate: qoh
+  nest: by_product_name is {
+    group_by: item.i_product_name
+    aggregate: qoh
+    nest: by_brand is {
+      group_by: item.i_brand
+      aggregate: qoh
+      nest: by_class is {
+        group_by: item.i_class
+        aggregate: qoh
+        nest: by_category is {
+          group_by: item.i_category
+          aggregate: qoh
+          order_by: i_category
+        }
+        order_by: i_class
+      }
+      order_by: i_brand
+    }
+  order_by: i_product_name
+  limit: 100
+  }
+
+  where:
+    date_dim.d_month_seq >= 1200
+    and date_dim.d_month_seq <= 1211
+}
+
+// --
+// Name: Query 23
+query: all_sales + {
+  join_one: best_ss_customer with customer_sk
+  join_one: frequent_ss_items with item_sk
+} -> {
+  group_by:
+    customer.c_last_name
+    customer.c_first_name
+
+  aggregate:
+    sales is sum(quantity * list_price)
+
+  where:
+    best_ss_customer.customer_sk != null
+    and frequent_ss_items.item_sk != null
+    and date_dim.d_year = 2000
+    and date_dim.d_moy = 2
+    and (
+      channel_category = 'catalog channel'
+      or channel_category = 'web channel'
+    )
+
+  order_by:
+    c_last_name
+    c_first_name
+    sales
+
+  limit: 100
+}
+
+// --
+// Name: Query 24
+query: store_sales_returns is store_sales + {
+  join_one: sr is store_returns
+    on ss_ticket_number = sr.sr_ticket_number
+    and ss_item_sk = sr.sr_item_sk
+} -> {
+  group_by:
+    customer.c_last_name
+    customer.c_first_name
+    store.s_store_name
+    customer_address.ca_state
+    store.s_state
+    item.i_color
+    item.i_current_price
+    item.i_manager_id
+    item.i_units
+    item.i_size
+
+  aggregate:
+    netpaid is sum(ss_net_paid)
+
+  where:
+    customer.c_birth_country != upper(customer.customer_address.ca_country)
+    and store.s_zip = customer.customer_address.ca_zip
+    and store.s_market_id = 8
+    and sr.sr_item_sk != null
+    and item.i_color = 'peach'
+} -> {
+  group_by:
+    c_last_name
+    c_first_name
+    s_store_name
+
+  aggregate:
+    paid is sum(netpaid)
+
+  having:
+    sum(netpaid) > 0.05 * avg(netpaid)
+
+  order_by: 
+    c_last_name
+    c_first_name
+    s_store_name
+}
+
+// --
+// Name: Query 25
+query: store_sales + {
+  join_one: cs is catalog_sales
+    on store_returns.sr_customer_sk = cs.cs_bill_customer_sk
+    and store_returns.sr_item_sk = cs.cs_item_sk
+} -> {
+  group_by:
+    item.i_item_id
+    item.i_item_desc
+    store.s_store_id
+    store.s_store_name
+
+  aggregate:
+    store_sales_profit is sum(ss_net_profit)
+    store_returns_loss is sum(store_returns.sr_net_loss)
+    catalog_sales_profit is sum(cs.cs_net_profit)
+
+  where: 
+    store_returns.sr_customer_sk != null
+    and cs.cs_bill_customer_sk != null
+    and date_dim.d_year = 2001
+    and date_dim.d_moy = 4
+    and store_returns.date_dim.d_year = 2001
+    and store_returns.date_dim.d_moy >= 4
+    and store_returns.date_dim.d_moy <= 10
+    and cs.date_dim.d_year = 2001
+    and cs.date_dim.d_moy >= 4
+    and cs.date_dim.d_moy <= 10
+}
+
+// --
+// Name: Query 26
+query: all_sales -> stats_by_item + {
+  where: channel_category = 'catalog channel'
+}
+
+// --
+// Name: Query 27
+query: store_sales + {
+  query: aggregations is {
+    aggregate:
+      agg1 is avg(ss_quantity)
+      agg2 is avg(ss_list_price)
+      agg3 is avg(ss_coupon_amt)
+      agg4 is avg(ss_sales_price)
+  }
+} -> aggregations + {
+  nest: by_item is aggregations + {
+    group_by: item.i_item_id
+    order_by: i_item_id
+    limit: 100
+
+    nest: by_state is aggregations + {
+      group_by: store.s_state
+      order_by: s_state
+    }
+  }
+
+  where:
+    customer_demographics.cd_gender = 'M'
+    and customer_demographics.cd_marital_status = 'S'
+    and customer_demographics.cd_education_status = 'College'
+    and date_dim.d_year = 2002
+    and store.s_state = 'TN'
+}
+
+// --
+// Name: Query 28
+query: store_sales -> {
+  declare:
+    b1_filters is (
+      ss_quantity >= 0 and ss_quantity <= 5
+      and (
+        (ss_list_price >= 8 and ss_list_price <= 18)
+        or (ss_coupon_amt >= 459 and ss_coupon_amt <= 1459)
+        or (ss_wholesale_cost >= 57 and ss_wholesale_cost <= 77)
+      )
+    )
+
+    b2_filters is (
+      ss_quantity >= 6 and ss_quantity <= 10
+      and (
+        (ss_list_price >= 90 and ss_list_price <= 100)
+        or (ss_coupon_amt >= 2323 and ss_coupon_amt <= 3323)
+        or (ss_wholesale_cost >= 31 and ss_wholesale_cost <= 51)
+      )
+    )
+
+    b3_filters is (
+      ss_quantity >= 11 and ss_quantity <= 15
+      and (
+        (ss_list_price >= 142 and ss_list_price <= 152)
+        or (ss_coupon_amt >= 12214 and ss_coupon_amt <= 13214)
+        or (ss_wholesale_cost >= 79 and ss_wholesale_cost <= 99)
+      )
+    )
+
+    b4_filters is (
+      ss_quantity >= 16 and ss_quantity <= 20 
+      and (
+        (ss_list_price >= 135 and ss_list_price <= 145)
+        or (ss_coupon_amt >= 6071 and ss_coupon_amt <= 7071)
+        or (ss_wholesale_cost >= 38 and ss_wholesale_cost <= 58)
+      )
+    )
+
+    b5_filters is (
+      ss_quantity >= 21 and ss_quantity <= 25
+      and (
+        (ss_list_price >= 122 and ss_list_price <= 132)
+        or (ss_coupon_amt >= 836 and ss_coupon_amt <= 1836)
+        or (ss_wholesale_cost >= 17 and ss_wholesale_cost <= 37)
+      )
+    )
+
+    b6_filters is (
+      ss_quantity >= 26 and ss_quantity <= 30
+      and (
+        (ss_list_price >= 154 and ss_list_price <= 164)
+        or (ss_coupon_amt >= 7326 and ss_coupon_amt <= 8326)
+        or (ss_wholesale_cost >= 7 and ss_wholesale_cost <= 27)
+      )
+    )
+
+  aggregate:
+    b1_lp is avg(ss_list_price) { where: b1_filters }
+    b1_cnt is count(*) { where: b1_filters and ss_list_price != null }
+    b1_cntd is count(distinct ss_list_price) { where: b1_filters }
+
+    b2_lp is avg(ss_list_price) { where: b2_filters }
+    b2_cnt is count(*) { where: b2_filters and ss_list_price != null }
+    b2_cntd is count(distinct ss_list_price) { where: b2_filters }
+
+    b3_lp is avg(ss_list_price) { where: b3_filters }
+    b3_cnt is count(*) { where: b3_filters and ss_list_price != null }
+    b3_cntd is count(distinct ss_list_price) { where: b3_filters }
+
+    b4_lp is avg(ss_list_price) { where: b4_filters }
+    b4_cnt is count(*) { where: b4_filters and ss_list_price != null }
+    b4_cntd is count(distinct ss_list_price) { where: b4_filters }
+
+    b5_lp is avg(ss_list_price) { where: b5_filters }
+    b5_cnt is count(*) { where: b5_filters and ss_list_price != null }
+    b5_cntd is count(distinct ss_list_price) { where: b5_filters }
+
+    b6_lp is avg(ss_list_price) { where: b6_filters }
+    b6_cnt is count(*) { where: b6_filters and ss_list_price != null }
+    b6_cntd is count(distinct ss_list_price) { where: b6_filters }
+}
+
+// --
+// Name: Query 29
+query: store_sales + {
+  join_one: cs is catalog_sales
+    on store_returns.sr_customer_sk = cs.cs_bill_customer_sk
+    and store_returns.sr_item_sk = cs.cs_item_sk
+} -> {
+  group_by:
+    item.i_item_id
+    item.i_item_desc
+    store.s_store_id
+    store.s_store_name
+
+  aggregate:
+    store_sales_quantity is sum(ss_quantity)
+    store_returns_quantity is sum(store_returns.sr_return_quantity)
+    catalog_sales_quantity is sum(cs.cs_quantity)
+
+  where: 
+    store_returns.sr_customer_sk != null
+    and cs.cs_bill_customer_sk != null
+    and date_dim.d_year = 1999
+    and date_dim.d_moy = 9
+    and store_returns.date_dim.d_year = 1999
+    and store_returns.date_dim.d_moy >= 9
+    and store_returns.date_dim.d_moy <= 12
+    and cs.date_dim.d_year >= 1999
+    and cs.date_dim.d_year <= 2001
+}
+
+// --
+// Name: Query 30
+query: web_returns -> {
+  group_by:
+    wr_returning_customer_sk
+    returning_addr.ca_state
+    returning_customer.c_customer_id
+    returning_customer.c_salutation
+    returning_customer.c_first_name
+    returning_customer.c_last_name
+    returning_customer.c_preferred_cust_flag
+    returning_customer.c_birth_day
+    returning_customer.c_birth_month
+    returning_customer.c_birth_year
+    returning_customer.c_birth_country
+    returning_customer.c_login
+    returning_customer.c_email_address
+    returning_customer.c_last_review_date
+    returning_customer_state is returning_customer.customer_address.ca_state
+
+  aggregate: 
+    customer_total_returns is total_returns
+    avg_web_return is all(total_returns / count(distinct wr_returning_customer_sk), ca_state)
+  where:
+    date_dim.d_year = 2002
+    and wr_return_amt != null
+    and returning_customer.c_customer_id != null
+    and returning_addr.ca_state != null
+} -> {
+  project:
+    c_customer_id
+    c_salutation
+    c_first_name
+    c_last_name
+    c_preferred_cust_flag
+    c_birth_day
+    c_birth_month
+    c_birth_year
+    c_birth_country
+    c_login
+    c_email_address
+    c_last_review_date
+    customer_total_returns
+    avg_web_return
+
+  where: 
+    customer_total_returns > avg_web_return * 1.2
+    and returning_customer_state = 'GA'
+
+  order_by:
+    c_customer_id
+  limit: 100
+}
+
+// --
+// Name: Query 31
+query: all_sales -> {
+  declare:
+    web_sales_q1 is total_ext_sales_price { where: date_dim.d_qoy = 1 and channel_category = 'web channel' }
+    web_sales_q2 is total_ext_sales_price { where: date_dim.d_qoy = 2 and channel_category = 'web channel' }
+    web_sales_q3 is total_ext_sales_price { where: date_dim.d_qoy = 3 and channel_category = 'web channel' }
+    store_sales_q1 is total_ext_sales_price { where: date_dim.d_qoy = 1 and channel_category = 'store channel' }
+    store_sales_q2 is total_ext_sales_price { where: date_dim.d_qoy = 2 and channel_category = 'store channel' }
+    store_sales_q3 is total_ext_sales_price { where: date_dim.d_qoy = 3 and channel_category = 'store channel' }
+
+  group_by:
+    customer_address.ca_county
+    date_dim.d_year
+
+  aggregate:
+    web_q1_q2_increase is web_sales_q2 / web_sales_q1
+    store_q1_q2_increase is store_sales_q2 / store_sales_q1
+    web_q2_q3_increase is web_sales_q3 / web_sales_q2
+    store_q2_q3_increase is store_sales_q3 / store_sales_q2
+
+  where:
+    date_dim.d_year = 2000
+} -> {
+  project: *
+  where:
+    web_q1_q2_increase > 0
+    and web_q1_q2_increase != null
+    and web_q2_q3_increase > 0
+    and web_q2_q3_increase != null
+    and store_q1_q2_increase > 0
+    and store_q1_q2_increase != null
+    and store_q2_q3_increase > 0
+    and store_q2_q3_increase != null
+
+    and web_q1_q2_increase > store_q1_q2_increase
+    and web_q2_q3_increase > store_q2_q3_increase
+  
+  order_by: ca_county
+}
+
+// --
+// Name: Query 32
+query: catalog_sales -> {
+  group_by: 
+    cs_item_sk 
+    cs_ext_discount_amt
+
+  aggregate:
+     avg_discount_amt is all(avg(cs_ext_discount_amt), cs_item_sk)
+
+  where:
+    item.i_manufact_id = 977
+    and date_dim.d_date >= '2000-01-27'
+    and date_dim.d_date <= '2000-04-26'
+} -> {
+  aggregate: discount_amt is sum(cs_ext_discount_amt)
+  where: cs_ext_discount_amt > 1.3 * avg_discount_amt
+  limit: 100
+}
+
+// --
+// Name: Query 33
+query: all_sales + {
+  join_one: manufacturers is from(
+    item -> {
+      group_by: i_manufact_id
+      where: i_category = 'Electronics'
+    }
+  ) on item.i_manufact_id = manufacturers.i_manufact_id
+} -> {
+  group_by: item.i_manufact_id
+  aggregate: total_ext_sales_price
+
+  where:
+    date_dim.d_year = 1998
+    and date_dim.d_moy = 5
+    and customer_address.ca_gmt_offset = -5
+    and manufacturers.i_manufact_id != null
+
+  order_by: total_ext_sales_price
+  limit: 100
+}
+
+// --
+// Name: Query 34
+query: store_sales -> {
+  group_by:
+    customer.c_last_name
+    customer.c_first_name
+    customer.c_salutation
+    customer.c_preferred_cust_flag
+    ss_ticket_number
+    ss_customer_sk
+
+  aggregate:
+    cnt is count(*)
+
+  where:
+    store.s_county = 'Williamson County'
+    and date_dim.d_year >= 1999 and date_dim.d_year <= 2001
+    and (
+      (date_dim.d_dom >= 1 and date_dim.d_dom <= 3)
+      or (date_dim.d_dom >= 25 and date_dim.d_dom <= 28)
+    )
+    and (
+      household_demographics.hd_buy_potential = '>10000'
+      or household_demographics.hd_buy_potential = 'Unknown'
+    )
+    and household_demographics.hd_vehicle_count > 0
+    and household_demographics.hd_dep_count / household_demographics.hd_vehicle_count > 1.2
+
+  having:
+    count(*) >= 15 & count(*) <= 20
+
+  order_by:
+    c_last_name
+    c_first_name
+    c_salutation
+    c_preferred_cust_flag
+    ss_ticket_number
+}
+
+// --
+// Name: Query 35
+query: all_sales -> {
+  group_by:
+    customer.c_customer_sk
+    customer.customer_address.ca_state
+    customer.customer_demographics.cd_gender
+    customer.customer_demographics.cd_marital_status
+    customer.customer_demographics.cd_dep_count
+    customer.customer_demographics.cd_dep_employed_count
+    customer.customer_demographics.cd_dep_college_count
+
+  aggregate:
+    cnt is count(*)
+    min1 is min(customer.customer_demographics.cd_dep_count)
+    max1 is max(customer.customer_demographics.cd_dep_count)
+    avg1 is avg(customer.customer_demographics.cd_dep_count)
+
+    min2 is min(customer.customer_demographics.cd_dep_employed_count)
+    max2 is max(customer.customer_demographics.cd_dep_employed_count)
+    avg2 is avg(customer.customer_demographics.cd_dep_employed_count)
+
+    min3 is min(customer.customer_demographics.cd_dep_college_count)
+    max3 is max(customer.customer_demographics.cd_dep_college_count)
+    avg3 is avg(customer.customer_demographics.cd_dep_college_count)
+
+  where:
+    date_dim.d_year = 2002
+    and date_dim.d_qoy < 4
+    and customer.c_customer_sk != null
+    and customer.customer_address.ca_address_sk != null
+    and customer.customer_demographics.cd_demo_sk != null
+
+  having:
+    count_store_sales > 0
+    & (
+      count_catalog_sales > 0
+      | count_web_sales > 0
+    )
+} -> { 
+  group_by: 
+    ca_state
+    cd_gender
+    cd_marital_status
+    cd_dep_count
+    cd_dep_employed_count
+    cd_dep_college_count
+
+  aggregate:
+    cnt is count(*) 
+    min1 is min(cd_dep_count)
+    max1 is max(cd_dep_count)
+    avg1 is avg(cd_dep_count)
+
+    min2 is min(cd_dep_employed_count)
+    max2 is max(cd_dep_employed_count)
+    avg2 is avg(cd_dep_employed_count)
+
+    min3 is min(cd_dep_college_count)
+    max3 is max(cd_dep_college_count)
+    avg3 is avg(cd_dep_college_count)
+
+  order_by:
+    ca_state
+    cd_gender
+    cd_marital_status
+    cd_dep_count
+    cd_dep_employed_count
+    cd_dep_college_count
+}
+
+// --
+// Name: Query 36
+query: store_sales + {
+  query: margin_agg is {
+    aggregate:
+      gross_margin is total_profit / total_ext_sales
+  }
+} -> {
+  nest: margin_agg
+  nest: by_category is {
+    group_by: item.i_category
+    nest: margin_agg
+    nest: by_class is {
+      group_by: item.i_class
+      nest: margin_agg
+    }
+  }
+
+  where:
+    date_dim.d_year = 2001
+    and store.s_state = 'TN'
+}
+
+// --
+// Name: Query 37
+query: inventory + {
+  join_one: catalog_sales on item.i_item_sk = catalog_sales.cs_item_sk
+} -> {
+  group_by:
+    item.i_item_id
+    item.i_item_desc
+    item.i_current_price
+
+  where:
+    item.i_current_price >= 68
+    and item.i_current_price <= 98
+    and date_dim.d_date >= '2000-02-01'
+    and date_dim.d_date <= '2000-04-01'
+    and (
+      item.i_manufact_id = 677
+      or item.i_manufact_id = 940
+      or item.i_manufact_id = 694
+      or item.i_manufact_id = 808
+    )
+    and inv_quantity_on_hand >= 100
+    and inv_quantity_on_hand <= 500
+    and catalog_sales.cs_item_sk != null
+
+  limit: 100
+}
+
+// --
+// Name: Query 38
+query: all_sales -> {
+  group_by:
+    date_dim.d_date
+    customer.c_first_name
+    customer.c_last_name
+
+  aggregate:
+    count_catalog_sales
+    count_web_sales
+    count_store_sales
+
+  where:
+    date_dim.d_month_seq >= 1200
+    and date_dim.d_month_seq <= 1211
+    and customer.c_customer_sk != null
+
+  having: count_catalog_sales > 0
+  having: count_web_sales > 0
+  having: count_store_sales > 0
+} -> {
+  aggregate: hot is count(*)
+}
+
+// --
+// Name: Query 39
+query: inventory -> {
+  group_by:
+    warehouse.w_warehouse_name
+    warehouse.w_warehouse_sk
+    item.i_item_sk
+    date_dim.d_moy
+  
+  aggregate:
+    stdev is stddev_samp(inv_quantity_on_hand) + sum(0)
+    mean is avg(inv_quantity_on_hand)
+
+  where:
+    date_dim.d_year = 2001
+} -> {
+  declare: cov is stdev / mean
+  project: *
+  where:
+    cov > 1
+    and (
+      d_moy = 1
+      or d_moy = 2
+    )
+} -> {
+  group_by:
+    w_warehouse_sk
+    i_item_sk
+
+  aggregate:
+    mean1 is sum(mean) { where: d_moy = 1 }
+    cov1 is sum(cov) { where: d_moy = 1 }
+    mean2 is sum(mean) { where: d_moy = 2 }
+    cov2 is sum(cov) { where: d_moy = 2 }
+
+  having: count(*) { where: d_moy = 1 } > 0
+  having: count(*) { where: d_moy = 2 } > 0
+
+  order_by:
+    w_warehouse_sk
+    i_item_sk
+
+  limit: 250
+}
 
 // --
 // Name: Query 40
@@ -488,5 +1421,220 @@ query: catalog_sales -> {
     w_state
     i_item_id
 
+  limit: 100
+}
+
+// --
+// Name: Query 41
+
+query: item -> {
+  group_by:
+    i_product_name
+    i_manufact
+    i_manufact_id
+
+  aggregate:
+    item_count is all(
+      count(*) { 
+        where:
+          (
+            (
+              i_category = 'Women'
+              and (i_color ? = 'powder' | = 'khaki')
+              and (i_units ? = 'Ounce' | = 'Oz')
+              and (i_size = 'medium' | = 'extra large')
+            )
+            or (
+              i_category = 'Women'
+              and (i_color ? = 'brown' | = 'honeydew')
+              and (i_units ? = 'Bunch' | = 'Ton')
+              and (i_size = 'N/A' | = 'small')
+            )
+            or (
+              i_category = 'Men'
+              and (i_color ? = 'floral' | = 'deep')
+              and (i_units ? = 'N/A' | = 'Dozen')
+              and (i_size = 'petite')
+            )
+            or (
+              i_category = 'Men'
+              and (i_color ? = 'light' | = 'cornflower')
+              and (i_units ? = 'Box' | = 'Pound')
+              and (i_size = 'medium' | = 'extra large')
+            )
+          )
+          or (
+            (
+              i_category = 'Women'
+              and (i_color ? = 'midnight' | = 'snow')
+              and (i_units ? = 'Pallet' | = 'Gross')
+              and (i_size = 'medium' | = 'extra large')
+            )
+            or (
+              i_category = 'Women'
+              and (i_color ? = 'cyan' | = 'papaya')
+              and (i_units ? = 'Cup' | = 'Dram')
+              and (i_size = 'N/A' | = 'small')
+            )
+            or (
+              i_category = 'Men'
+              and (i_color ? = 'orange' | = 'frosted')
+              and (i_units ? = 'Each' | = 'Tbl')
+              and (i_size = 'petite')
+            )
+            or (
+              i_category = 'Men'
+              and (i_color ? = 'forest' | = 'ghost')
+              and (i_units ? = 'Lb' | = 'Bundle')
+              and (i_size = 'medium' | = 'extra large')
+            )
+          )
+      }
+      , i_manufact
+    )
+} -> {
+  group_by: i_product_name
+  where:
+    i_manufact_id >= 738
+    and i_manufact_id <= 778
+    and item_count > 0
+}
+
+// --
+// Name: Query 42
+query: store_sales -> {
+  group_by:
+    date_dim.d_year
+    item.i_category_id
+    item.i_category
+
+  aggregate:
+    total_ext_sales
+
+  where:
+    date_dim.d_moy = 11
+    and date_dim.d_year = 2000
+    and item.i_manager_id = 1
+}
+
+// --
+// Name: Query 43
+query: store_sales -> {
+  group_by:
+    store.s_store_name
+    store.s_store_id
+
+  aggregate:
+    sun_sales is sum(ss_sales_price) { where: date_dim.d_day_name = 'Sunday' }
+    mon_sales is sum(ss_sales_price) { where: date_dim.d_day_name = 'Monday' }
+    tue_sales is sum(ss_sales_price) { where: date_dim.d_day_name = 'Tuesday' }
+    wed_sales is sum(ss_sales_price) { where: date_dim.d_day_name = 'Wednesday' }
+    thu_sales is sum(ss_sales_price) { where: date_dim.d_day_name = 'Thursday' }
+    fri_sales is sum(ss_sales_price) { where: date_dim.d_day_name = 'Friday' }
+    sat_sales is sum(ss_sales_price) { where: date_dim.d_day_name = 'Saturday' }
+
+  where:
+    store.s_gmt_offset = -5
+    and date_dim.d_year = 2000
+
+  order_by: 
+    s_store_name
+    s_store_id
+}
+
+// --
+// Name: Query 44
+query: store_sales + {
+  query: ranked_items is {
+    group_by:
+      ss_item_sk
+      ss_store_sk
+      item.i_product_name
+
+    aggregate: 
+      rank_col is avg(ss_net_profit)
+      store_avg is all(avg(ss_net_profit) { where: ss_store_sk = 4 and ss_addr_sk = null }, ss_store_sk)
+
+    where: ss_store_sk = 4
+  } -> {
+    project: *
+    where: rank_col > 0.9 * store_avg
+  }
+} -> {
+  nest: best_performing is ranked_items -> {
+    project:
+      i_product_name
+      rank_col
+    order_by: rank_col asc
+    limit: 10
+  } -> { 
+    project: i_product_name 
+  }
+
+  nest: worst_performing is ranked_items -> { 
+    project:
+      i_product_name
+      rank_col
+    order_by: rank_col desc
+    limit: 10
+  } -> {
+    project: i_product_name
+  }
+}
+
+// --
+// Name: Query 45
+query: web_sales -> {
+  group_by:
+    customer.customer_address.ca_zip
+    customer.customer_address.ca_city
+
+  aggregate:
+    sales_price is sum(ws_sales_price)
+
+  where:
+    date_dim.d_qoy = 2
+    and date_dim.d_year = 2001
+    and (
+      (substring(customer.customer_address.ca_zip, 1, 5)? '85669' | '86197' | '88274' | '83405' | '86475' | '85392' | '85460' | '80348' | '81792')
+      or (item.i_item_sk? 2 | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29)
+    )
+  
+  order_by: 
+    ca_zip
+    ca_city
+  
+  limit: 100
+}
+
+// --
+// Name: Query 46
+query: store_sales -> {
+  group_by:
+    customer.c_last_name
+    customer.c_first_name
+    customer.customer_address.ca_city
+    bought_city is customer_address.ca_city
+    ss_ticket_number
+    ss_customer_sk
+
+  aggregate:
+    amt is sum(ss_coupon_amt)
+    profit is sum(ss_net_profit)
+
+  where:
+    (date_dim.d_dow ? 0 | 6)
+    and date_dim.d_year >= 1999
+    and date_dim.d_year <= 2001
+    and (store.s_city ? 'Fairview' | 'Midway')
+    and (
+      household_demographics.hd_dep_count = 4
+      or household_demographics.hd_vehicle_count = 3
+    )
+    and customer_address.ca_city != customer.customer_address.ca_city
+
+  order_by:
+    profit
+  
   limit: 100
 }
