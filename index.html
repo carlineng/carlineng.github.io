@@ -71,7 +71,7 @@
           <p>Lloyd Tabb, former Looker CTO and creator of Malloy, recently wrote a post entitled <a
               href="https://lloydtabb.substack.com/p/data-is-rectangular-and-other-limiting">Data is Rectangular and
               Other Limiting Misconceptions</a>. If you haven’t read it yet, go check it out now — it very neatly lays
-            out a fundamental flaw in the SQL’s perspective of data, and how the Malloy language does better. In
+            out a fundamental flaw in SQL’s perspective of data, and describes how the Malloy language does better. In
             particular, SQL resultsets can only naturally represent data in two dimensions: rows and columns. However,
             data in the real world is NOT two-dimensional. This mismatch results in awkwardness in both writing SQL
             queries and interpreting SQL results. As I was reading Lloyd's post, it sparked a memory of a recent trip I
@@ -94,29 +94,29 @@
           <p>The transition from the Gothic to the Renaissance period was marked, among other things, by a growing
             understanding of perspective: the ability to accurately represent three-dimensional scenes on a flat canvas.
             <a href="https://www.uffizi.it/en/artworks/battle-of-san-romano">The Battle of San Romano</a> by Paolo
-            Uccello (circa 1435-1440) is a great example from this transition period. A fierce battle rages in the
-            foreground, while scenes from life in the Italian countryside play out in the background. In painting the
-            background, Uccello clearly understood that far away objects in the background must be smaller than those in
-            the foreground. But just how much smaller hadn’t been fully worked out yet. Look at the hunting scene in the
-            background — the hunters and hares would be massively tall if brought to the foreground. </p>
+            Uccello circa 1435-1440 is a great example from this transition period. A fierce battle rages in the
+            foreground, while scenes from life in the Italian countryside play out in the background. Uccello clearly
+            understood that far away objects in the background must be smaller than those in the foreground, but just
+            how much smaller hadn’t been fully worked out yet. Look at the hunting scene in the background — the hunters
+            and hares would be massively tall if brought to the foreground. </p>
           <a href="#img-uccello"><img loading="lazy" alt="" id="renaissance-uccello"
               src="./img/uccello-battle-of-san-romano.jpeg" style="max-width: 100%" /></a>
           <h3>The Renaissance</h3>
-          <p>Finally we arrived at <a href="https://www.uffizi.it/en/artworks/annunciation">The Annunciation by Leonardo
+          <p>Finally we arrive at <a href="https://www.uffizi.it/en/artworks/annunciation">The Annunciation by Leonardo
               da Vinci</a>, painted around 1472-1476. Here, the lines of the building behind Mary clearly converge into
             a well-defined <a href="https://en.wikipedia.org/wiki/Vanishing_point">vanishing point</a> in the
-            background, and the mountains, ships, and trees look realistically distant. This was as much a technological
-            advancement as an artistic one. Da Vinci applied his knowledge of mathematics to represent the
-            three-dimensional world in only two dimensions. </p>
+            background. The mountains, ships, and trees behind the kneeling archangel Gabriel appear realistically
+            distant. This was as much a technological advancement as an artistic one. Da Vinci applied his knowledge of
+            mathematics to accurately represent the three-dimensional world on a two-dimensional canvas. </p>
           <a href="#img-davinci"><img loading="lazy" alt="" id="renaissance-davinci"
               src="./img/davinci-annunciation.jpeg" style="max-width: 100%" /></a>
           <h3>SQL: The Gothic Art of Query Languages</h3>
           <p> A SQL resultset is a two-dimensional canvas with rows on one axis and columns on the other. The typical
             star-schema data model contains hundreds of dimensions which can be used to slice, dice, and aggregate data.
             Because a SQL resultset can only naturally represent two dimensions, any single projection of the
-            star-schema model can only naturally represent the data in two dimensions. A query that aggregates along a
-            single level of granularity is like the Gothic painting above -- a flat scene representing two dimensions,
-            without any notion of depth. Queries that require aggregation at different levels of granularity (like the
+            star-schema model can only represent the data in two dimensions. A query that aggregates along a single
+            level of granularity is like the Gothic painting above -- a flat scene representing two dimensions, without
+            any notion of depth. Queries that require aggregation at different levels of granularity (like the
             hierarchical subtotals of my <a href="index.html?postid=sql-bad-syntax#blog">last post</a>) are possible,
             but fit awkwardly into the two-dimensional output of the query. Looking at the results of a <code>GROUP BY
             ROLLUP</code> query is akin to looking at the Battle of San Romano. The point comes across, but the image
