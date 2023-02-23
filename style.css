@@ -241,6 +241,16 @@ label.post-title:after {
   display: block;
 }
 
+.side-by-side {
+  display: flex;
+  overflow: auto;
+}
+
+.sbs-child {
+  flex: 1;
+  overflow: auto;
+}
+
 /* Inline footnotes */
 
 label {
@@ -335,10 +345,6 @@ a:before {
 }
 
 /* Add more filetypes here if you want */
-
-a[href$=".pdf"]:before {
-  content: "PDF";
-}
 
 a[href$=".txt"]:before {
   content: "TXT";

@@ -60,6 +60,234 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+        <label for="malloy-tpcds" class="post-title">Exploring the TPC-DS Benchmark Queries with Malloy</label>
+        <time datetime="2023-02-24">02.24.2023</time>
+        <input type="checkbox" id="malloy-tpcds" />
+        <div class="post-body">
+          <p> I’ve been writing a lot recently about <a href="https://github.com/malloydata/malloy">Malloy</a>, an
+            experimental analytical query language built by members of Looker’s founding team. Upon reading the overview
+            materials and documentation, it sounded like exactly what I was hoping for, but in order to develop a more
+            informed opinion, I needed to get some experience with actually writing the language. Hence, I decided to
+            embark on a project to translate each of the 99 TPC-DS benchmark SQL queries to Malloy. This post will give
+            an overview of the TPC-DS dataset, the queries, and the opinions I've formed about Malloy along the way. For
+            a more introductory overview of Malloy, check out my <a href="?postid=malloy-intro#blog">prior blog
+              post</a>, as well as the <a href="https://malloydata.github.io/documentation/">Malloy documentation</a>.
+          </p>
+          <p> I posted the translations of all 99 queries to <a
+              href="https://github.dev/carlineng/malloy-tpcds/tree/remote_files">this Github repository</a>. If you'd
+            like to try any of these out for yourself, it's trivial from within the github.dev web editor. Simply go to
+            "Extensions" in the lefthand sidebar of the editor and install the Malloy extension. The Malloy queries will
+            then be runnable directly in your browser by clicking on the "Run" button above any query. Give it a shot
+            with <a
+              href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/01.malloy#L24">this
+              query!</a></p>
+          <h2>A Brief Overview of the TPC-DS Benchmark</h2>
+          <p> TPC-DS is a well-known standard for benchmarking the performance of OLAP database systems. From a paper
+            entitled <a href="https://www.tpc.org/tpcds/presentations/the_making_of_tpcds.pdf">“The Making of
+              TPC-DS”</a>:
+          <blockquote> “TPC-DS models the decision support functions of a retail product supplier. The supporting schema
+            contains vital business information such as customer, order, and product data. The imaginary retail company
+            sells goods through the three distribution channels, store, catalog and Internet (web).” </blockquote> The
+          benchmark contains 99 SQL queries of varying complexity against a star-schema data model containing 7 fact
+          tables and 17 dimension tables. This sample schema diagram describing a portion of the data model has been
+          taken from the paper above: </p>
+          <a href="#img-tpcds-schema"><img loading="lazy" alt="" id="tpcds-schema" src="./img/tpcds_schema.png"
+              style="max-width: 50%" /></a>
+          <p> The queries test a wide range of OLAP query functionality as specified by the SQL99 standard, including
+            common table expressions, ranking window functions, and joins of all types. Because of this, it is
+            considered by many to be a “completeness” test for a query engine’s capabilities. For example, as of
+            February 2023, <a
+              href="https://github.com/Altinity/tpc-ds/tree/bc9725416f96bccc43ad377462768343fe0b3703">Altinity’s
+              benchmark repository</a> reports that Clickhouse currently only passes 75% of the queries. Based on this
+            reputation, I thought the query suite would make a great case study in testing the capabilities of Malloy,
+            as well as giving me the opportunity to develop a firsthand perspective on the language. </p>
+          <h2>Getting Acquainted with the TPC-DS Queries</h2>
+          <p> Though I had previously read a lot of TPC-DS benchmark reports and looked superficially at some of the
+            queries, I didn’t actually know the queries or the schema all that well. It didn’t take long for me to
+            realize that the benchmark is far from a picture-perfect dataset with cleanly written SQL. Some of the
+            queries contain bugs, the data model is not always applied consistently, and the SQL style employed by the
+            authors is somewhat unconventional. </p>
+          <h3>Bugs in Queries</h3>
+          <p> Several of the queries contain exploding joins due to poorly specified join conditions between tables. In
+            some queries, like <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/02.sql">Query
+              2</a>, the results contain duplicate rows that provide no meaningful information. In another example, <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/54.sql#L26-L33">Query
+              54</a>, one of the joins (<code>store</code> and <code>customer_address</code>) causes a fan-out followed
+            by a sum on duplicate rows, ultimately generating an incorrect result. In <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/77.sql#L76-L82">Query
+              77</a>, one of the joins is simply missing any join conditions at all, which results in an aggregation on
+            top of a cartesian join, again producing incorrect results.</p>
+          <h3>Inconsistencies in Data Model Between Queries</h3>
+          <p>In <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/49.sql#L26-L27">Query
+              49</a>, the join condition between the <code>store_sales</code> and <code>store_returns</code> tables uses
+            two columns, <code>item_sk</code> and <code>ticket_number</code>. In <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/17.sql#L28-L30">Query
+              17</a>, the join between the tables includes a third column, <code>customer_sk</code>. It’s possible that
+            there’s a legitimate reason why one query should use a different set of join keys than another, but this is
+            exactly the sort of arcane knowledge that is likely to cause bugs when working in a complex data warehouse.
+            When encountering these tables for the first time, how does an analyst know which join keys are appropriate
+            for which situation?</p>
+          <h3>Other Miscellaneous Issues</h3>
+          <p><b>Join Specification</b>: The majority of joins are specified in the <code>WHERE</code> clause instead of
+            using the <code>JOIN</code> keyword. I dislike this syntax because I think it makes queries harder to
+            interpret. I prefer to structure my SQL queries such that each part of the query is associated with a
+            particular “action”, e.g., joining, grouping, aggregating, or filtering. Using the <code>WHERE</code> clause
+            to specify joins means that filtering and joining operations can be interleaved in the query text, and that
+            the join condition is oftentimes far away from the names of the joining tables (see <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/25.sql#L9-L25">Query
+              25</a>). This makes understanding the query just a bit more difficult since filters and joins can be hard
+            to distinguish from each other. Understanding how the join occurs now requires jumping back and forth
+            between different parts of the query. </p>
+          <p><b>Correlated Subqueries</b>: A large number of the queries use <a
+              href="https://en.wikipedia.org/wiki/Correlated_subquery">correlated subqueries</a> (e.g., <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/01.sql#L15-L18">Query
+              1</a> and <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/41.sql#L5-L7">Query
+              41</a>). I’ve always found correlated subqueries hard to understand, since the join syntax requires
+            joining a column in the subquery to an “outside” column, which oftentimes lacks immediate context to
+            indicate where it comes from. This forces the reader to backtrack (oftentimes quite far) to earlier in the
+            query to figure out what’s going on. </p>
+          <p><b>GROUP BY ROLLUP</b>: A lot of the queries use the <code>GROUP BY ROLLUP</code> construct (e.g., <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/18.sql#L41-L44">Query
+              18</a>). While most modern data warehouses support this functionality, I’ve very rarely seen it used in
+            practice because the output is so clumsy and difficult to work with. For more on this topic, check out my <a
+              href="https://carlineng.com/?postid=sql-bad-syntax#blog">prior blog post</a>. </p>
+          <p>To be fair, most of the above issues are quite likely to appear in a real-world data warehouse. It’s not
+            unreasonable for a benchmark suite to contain problems like these, but I doubt they were intentional. I
+            couldn’t find any mention of intentionally including mistakes when I browsed through the TPC-DS reference
+            materials. </p>
+          <h2>Translating to Malloy</h2>
+          <p> The Malloy language currently supports querying Postgres, DuckDB, and BigQuery. I opted to use DuckDB
+            because of the ease of setup — it’s an in-process database that doesn’t require running a separate server or
+            a connection to the Internet, and it operates directly on local files.</p>
+          <p> Once I had the database up and running, writing the actual queries was pretty straightforward. The
+            examples in the Malloy documentation provide a great template for getting started. I created a <a
+              href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/tpcds.malloy">“model
+              file”</a> to develop the data model with predefined joins, commonly used aggregations, and other reusable
+            constructs. Each individual query file imports this model file and uses one of the Sources defined there as
+            a starting point for querying. Of the 99 queries, I was able to write logical translations of all but one:
+            <a
+              href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/51.malloy">Query
+              51</a>, which requires cumulative window functions. Of the 98 translated queries, 96 returned successfully
+            with correct answers. One query failed due to a bug where the Malloy-to-SQL compilation process generated
+            invalid SQL (<a
+              href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/14.malloy">Query
+              14</a>), and the other was due to DuckDB crashing on the compiled SQL (<a
+              href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/64.malloy">Query
+              64</a>). Given that the TPC-DS queries are considered a “completeness” benchmark for logical capabilities,
+            I was rather impressed with Malloy’s coverage. 97% (96 out of 99) is solid, especially for a project so
+            young. </p>
+          <p> In total, the Malloy queries consisted of 4,727 lines, 13,788 words, 129,880 characters. The SQL queries
+            from the DuckDB repository are 5,524 lines, 14,961 words, and 184,424 characters. In lines of code, the
+            Malloy is about 15% more compact, and over 30% more compact when looking at character count. In addition to
+            being more concise, I’ve found the Malloy queries to be quite a bit more readable. <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/04.sql">Query
+              4</a> is an extreme example -- the SQL query comes in at a whopping 119 lines of code. Parsing a single
+            119 line SQL query is a task that requires a good deal of mental focus. The Malloy equivalent is only 37
+            lines:</p>
+          <div id="tpcds4" class="side-by-side">
+            <div class="sbs-child">
+              <script
+                src="https://gist.github.com/carlineng/624846faf62c2158dcf49af07a82e1da.js?file=tpcds4.sql"></script>
+            </div>
+            <div class="sbs-child">
+              <script
+                src="https://gist.github.com/carlineng/624846faf62c2158dcf49af07a82e1da.js?file=tpcds4.malloy"></script>
+            </div>
+          </div>
+          <p>It’s not a completely fair comparison, since the Malloy query leverages pre-defined logic imported from the
+            model file, but even with that in mind, I find the difference between the two implementations quite
+            informative. </p>
+          <p> Overall, writing Malloy queries is a lovely experience. Coming from SQL, the syntactic structure of the
+            language feels familiar, but much more refined — as if the clunky, jagged edges of the language have been
+            reshaped and sanded down, leaving something with a much smaller footprint, and a much more pleasing
+            ergonomics. Malloy’s syntax seems smaller and has a more explicit structure. Unlike SQL, it doesn’t make the
+            hopeless attempt to mimic human language, and seems instead optimized for someone trying to manipulate data
+            using a well-understood set of actions — grouping, joining, aggregating, and filtering. </p>
+          <p>Interestingly, the explicit structure imposed by the language meant that I settled in very quickly on
+            conventions for formatting my Malloy queries. When writing a query, there are far fewer formatting decision
+            points than in the equivalent SQL query. While this may seem trivial at first, it’s a subject that has
+            spawned a <a href="https://github.com/un-ts/prettier/tree/master/packages/sql">number</a> of <a
+              href="https://sqlfum.pt/">linting</a> <a href="https://github.com/sqlfluff/sqlfluff">packages</a>, and
+            more than a few <a href="https://benn.substack.com/p/the-case-against-sql-formatting">essays by analytics
+              influencers</a>. Reducing the time spent picking apart query formatting means more mental energy can be
+            spent on the logic itself. This is a much improved experience for writing queries, and even better for
+            reading them. There are countless examples of this in the TPC-DS queries, but <a
+              href="?postid=malloy-tpcds&scrollto=tpcds4#blog">Query 4</a> above is a prime example. The SQL query
+            contains filters with nested case statements, <code>UNION ALL</code> statements, and common table
+            expressions. With each of these elements, formatting is applied inconsistently, and it took me a good deal
+            of time to piece together the logic. The <a href="?postid=malloy-tpcds&scrollto=tpcds4#blog">Malloy
+              version</a> is clearly much more concise and far less chaotic:</p>
+          <p> Drilling into a few more details, here are some additional points where I found Malloy to be a clear
+            improvement over SQL:</p>
+          <p><b>Joins:</b> the ability to leverage a pre-defined data model and not have to remember and write out join
+            keys for every single join was really great. </p>
+          <p><b>Nested Aggregations:</b> Nested aggregations take the place of <code>GROUP BY ROLLUP</code>, and do a
+            far better job (see <a
+              href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/22.malloy">Query
+              22</a>). As mentioned previously, see my <a href="?postid=sql-bad-syntax#blog">previous blog post</a> for
+            a deeper dive on this topic.</p>
+          <p><b>Filtered Aggregations:</b> Filtered aggregates are so much nicer to use and interpret than using CASE
+            statements inside aggregate functions (see <a
+              href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/21.malloy">Query
+              21</a>). Some SQL databases have implemented this functionality, and I think it’s a no-brainer to make it
+            a standard part of the language. </p>
+          <div id="tpcds21" class="side-by-side">
+            <div class="sbs-child">
+              <script
+                src="https://gist.github.com/carlineng/1156dceee87530b024d0bccffd5be5cd.js?file=tpcds21.sql"></script>
+            </div>
+            <div class="sbs-child">
+              <script
+                src="https://gist.github.com/carlineng/1156dceee87530b024d0bccffd5be5cd.js?file=tpcds21.malloy"></script>
+            </div>
+          </div>
+          <h2>Potential Areas for Improvement</h2>
+          <p> While the experience was overwhelmingly positive, there were still a few spots where I fell into traps, or
+            where the language didn’t feel quite optimized for the task. </p>
+          <p><b>LEFT JOIN vs INNER JOIN:</b> All joins in Malloy are <code>LEFT JOIN</code>s by default. To implement
+            <code>INNER JOIN</code> semantics, a query needs to specify a filter on
+            <code>right_table.column = null</code>, which I would often forget to do. It’s trivial to add these filters,
+            but in SQL queries, the type of join is a critical piece of information that is oftentimes the first thing
+            an analyst will look at to determine the nature of a query. Having the <code>INNER JOIN</code> indicator
+            placed in a <code>`where`</code> clause might not be obvious to someone quickly glancing at a query, since
+            <code>`where`</code> clauses are typically reserved for filtering down datasets based on properties. From a
+            UX perspective, since joins in Malloy are usually defined in a Source and not necessarily the query itself,
+            it’s not clear to me how to make this more obvious, and it might just be one of those things that takes some
+            getting used to with a new tool. </p>
+          <p>
+            <b>SEMI-JOIN:</b> The semi-join operation in SQL takes the form of
+            <code>WHERE customer_id IN (SELECT … FROM …)</code>, as seen in <a
+              href="https://github.com/duckdb/duckdb/blob/cdd23d5e03b2a82b7e611c40a543303722071465/extension/tpcds/dsdgen/queries/33.sql#L8-L11">Query
+              33</a>. The Malloy implementation of this construct requires an extension to a Source with an ad-hoc join
+            (lines 2-7 in the query below), and an additional <code>NULL</code> filter in the <code>where</code> block
+            (line 16):
+          </p>
+          <script src="https://gist.github.com/carlineng/703a08b36cd77055aa4073d9c01e9786.js"></script>
+          <p>Logically, this produces the correct output, but I don’t love the syntax since it combines two operations
+            that could each have separate semantic meanings, and which are far apart in the query. This makes it harder
+            to interpret exactly what the query is doing. By contrast, the SQL syntax of
+            <code>column IN (sub-select)</code> is neatly contained in a single location, and unambiguous in its intent.
+          </p>
+          <h2>Conclusion</h2>
+          <p>Throughout this entire process, I learned a lot about both Malloy and the TPC-DS benchmark. Initially,
+            writing 99 queries in a new query language felt like a huge task, but it wasn’t long before I hit my stride.
+            The Malloy language made the task easy, and dare I say, fun. Getting up close with the benchmark queries was
+            hugely educational as well. The dataset and queries are impressive in many aspects, but ultimately, I don’t
+            think they’re very representative of actual workloads. Even though it has earned a reputation as a coverage
+            test for a query engine’s logical completeness, there are still many real-world query patterns and scenarios
+            that are not represented, such as <a href="https://mode.com/blog/finding-user-sessions-sql/">session
+              analysis</a>, or the <a
+              href="https://discourse.getdbt.com/t/finding-active-days-for-a-subscription-user-account-date-spining/265">construction
+              of “date-spined” reporting tables</a>. As a result, I’ve come away from the exercise more excited about
+            Malloy than ever, but acutely aware that there is still much to be tested. Will Malloy ever truly replace
+            SQL as the lingua franca of the analytics world? If it does, it will take a long time to get there, but it’s
+            a future I’d like to live in. </p>
+        </div>
+      </article>
+      <article>
         <label for="sql-renaissance" class="post-title">SQL, Malloy, and the Art of the Renaissance</label>
         <time datetime="2023-02-05">02.05.2023</time>
         <input type="checkbox" id="sql-renaissance" />
@@ -355,7 +583,7 @@
 
   // declare some resusable aggregate calculations
   measure:
-    flight_count is count()
+    count is count()
     total_distance is sum(distance)
   }
 }</pre></code>
@@ -1242,6 +1470,8 @@ ORDER BY 1,2
       loading="lazy" alt="" src="./img/uccello-battle-of-san-romano.jpeg" /></a>
   <a href="?postid=sql-renaissance&scrollto=renaissance-davinci#blog" class="lightbox" id="img-davinci"><img
       loading="lazy" alt="" src="./img/davinci-annunciation.jpeg" /></a>
+  <a href="?postid=malloy-tpcds&scrollto=tpcds-schema#blog" class="lightbox" id="img-tpcds-schema"><img loading="lazy"
+      alt="" src="./img/tpcds_schema.png" /></a>
 </body>
 
 </html>
