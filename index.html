@@ -152,44 +152,13 @@
             YAML config, then making API calls, you simply write and execute Malloy. Malloy compiles to SQL, which runs
             directly on the data warehouse. <b> This gives you the superpowers of a semantic layer, without sacrificing
               the freedom to explore, manipulate, and drill into the full unaggregated dataset. </b> </p>
-          <p> Here’s an example to illustrate the point. In Malloy, semantic modeling is done using sources. A source is
-            a table or view in the data warehouse, with additional information encoded such as join relationships,
-            measures, and dimensions. Let’s start with a simple source from a database containing FAA data about flights
-            in the USA: </p>
-          <!-- TODO: add code block -->
-          <p> The flights table is a fact table, and contains joins to two dimension tables. It also has a few measures
-            (predefined aggregate calculations) and dimensions (predefined scalar calculations). </p>
-          <p> Querying this source is simple. In the following query, I request the count of flights for each carrier.
-            It looks like Southwest has the most flights in this dataset. </p>
-          <!-- TODO: add code block -->
-          <!-- TODO: add query results-->
-          <p> To follow along at home, <a
-              href="https://github.dev/malloydata/quickstart/blob/89bb6768826cbc36744da99ad2cb28d851af8291/is_early.malloy">this
-              link</a> will take you to a browser-based environment where you can run the examples and play around for
-            yourself. </p>
-          <p> Already I can see the source is doing some work for me. The join between the flights fact table and the
-            carriers dimension table is pre-specified, so I can simply reference the “nickname” field from the carriers
-            table without having to specify the join in the query. </p>
-          <p> Suppose, for some reason I’m interested in which carriers tend to have flights that depart very early in
-            the morning. I can add a filter to only look at flights where the hour of departure is before 6am: </p>
-          <!-- TODO: add code block -->
-          <!-- TODO: add query results-->
-          <p>It looks like Southwest doesn’t have many early morning flights. Delta takes the top spot here. I like this
-            way of slicing the data, and want to encode it into a dimension so it’s easy for me or someone else to
-            re-use it later. I’ll create a new dimension on the `flights` source, is_early, with the same definition:
-            <!-- TODO: add code block -->
-          <p> I can now easily re-use this logic across new queries and unearth new insights. For example, the following
-            query calculates the ratio of “early-morning” to “non-early morning” flights for each carrier (the query
-            also takes advantage of nesting, another super interesting Malloy feature, but a topic for another blog
-            post.): </p>
-          <!-- TODO: add code block -->
-          <!-- TODO: add query results-->
-          <p> This rapid loop of iteratively exploring, modeling, and re-exploring data is only made possible because
-            the semantic layer and query language are one and the same. If I need to drill into a finer level of
-            granularity, I can access the raw `flights` data. If I want to re-define the `is_early` dimension to “before
-            5am”, I change a single line of code and re-run the queries. This same workflow could take hours in a system
-            like Minerva. </p>
-          <h3>Conclusion</h3>
+          <p> To see an interactive example that illustrates the point, check out this <a
+              href="https://github.dev/malloydata/quickstart/blob/ecb3cc08129655b6268627c47319d5c611a9bcae/is_early.malloynb">interactive
+              Malloy notebook</a>. It runs directly in your browser in Github's browser-based VSCode environment,
+            github.dev. Once your VSCode environment las loaded in your browser, install the Malloy extension, and
+            navigate back to the <a
+              href="https://github.dev/malloydata/quickstart/blob/ecb3cc08129655b6268627c47319d5c611a9bcae/is_early.malloynb">notebook
+              file</a>. </p>
           <p> At first glance, it may seem like an impossible task to convince people to learn a new query language.
             After all, SQL has been around for over 40 years, and it’s “good enough”, right? Wrong. The excitement
             around metric layers struck a nerve because SQL is clearly NOT good enough. However, most iterations of
