@@ -75,9 +75,10 @@
             question might require a lot of background knowledge to answer: what tables contribute to revenue, and how
             are they joined together? Which columns are the right ones to use, and which rows must be filtered out? It’s
             the job of a semantic layer to store all of this knowledge, so anyone can ask the question “what is
-            revenue”, and not need to know about all of the sharp edges in the underlying dataset. </p>
-          <p> It’s an old idea, present in many enterprise ecosystems (e.g., Microsoft, SAP), but in modern cloud data
-            warehousing environments, semantic layers are always tightly coupled to a visualization layer such as
+            revenue”, and not need to know all the arcane knowledge about the underlying dataset in order to answer it.
+          </p>
+          <p> This is an old idea, present in many enterprise ecosystems (e.g., Microsoft, SAP), but in modern cloud
+            data warehousing environments, semantic layers are always tightly coupled to a visualization layer such as
             Looker. The recent buzz relates to separating the semantic layer from the visualization layer, hence the
             term “headless BI”. Benn Stancil called it <a href="https://benn.substack.com/p/metrics-layer">“the missing
               piece of the modern data stack”</a>. In a post titled <a
@@ -149,8 +150,8 @@
             that offers a better way, and it’s called <a href="https://malloydata.github.io/documentation/">Malloy</a>.
             Malloy unifies the semantic layer and the query language. Instead of writing exploratory SQL, developing
             YAML config, then making API calls, you simply write and execute Malloy. Malloy compiles to SQL, which runs
-            directly on the data warehouse. This gives you the superpowers of a semantic layer, without sacrificing the
-            freedom to explore, manipulate, and drill into the full unaggregated dataset. </p>
+            directly on the data warehouse. <b> This gives you the superpowers of a semantic layer, without sacrificing
+              the freedom to explore, manipulate, and drill into the full unaggregated dataset. </b> </p>
           <p> Here’s an example to illustrate the point. In Malloy, semantic modeling is done using sources. A source is
             a table or view in the data warehouse, with additional information encoded such as join relationships,
             measures, and dimensions. Let’s start with a simple source from a database containing FAA data about flights
