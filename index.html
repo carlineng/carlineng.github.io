@@ -66,26 +66,25 @@
         <div class="post-body">
           <p>
             <i>Disclaimer: this blog post relates directly to my work as a Product Manager at Google; however, all
-              opinions expressed here are my own and do not reflect those of Google. I also can't comment on any future 
+              opinions expressed here are my own and do not reflect those of Google. I also can't comment on any future
               Google product plans.</i>
           </p>
           <p> Semantic layers, also known as metrics layers or “headless BI”, have become a popular topic in recent
             years. The idea of a semantic layer is straightforward but powerful – put simply, it’s a system that takes
-            tables in a SQL database and provides business context around them. A semantic layer can help
-            answer surprisingly complex questions like “what is the exact definition of revenue?” Such an innocent
-            question might require a lot of background knowledge to answer: what tables contribute to revenue, and how
-            are they joined together? Which columns are the right ones to use, and which rows must be filtered out? It’s
-            the job of a semantic layer to store all of this knowledge, so anyone can ask the question “what is
-            revenue”, and not need to know all the arcane knowledge about the underlying dataset in order to answer it.
-          </p>
+            tables in a SQL database and provides business context around them. A semantic layer can help answer
+            surprisingly complex questions like “what is the exact definition of revenue?” Such an innocent question
+            might require a lot of background knowledge to answer: what tables contribute to revenue, and how are they
+            joined together? Which columns are the right ones to use, and which rows must be filtered out? It’s the job
+            of a semantic layer to store all of this knowledge, so anyone can ask the question “what is revenue”, and
+            not need to know all the arcane knowledge about the underlying dataset in order to answer it. </p>
           <p> This is an old idea, present in many enterprise ecosystems (e.g., Microsoft, SAP), but in modern cloud
-            data warehousing environments, semantic layers are always tightly coupled to a visualization layer. The BI tool
-            <a href="https://www.looker.com/">Looker</a>, with its LookML configuration language is a prime example. 
-            Much of the recent buzz around this topic relates to decoupling the
-            semantic layer from the visualization layer, which would allow many other types of applications to leverage
-            centrally defined metrics. Example use cases include customer segmentation for marketing campaigns and 
-            lead-scoring in a CRM. Benn Stancil called the semantic layer <a href="https://benn.substack.com/p/metrics-layer">
-            “the missing piece of the modern data stack”</a>. In a post titled <a
+            data warehousing environments, semantic layers are always tightly coupled to a visualization layer. The BI
+            tool <a href="https://www.looker.com/">Looker</a>, with its LookML configuration language is a prime
+            example. Much of the recent buzz around this topic relates to decoupling the semantic layer from the
+            visualization layer, which would allow many other types of applications to leverage centrally defined
+            metrics. Example use cases include customer segmentation for marketing campaigns and lead-scoring in a CRM.
+            Benn Stancil called the semantic layer <a href="https://benn.substack.com/p/metrics-layer"> “the missing
+              piece of the modern data stack”</a>. In a post titled <a
               href="https://basecase.vc/blog/headless-bi">Headless Business Intelligence</a>, Ankur Goyal and Alana
             Anderson predicted that it would be the foundation of “the next generation of software companies“. Airbnb
             made a big splash with a blog post describing its internal metrics layer, <a
@@ -113,10 +112,10 @@
           </blockquote>
           <p> Benn hits it right on the nose. Querying these models takes an analyst out of their most familiar tool
             (SQL) and forces them to use an API, shunting them into tools like Python or R to carry their analysis
-            further. If they hit a snag (e.g., numbers don't match, or things look wonky), they're forced back into
-            the world of raw SQL without any of the benefits of the metrics layer, and stuck with the unpleasant task of 
-            resolving differences between hand-written and machine-generated SQL.
-            But even assuming the happy path, once in Python-land the analyst is hamstrung in the following ways:
+            further. If they hit a snag (e.g., numbers don't match, or things look wonky), they're forced back into the
+            world of raw SQL without any of the benefits of the metrics layer, and stuck with the unpleasant task of
+            resolving differences between hand-written and machine-generated SQL. But even assuming the happy path, once
+            in Python-land the analyst is hamstrung in the following ways:
           <ul>
             <li> Analytical freedom is severely limited. Since data from the metrics API is already aggregated, there’s
               no way to drill into specific records, or create on-the-fly dimensions and measures to slice the data in a
@@ -127,7 +126,7 @@
             </li>
           </ul> Clients of these metrics layers are isolated from the data warehouse, and only able to communicate with
           the warehouse via a very restrictive API. This might be sufficient for a subset of an analyst’s work such as
-          building executive reports and dashboards, but it falls flat when the analyst needs to do critical work like 
+          building executive reports and dashboards, but it falls flat when the analyst needs to do critical work like
           debugging misbehaving metrics, or more creative data work such as exploratory deep-dives. </p>
           <h3>Model Development</h3>
           <p> We’ve looked at the metrics layer from the perspective of an analyst, but what about a data modeler?
@@ -158,11 +157,11 @@
             directly on the data warehouse. <b> This gives you the superpowers of a semantic layer, without sacrificing
               the freedom to explore, manipulate, and drill into the full unaggregated dataset. </b> </p>
           <p> To see an example that illustrates the point, check out this <a
-              href="https://github.dev/malloydata/quickstart/blob/ecb3cc08129655b6268627c47319d5c611a9bcae/is_early.malloynb">interactive
+              href="https://github.dev/malloydata/quickstart/blob/5c6c1ad02c5e799cf17c40f04f3bc5156782ecc7/is_early.malloynb">interactive
               Malloy notebook</a>. It runs directly in your browser in Github's browser-based VSCode environment,
             github.dev. Once your VSCode environment has loaded in your browser, install the Malloy extension, and
             navigate back to the <a
-              href="https://github.dev/malloydata/quickstart/blob/ecb3cc08129655b6268627c47319d5c611a9bcae/is_early.malloynb">notebook
+              href="https://github.dev/malloydata/quickstart/blob/5c6c1ad02c5e799cf17c40f04f3bc5156782ecc7/is_early.malloynb">notebook
               file</a>. The notebook demonstrates an example of building up a data model, using that model to explore
             and drill down into the raw data, and using insights from that exploration to iterate further on the data
             model. This sort of workflow is only possible when the semantic layer and the query language are the same,
