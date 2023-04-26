@@ -60,6 +60,133 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+        <label for="semantic-layer" class="post-title">What Happened to the Semantic Layer?</label>
+        <time datetime="2023-04-26">04.26.2023</time>
+        <input type="checkbox" id="semantic-layer" />
+        <div class="post-body">
+          <p>
+            <i>Disclaimer: this blog post relates directly to my work as a Product Manager at Google; however, all
+              opinions expressed here are my own and do not reflect those of Google. I also can't comment on any future
+              Google product plans.</i>
+          </p>
+          <p> Semantic layers, also known as metrics layers or “headless BI”, have become a popular topic in recent
+            years. The idea of a semantic layer is straightforward but powerful – put simply, it’s a system that takes
+            tables in a SQL database and provides business context around them. A semantic layer can help answer
+            surprisingly complex questions like “what is the exact definition of revenue?” Such an innocent question
+            might require a lot of background knowledge to answer: what tables contribute to revenue, and how are they
+            joined together? Which columns are the right ones to use, and which rows must be filtered out? It’s the job
+            of a semantic layer to store all of this knowledge, so anyone can ask the question “what is revenue”, and
+            not need to know all the arcane knowledge about the underlying dataset in order to answer it. </p>
+          <p> This is an old idea, present in many enterprise ecosystems (e.g., Microsoft, SAP), but in modern cloud
+            data warehousing environments, semantic layers are always tightly coupled to a visualization layer. The BI
+            tool <a href="https://www.looker.com/">Looker</a>, with its LookML configuration language is a prime
+            example. Much of the recent buzz around this topic relates to decoupling the semantic layer from the
+            visualization layer, which would allow many other types of applications to leverage centrally defined
+            metrics. Example use cases include customer segmentation for marketing campaigns and lead-scoring in a CRM.
+            Benn Stancil called the semantic layer <a href="https://benn.substack.com/p/metrics-layer"> “the missing
+              piece of the modern data stack”</a>. In a post titled <a
+              href="https://basecase.vc/blog/headless-bi">Headless Business Intelligence</a>, Ankur Goyal and Alana
+            Anderson predicted that it would be the foundation of “the next generation of software companies“. Airbnb
+            made a big splash with a blog post describing its internal metrics layer, <a
+              href="https://medium.com/airbnb-engineering/how-airbnb-achieved-metric-consistency-at-scale-f23cc53dea70">Minerva</a>.
+            All these articles generated a fair amount of excitement in the online data community, but despite all that,
+            we have yet to see this supposedly transformative idea change our profession. Several startups gave it a
+            shot (<a href="https://transform.co/">Transform</a>, <a
+              href="https://www.businesswire.com/news/home/20211109005713/en/Supergrain-Raises-6.8M-from-Benchmark-to-Build-Headless-Business-Intelligence-Platform">Supergrain</a>,
+            <a href="https://cube.dev/">Cube</a>, and more), but haven’t seen much traction amongst analysts. Transform
+            was recently acquired by dbt Labs for an undisclosed amount, Supergrain has pivoted, and Cube explicitly
+            targets developers rather than analysts. So why has a concept that seemed to resonate so deeply with so many
+            in the data community failed to take off? </p>
+          <h3>Querying a Semantic Layer</h3>
+          <p> To begin, I’ll defer again to Benn Stancil, co-founder and CTO of Mode Analytics, when he asks <a
+              href="https://benn.substack.com/p/minerva-metrics-layer">“Is Minerva the answer?”</a> </p>
+          <blockquote>
+            <p>My biggest gripe with Minerva is how you “query” it. As best I can tell, metrics are extracted from
+              Minerva via API; [...] it looks like the API lets people request metrics over date ranges, with filters,
+              and grouped by different dimensions. </p>
+            <p> [...] API-based solutions don’t work for analysts working directly in SQL. Though I don’t know how
+              analysts work at Airbnb, in the broader market, most analysts’ work starts in SQL; for many, it also ends
+              there. Unfortunately, Minerva appears to be inaccessible to these workflows. Analysts, when inevitably
+              asked to explain why some KPI is yo-yoing across a Minerva-backed dashboard, will eventually have to
+              recreate that metric, in SQL, on raw data in their warehouse. </p>
+          </blockquote>
+          <p> Benn hits it right on the nose. Querying these models takes an analyst out of their most familiar tool
+            (SQL) and forces them to use an API, shunting them into tools like Python or R to carry their analysis
+            further. If they hit a snag (e.g., numbers don't match, or things look wonky), they're forced back into the
+            world of raw SQL without any of the benefits of the metrics layer, and stuck with the unpleasant task of
+            resolving differences between hand-written and machine-generated SQL. But even assuming the happy path, once
+            in Python-land the analyst is hamstrung in the following ways:
+          <ul>
+            <li> Analytical freedom is severely limited. Since data from the metrics API is already aggregated, there’s
+              no way to drill into specific records, or create on-the-fly dimensions and measures to slice the data in a
+              way that might reveal new insight. You can request other dimensions from the metrics layer, but what if
+              the dimension you’re interested in doesn’t exist yet? </li>
+            <li> The analyst is now constrained to whatever environment is hosting their Python runtime, whether that’s
+              a local laptop or a cloud-hosted notebook. Operations that require more memory or compute aren’t possible.
+            </li>
+          </ul> Clients of these metrics layers are isolated from the data warehouse, and only able to communicate with
+          the warehouse via a very restrictive API. This might be sufficient for a subset of an analyst’s work such as
+          building executive reports and dashboards, but it falls flat when the analyst needs to do critical work like
+          debugging misbehaving metrics, or more creative data work such as exploratory deep-dives. </p>
+          <h3>Model Development</h3>
+          <p> We’ve looked at the metrics layer from the perspective of an analyst, but what about a data modeler?
+            Suppose you want to define a new metric or dimension… what does the workflow look like? I imagine something
+            like the following:
+          <ol>
+            <li>Write ad-hoc SQL queries against the data warehouse to develop the metric</li>
+            <li>Once the SQL logic has been validated, edit a YAML configuration file to encode this logic in the
+              semantic layer </li>
+            <li> Push the new configuration to source control, potentially get it code reviewed </li>
+            <li> Redeploy the semantic layer service, or trigger data pipelines to calculate the new metric </li>
+            <li> Get a coffee </li>
+            <li> Fire an API call to the semantic layer to get your metric, and confirm that it’s actually what you want
+            </li>
+          </ol> Steps 2-5 have the <a
+            href="https://medium.com/airbnb-engineering/airbnb-metric-computation-with-minerva-part-2-9afe6695b486#:~:text=Staging%20environment%20where%2C-,within%20a%20few%20hours%2C,-the%20entire%20history">potential
+            to take hours</a>, and step 6 takes the analyst away from their most familiar language. If there’s a bug in
+          the metric logic, or something else in the process goes wrong, iterating is painfully slow and requires
+          context switching between SQL, YAML, and API. In summary, in order to solve the problem of consistent business
+          logic, semantic layers like Minerva take an analyst’s primary tool (SQL) and break it out into three parts
+          that don’t play well together: SQL for exploration, a modeling language for definitions (typically YAML), and
+          an API to interact with the data model. </p>
+          <h3>Enter Malloy</h3>
+          <p> I recently joined a team at Google trying to solve these issues. We’re building a new open-source language
+            that offers a better way, and it’s called <a href="https://malloydata.github.io/documentation/">Malloy</a>.
+            Malloy unifies the semantic layer and the query language. Instead of writing exploratory SQL, developing
+            YAML config, then making API calls, you simply write and execute Malloy. Malloy compiles to SQL, which runs
+            directly on the data warehouse. <b> This gives you the superpowers of a semantic layer, without sacrificing
+              the freedom to explore, manipulate, and drill into the full unaggregated dataset. </b> </p>
+          <p> To see an example that illustrates the point, check out this <a
+              href="https://github.dev/malloydata/quickstart/blob/5c6c1ad02c5e799cf17c40f04f3bc5156782ecc7/is_early.malloynb">interactive
+              Malloy notebook</a>. It runs directly in your browser in Github's browser-based VSCode environment,
+            github.dev. Once your VSCode environment has loaded in your browser, install the Malloy extension, and
+            navigate back to the <a
+              href="https://github.dev/malloydata/quickstart/blob/5c6c1ad02c5e799cf17c40f04f3bc5156782ecc7/is_early.malloynb">notebook
+              file</a>. The notebook demonstrates an example of building up a data model, using that model to explore
+            and drill down into the raw data, and using insights from that exploration to iterate further on the data
+            model. This sort of workflow is only possible when the semantic layer and the query language are the same,
+            unified experience.</p>
+          <p> At first glance, it may seem like an impossible task to convince people to learn a new query language.
+            After all, SQL has been around for over 40 years, and it’s “good enough”, right? Wrong. The excitement
+            around metric layers struck a nerve because SQL is clearly NOT good enough. However, most iterations of
+            metrics layers up until this point have provided a solution with too grave a cost. They completely fragment
+            the analyst workflow and ask users to learn not one, but TWO additional languages: the metric configuration
+            language and the metric API (an API is not so different from a small language, after all). With all that in
+            mind, it’s not surprising that the metrics layer hasn’t taken off. </p>
+          <p> This is why I’m so excited about Malloy. It fulfills the promise of the metrics layer at a fraction of the
+            cost. Plus, if we’re going to ask users to learn a new language, we can seize the opportunity to <a
+              href="https://medium.com/@michaeltoy/designing-malloy-0-introduction-88b8809d75d0">design it
+              thoughtfully</a>, incorporating everything we’ve learned from the past 40 years of working with data.
+            After all, language is a tool for thought, and improving the syntax of a language has deep implications for
+            what we can imagine and what we can express. </p>
+          <p> If you’d like to learn more about Malloy, check out the <a
+              href="https://github.com/malloydata/quickstart">Quickstart repository</a> and our <a
+              href="https://malloydata.github.io/documentation/index.html">documentation</a>. We also have a <a
+              href="https://join.slack.com/t/malloy-community/shared_invite/zt-1t32mufpy-THwP1o1ADJVkd3o2L2zaZw">community
+              Slack channel</a>, where you are welcome to post any questions or feedback! </p>
+        </div>
+      </article>
+      <article>
         <label for="malloy-tpcds" class="post-title">Exploring the TPC-DS Benchmark Queries with Malloy</label>
         <time datetime="2023-02-24">02.24.2023</time>
         <input type="checkbox" id="malloy-tpcds" />
