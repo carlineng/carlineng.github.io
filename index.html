@@ -88,11 +88,14 @@
             example, the
             aforementioned star schemas and OBTs. Others talk about data modeling as a way to map already-existing
             database objects to business metrics – what tables and columns feed into the
-            revenue calculation? What segments can we cut revenue by? These two viewpoints correspond to two related, but
-            mostly separate camps: data transformation and semantic modeling. Data transformation uses tools like dbt to
+            revenue calculation? What segments can we cut revenue by? These two viewpoints correspond to two related,
+            but
+            mostly separate camps: data transformation and semantic modeling. Data transformation uses tools like <a
+              href="https://www.getdbt.com/">dbt</a> to
             define pipelines of SQL queries. These queries take raw data from source systems as input, and produce
             “clean” tables and views for downstream consumers to use. In the other camp, semantic modeling uses tools
-            like LookML to specify joins between tables and define how measures are calculated from those tables.
+            like <a href="https://cloud.google.com/looker/docs/what-is-lookml">LookML</a> to specify joins between
+            tables and define how measures are calculated from those tables.
           </p>
           <p>
             A very common workflow is to use dbt to create pipelines that produce clean output tables, then use those
