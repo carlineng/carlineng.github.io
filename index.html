@@ -37,9 +37,9 @@
         </a>
       </figure>
       <p> Former Data Engineer and Engineering Manager at <a href='https://strava.com/'>Strava</a>; then spent two years
-        as a Sales Engineer and Data Scientist at <a href='https://www.snowflake.com/'>Snowflake</a>. Currently working on
-        the <a href='https://malloydata.github.io/documentation/index.html'>Malloy</a> language at Google.
-        Avid cyclist, and proud member of the Dolphin Club in San Francisco, California. </p>
+        as a Sales Engineer and Data Scientist at <a href='https://www.snowflake.com/'>Snowflake</a>. Currently working
+        on the <a href='https://malloydata.github.io/documentation/index.html'>Malloy</a> language at Google. Avid
+        cyclist, and proud member of the Dolphin Club in San Francisco, California. </p>
       <div style="position: absolute; bottom: 5%; font-size: .8em; color: #949494"> Made with <span
           id="emoji-carousel">🚴‍♂️</span> by Carlin Eng <br />
         <div id="social" style="width: fit-content; padding: 5px">
@@ -59,6 +59,74 @@
     </section>
     <section id="blog">
       <!-- BLOG -->
+      <article>
+        <label for="data-modeling-divide" class="post-title">The Data Modeling Divide</label>
+        <a href="?postid=data-modeling-divide#blog" class="selflink">[link]</a>
+        <time datetime="2023-06-05">06.05.2023</time>
+        <input type="checkbox" id="data-modeling-divide" />
+        <div class="post-body">
+          <p> There is no shortage of opinions on the Internet about how best to organize data: <a
+              href="https://en.wikipedia.org/wiki/Star_schema">star schemas</a>, <a
+              href="https://www.fivetran.com/blog/star-schema-vs-obt">OBTs</a> (“One Big Table”), <a
+              href="https://en.wikipedia.org/wiki/Slowly_changing_dimension">slowly changing dimensions</a>, and <a
+              href="https://www.activityschema.com/">Activity Schema</a>, just to name a few. However, despite the
+            existence of all these “best practices”, most data practitioners I know still describe their data warehouse
+            as a complete mess. The most innocent question of “why are these two numbers different?” can send an analyst
+            or data engineer down a deep rabbit hole for hours or days. With so much discourse about data modeling, why
+            are we still in such a fragile situation? In this post, I argue that the root cause is the unnatural
+            division of “data modeling” into two separate workflows: transformation and semantic modeling. </p>
+          <p> It's worth taking a second to discuss what data modeling actually is. Here’s my best attempt at a
+            definition: <em>“The process of turning raw data into useful business insights.”</em> While this definition
+            is broad and perhaps a bit too generalized, I’ve noticed that much of the online discourse seems to focus on
+            specific tools or techniques. Some people talk about data modeling in terms of the artifacts it produces,
+            for example, the aforementioned star schemas and OBTs. Others talk about data modeling as a way to map
+            already-existing database objects to business metrics – what tables and columns feed into the revenue
+            calculation? What segments can we cut revenue by? These two viewpoints correspond to two related, but mostly
+            separate camps: data transformation and semantic modeling. Data transformation uses tools like <a
+              href="https://www.getdbt.com/">dbt</a> to define pipelines of SQL queries. These queries take raw data
+            from business systems as input, and produce “clean” tables and views for downstream consumers to use. In the
+            other camp, semantic modeling uses tools like <a
+              href="https://cloud.google.com/looker/docs/what-is-lookml">LookML</a> to specify joins between tables and
+            define how measures are calculated from those tables. </p>
+          <p> A very common workflow is to use dbt to create pipelines that produce clean output tables, then use those
+            clean output tables to generate metrics for reporting. These metrics can be defined either in a semantic
+            modeling layer like LookML or directly in a visualization tool like Tableau. In either case, it’s rare for
+            the transformation layer to own 100% of the metric logic. There are usually too many dimensional cuts and
+            edge cases to enumerate explicitly in the pipeline. </p>
+          <p> At first glance this might seem like a reasonable approach, but let’s look at what happens when the
+            inevitable question arises: “why is Number X different from Number Y?” Numbers X and Y probably come from
+            two different dashboards, and if you’re lucky enough to use a tool like Looker, you can easily inspect the
+            semantic layer to find the measure definitions that generated them. This is great, until you hit a wall:
+            measures X and Y are built on tables that are “clean output tables” from a dbt job. Looker has no idea where
+            those tables came from or how they were calculated; it just sees the materialized tables in the database. To
+            understand the logic behind the columns where measures X and Y come from, you need to jump into dbt and
+            trace the pipeline that generated their input tables. There is no longer a single place to look up how a
+            metric is defined – the business logic for numbers X and Y is split across two tools that use different
+            languages (SQL and LookML), and might not even be owned by the same team (BI team owns the BI tool, data
+            engineering team owns the transformation tool). If this is the case, good luck in your quest. Crossing team
+            boundaries can mean adding hours or even days to a task. </p>
+          <p> Transformation and semantic modeling are not fundamentally different tasks – they are two parts of the
+            same process: turning raw data into business insight. And yet, our ecosystem forces them to happen in
+            separate places, oftentimes with tools operated by separate users. </p>
+          <p> This problem has been recognized by many in the industry, but existing solutions all fall short. Looker’s
+            Persistent Derived Table functionality allows users to construct data pipelines to materialize their models,
+            but practically speaking, the resulting tables are really only usable by Looker, and are difficult to query
+            directly from the data warehouse. dbtLabs’ acquisition of Transform is a sign that they have an intuitive
+            understanding of the issue, but I’m not confident that their current direction will improve the situation.
+            While full details of the integration haven’t been published, early indications are that it will look very
+            similar to the workflow described above with all its flaws: SQL+dbt for transformations, and a YAML-based
+            configuration language for semantic modeling. Still two separate languages and two separate toolsets for
+            what is essentially the same problem. </p>
+          <p> Is there any solution to all of this? I can’t say for sure, but in my dream world, transformations don’t
+            create tables or views, they create Models. Models are simply tables with additional metadata attached:
+            joins, dimensions, measures, and more. Even further, every intermediate node in a pipeline DAG should also
+            be a Model with the same types of metadata attached. Every Model should be queryable by BI tools,
+            operational applications, or human analysts using a query language that understands the Model metadata. In
+            such a world, the artificial divide between transformation and semantic modeling no longer exists, two tools
+            get integrated into one, and the question of “why are these numbers different” becomes a lot easier to
+            answer. </p>
+        </div>
+      </article>
       <article>
         <label for="semantic-layer" class="post-title">What Happened to the Semantic Layer?</label>
         <a href="?postid=semantic-layer#blog" class="selflink">[link]</a>
@@ -1455,6 +1523,11 @@ ORDER BY 1,2
                 + window.location.hash;
               window.history.replaceState(null, null, newUrl)
             }, 100);
+          } else {
+            setTimeout(() => {
+              const parent = document.querySelector(`#blog input#${postId}`).parentNode;
+              parent.scrollIntoView();
+            }, 100)
           }
         }
 
