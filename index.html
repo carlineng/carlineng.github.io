@@ -38,9 +38,8 @@
       </figure>
       <p> Former Data Engineer and Engineering Manager at <a href='https://strava.com/'>Strava</a>; then spent two years
         as a Sales Engineer and Data Scientist at <a href='https://www.snowflake.com/'>Snowflake</a>. Currently working
-        on
-        the <a href='https://malloydata.github.io/documentation/index.html'>Malloy</a> language at Google.
-        Avid cyclist, and proud member of the Dolphin Club in San Francisco, California. </p>
+        on the <a href='https://malloydata.github.io/documentation/index.html'>Malloy</a> language at Google. Avid
+        cyclist, and proud member of the Dolphin Club in San Francisco, California. </p>
       <div style="position: absolute; bottom: 5%; font-size: .8em; color: #949494"> Made with <span
           id="emoji-carousel">🚴‍♂️</span> by Carlin Eng <br />
         <div id="social" style="width: fit-content; padding: 5px">
@@ -66,46 +65,35 @@
         <time datetime="2023-04-26">04.26.2023</time>
         <input type="checkbox" id="data-modeling-divide" />
         <div class="post-body">
-          <p>
-            There is no shortage of opinions on the Internet about how best to organize data: <a
+          <p> There is no shortage of opinions on the Internet about how best to organize data: <a
               href="https://en.wikipedia.org/wiki/Star_schema">star schemas</a>, <a
-              href="https://www.fivetran.com/blog/star-schema-vs-obt">OBTs</a> (“One
-            Big Table”), <a href="https://en.wikipedia.org/wiki/Slowly_changing_dimension">slowly changing
-              dimensions</a>, and <a href="https://www.activityschema.com/">Activity Schema</a>, just to name a few.
-            However, despite the existence of all these
-            “best practices”, most data practitioners I know still describe their data warehouse as a complete mess. The
-            most innocent question of “why are these numbers different?” can send an analyst or data engineer down a
-            deep rabbit hole for hours or days. With so much discourse about data modeling, why are we still in such a
-            fragile situation? In this post, I argue that the root cause is the unnatural division of “data modeling”
-            into two separate workflows: transformation and semantic modeling.
-          </p>
-          <p>
-            It's worth taking a second to discuss what data modeling actually is. Here’s my best attempt at a
+              href="https://www.fivetran.com/blog/star-schema-vs-obt">OBTs</a> (“One Big Table”), <a
+              href="https://en.wikipedia.org/wiki/Slowly_changing_dimension">slowly changing dimensions</a>, and <a
+              href="https://www.activityschema.com/">Activity Schema</a>, just to name a few. However, despite the
+            existence of all these “best practices”, most data practitioners I know still describe their data warehouse
+            as a complete mess. The most innocent question of “why are these numbers different?” can send an analyst or
+            data engineer down a deep rabbit hole for hours or days. With so much discourse about data modeling, why are
+            we still in such a fragile situation? In this post, I argue that the root cause is the unnatural division of
+            “data modeling” into two separate workflows: transformation and semantic modeling. </p>
+          <p> It's worth taking a second to discuss what data modeling actually is. Here’s my best attempt at a
             definition: <em>“The process of turning raw data into useful business insights.”</em> While this definition
             is broad and perhaps a bit too generalized, I’ve noticed that much of the online discourse seems to focus on
-            specific
-            tools or techniques. Some people talk about data modeling in terms of the artifacts it produces, for
-            example, the
-            aforementioned star schemas and OBTs. Others talk about data modeling as a way to map already-existing
-            database objects to business metrics – what tables and columns feed into the
-            revenue calculation? What segments can we cut revenue by? These two viewpoints correspond to two related,
-            but
-            mostly separate camps: data transformation and semantic modeling. Data transformation uses tools like <a
-              href="https://www.getdbt.com/">dbt</a> to
-            define pipelines of SQL queries. These queries take raw data from source systems as input, and produce
-            “clean” tables and views for downstream consumers to use. In the other camp, semantic modeling uses tools
-            like <a href="https://cloud.google.com/looker/docs/what-is-lookml">LookML</a> to specify joins between
-            tables and define how measures are calculated from those tables.
-          </p>
-          <p>
-            A very common workflow is to use dbt to create pipelines that produce clean output tables, then use those
+            specific tools or techniques. Some people talk about data modeling in terms of the artifacts it produces,
+            for example, the aforementioned star schemas and OBTs. Others talk about data modeling as a way to map
+            already-existing database objects to business metrics – what tables and columns feed into the revenue
+            calculation? What segments can we cut revenue by? These two viewpoints correspond to two related, but mostly
+            separate camps: data transformation and semantic modeling. Data transformation uses tools like <a
+              href="https://www.getdbt.com/">dbt</a> to define pipelines of SQL queries. These queries take raw data
+            from source systems as input, and produce “clean” tables and views for downstream consumers to use. In the
+            other camp, semantic modeling uses tools like <a
+              href="https://cloud.google.com/looker/docs/what-is-lookml">LookML</a> to specify joins between tables and
+            define how measures are calculated from those tables. </p>
+          <p> A very common workflow is to use dbt to create pipelines that produce clean output tables, then use those
             clean output tables to generate metrics for reporting. These metrics can be defined either in a semantic
             modeling layer like LookML or directly in a visualization tool like Tableau. In either case, it’s rare for
             the transformation layer to own 100% of the metric logic. There are usually too many dimensional slices and
-            edge cases to enumerate all of them in the transformation layer.
-          </p>
-          <p>
-            At first glance this might seem like a reasonable approach, but let’s look at what happens when the
+            edge cases to enumerate all of them in the transformation layer. </p>
+          <p> At first glance this might seem like a reasonable approach, but let’s look at what happens when the
             inevitable question arises: “why is Number X different from Number Y?” Numbers X and Y probably come from
             two different dashboards, and if you’re lucky enough to use a tool like Looker, you can easily inspect the
             semantic layer to find the measure definitions that generated them. This is great, until you hit a wall:
@@ -116,15 +104,11 @@
             metric is defined – the business logic for numbers X and Y is split across two tools that use different
             languages (SQL and LookML), and might not even be owned by the same team (BI team owns the BI tool, data
             engineering team owns the transformation tool). If this is the case, good luck in your quest. Crossing team
-            boundaries can mean adding hours or even days to a task.
-          </p>
-          <p>
-            Transformation and semantic modeling are not fundamentally different tasks – they are two parts of the same
-            process: turning raw data into business insight. And yet, our ecosystem forces them to happen in separate
-            places, oftentimes with tools operated by separate users.
-          </p>
-          <p>
-            This problem has been recognized by many in the industry, but existing solutions all fall short. Looker’s
+            boundaries can mean adding hours or even days to a task. </p>
+          <p> Transformation and semantic modeling are not fundamentally different tasks – they are two parts of the
+            same process: turning raw data into business insight. And yet, our ecosystem forces them to happen in
+            separate places, oftentimes with tools operated by separate users. </p>
+          <p> This problem has been recognized by many in the industry, but existing solutions all fall short. Looker’s
             Persistent Derived Table functionality allows users to construct data pipelines to materialize their models,
             but practically speaking, the resulting tables are really only usable by Looker, and are difficult to query
             directly from the data warehouse. dbtLabs’ acquisition of Transform is a sign that they have an intuitive
@@ -132,18 +116,15 @@
             While full details of the integration haven’t been published, early indications are that it will look very
             similar to the workflow described above with all its flaws: SQL+dbt for transformations, and a YAML-based
             configuration language for semantic modeling. Still two separate languages and two separate toolsets for
-            what is essentially the same problem.
-          </p>
-          <p>
-            Is there any solution to all of this? I can’t say for sure, but in my dream world, transformations don’t
+            what is essentially the same problem. </p>
+          <p> Is there any solution to all of this? I can’t say for sure, but in my dream world, transformations don’t
             create tables or views, they create Models. Models are simply tables with additional metadata attached:
             joins, dimensions, measures, and more. Even further, every intermediate node in a pipeline DAG should also
             be a Model with the same types of metadata attached. Every Model should be queryable by BI tools,
             operational applications, or human analysts using a query language that understands the Model metadata. In
             such a world, the artificial divide between transformation and semantic modeling no longer exists, two tools
             get integrated into one, and the question of “why are these numbers different” becomes a lot easier to
-            answer.
-          </p>
+            answer. </p>
         </div>
       </article>
       <article>
@@ -184,8 +165,7 @@
             <a href="https://cube.dev/">Cube</a>, and more), but haven’t seen much traction amongst analysts. Transform
             was recently acquired by dbt Labs for an undisclosed amount, Supergrain has pivoted, and Cube explicitly
             targets developers rather than analysts. So why has a concept that seemed to resonate so deeply with so many
-            in the data community failed to take off?
-          </p>
+            in the data community failed to take off? </p>
           <h3>Querying a Semantic Layer</h3>
           <p> To begin, I’ll defer again to Benn Stancil, co-founder and CTO of Mode Analytics, when he asks <a
               href="https://benn.substack.com/p/minerva-metrics-layer">“Is Minerva the answer?”</a> </p>
@@ -395,8 +375,7 @@
               href="https://github.dev/carlineng/malloy-tpcds/blob/82650a9e105e95b58a14aee1dcfabce3912d2858/malloy_queries/64.malloy">Query
               64</a>). Given that the TPC-DS queries are considered a “completeness” benchmark for logical capabilities,
             I was rather impressed with Malloy’s coverage. 97% (96 out of 99) is solid, especially for a project so
-            young.
-          </p>
+            young. </p>
           <p> In total, the Malloy queries consisted of 4,727 lines, 13,788 words, 129,880 characters. The SQL queries
             from the DuckDB repository are 5,524 lines, 14,961 words, and 184,424 characters. In lines of code, the
             Malloy is about 15% more compact, and over 30% more compact when looking at character count. In addition to
@@ -474,8 +453,7 @@
             <code>`where`</code> clauses are typically reserved for filtering down datasets based on properties. From a
             UX perspective, since joins in Malloy are usually defined in a Source and not necessarily the query itself,
             it’s not clear to me how to make this more obvious, and it might just be one of those things that takes some
-            getting used to with a new tool.
-          </p>
+            getting used to with a new tool. </p>
           <p>
             <b>SEMI-JOIN:</b> The semi-join operation in SQL takes the form of
             <code>WHERE customer_id IN (SELECT … FROM …)</code>, as seen in <a
@@ -546,8 +524,7 @@
             foreground, while scenes from life in the Italian countryside play out in the background. Uccello clearly
             understood that far away objects in the background must be smaller than those in the foreground, but just
             how much smaller hadn’t been fully worked out yet. Look at the hunting scene in the background — the hunters
-            and hares would be massively tall if brought to the foreground.
-          </p>
+            and hares would be massively tall if brought to the foreground. </p>
           <a href="#img-uccello"><img loading="lazy" alt="" id="renaissance-uccello"
               src="./img/uccello-battle-of-san-romano.jpeg" style="max-width: 100%" /></a>
           <h3>The Renaissance</h3>
@@ -671,14 +648,12 @@
             <code>SUM(yearly_sales)</code> aggregation on this table is a dangerous operation that will lead to
             incorrect results without the appropriate filters.
           <p>In approach (3), yearly aggregates are represented as rows where the finer-grained column (month) contains
-            <code>NULL</code> values:
-          </p>
+            <code>NULL</code> values: </p>
           <script
             src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_nulls.markdown"></script>
           <p>Values aggregated at different grains are all contained in the <code>total_sales</code> column. Whether
             it's a yearly aggregate or a monthly aggregate depends on the values of other columns. Here again, running
-            <code>SUM(total_sales)</code> is potentially a very dangerous operation.
-          </p>
+            <code>SUM(total_sales)</code> is potentially a very dangerous operation. </p>
           <p>In all of these cases, the resulting “sales” columns can no longer be used as inputs to aggregate functions
             or other downstream transformations, since the rows contain duplicated information. If this table is
             consumed by downstream queries, those queries must take extreme care to apply the appropriate filters or
@@ -734,8 +709,7 @@
             <code>QUALIFY</code> clauses. Unfortunately, the reality is that SQL is “good enough” for most use cases,
             and according to <a href="https://youtu.be/IVlMB9akD1A?t=420">Aiken’s Law</a>, programmer training is the
             dominant cost for a programming language. It seems that syntactic sugar is simply not enough to overcome
-            SQL’s entrenchment.
-          </p>
+            SQL’s entrenchment. </p>
           <p>This brings me to <a href="https://github.com/looker-open-source/malloy">Malloy</a>, a new query language
             for data analysis currently being developed by <a href="https://twitter.com/lloydtabb">Lloyd Tabb</a>,
             founder and former CTO of <a href="https://www.looker.com/">Looker</a>. Malloy addresses many of the
@@ -756,8 +730,7 @@
             access only to the raw data, but not the requisite domain-specific knowledge will not be able to accurately
             reproduce these metrics. The semantic layer provides a place to set these rules and require queries to abide
             by them; e.g., which joins are valid, which columns can be grouped on, or what inputs go into a particular
-            aggregate function.
-          </p>
+            aggregate function. </p>
           <p>A semantic layer usually takes the form of an application that sits on top of the database, along with
             configuration files that define the rules described above. Examples of products on the market today include
             SAP’s <a
@@ -837,12 +810,10 @@
             particularly nice feature is its handling of nested data. Rollup queries with nested subtotals can be
             painful to write in SQL, and the
             <code><a
-              href="https://docs.snowflake.com/en/sql-reference/constructs/group-by-rollup.html">GROUP BY ROLLUP</a></code>
-            function in most SQL
+              href="https://docs.snowflake.com/en/sql-reference/constructs/group-by-rollup.html">GROUP BY ROLLUP</a></code> function in most SQL
             dialects produces awkward output that is very difficult to work with. Malloy’s nest clause makes this
             trivial. The previous query simply counts the number of flights by month. Let’s say I now want to compute
-            the top 3 destination airports for each month:
-          </p>
+            the top 3 destination airports for each month: </p>
           <p>
             <a href="#img-malloy-nest">
               <img loading="lazy" alt="" id="malloy-nest" src="./img/malloy_nest.png" style="max-width: 100%" /></a>
@@ -1009,8 +980,7 @@ ORDER BY 1,2
             clause provides a scoping hint to a column-function to indicate that the function input must make use of the
             <code>GROUP BY</code> clause. The author does not mince words here: “The <code>HAVING</code> clause and the
             <code>GROUP BY</code> clause are needed in SQL only as a consequence of the column-function argument scoping
-            rules.”
-          </p>
+            rules.” </p>
           <p>The author also describes table-functions (functions that take a table as input, rather than just a
             column), and laments several instances of arbitrary and non-orthogonal syntax. First, the
             <code>EXISTS</code> function (takes a table-expression, returns a scalar) can only be used in a
@@ -1018,8 +988,7 @@ ORDER BY 1,2
             language accepts a scalar. Second, the <code>UNION</code> function is represented by an in-fix operator, and
             since SQL[1983] did not allow arbitrary table-expressions in <code>FROM</code> clauses, it was impossible to
             compute a column-function over a <code>UNION</code> of two tables. This problem is solved in SQL[2022], as
-            the following syntax is now legal:
-          </p>
+            the following syntax is now legal: </p>
           <p>
             <code>
   <pre>
@@ -1051,8 +1020,7 @@ ORDER BY 1,2
             <code>NULL</code> values, leading to the unfortunate fact that for a column X with values
             <code>x1, x2, …, xn</code>, <code><pre>x1 + x2 + … + xn != SUM(X)</pre></code>and
             <code><pre>(X1 + X2) != SUM(X1) + SUM(X2)</pre></code>See the <a
-              href="https://www.db-fiddle.com/f/hUeLXcYP38eEqZmvLbdumZ/1">following example</a> in Postgres:
-          </p>
+              href="https://www.db-fiddle.com/f/hUeLXcYP38eEqZmvLbdumZ/1">following example</a> in Postgres: </p>
           <p><code><pre>
   WITH v AS (
     SELECT * FROM ( 
@@ -1156,8 +1124,7 @@ ORDER BY 1,2
           <p><em><b>Explicit <code>JOIN</code>, <code>INTERSECT</code>, and <code>DIFFERENCE</code> operators:</b></em>
             SQL[1983] did not support these. SQL[2022] does. JOIN was added to the SQL92 standard.
             <code>INTERSECT</code> and <code>MINUS</code> are supported by most databases, and even if they aren’t, the
-            operators have semantically identical equivalents using <code>JOIN</code>.
-          </p>
+            operators have semantically identical equivalents using <code>JOIN</code>. </p>
           <h3>Summary</h3>
           <p>While many of the critiques of SQL have been fixed by updates to the ANSI standard, many are still present.
             Lack of orthogonality in many places still exists, which makes SQL clunky to learn and use; however, I
@@ -1165,8 +1132,7 @@ ORDER BY 1,2
             can write SQL. By contrast, missing components of the relational model and issues arising from
             <code>NULL</code> values are likely the cause of many queries that look correct but provide wrong answers,
             especially by folks who are confident in their ability to write queries, but unfamiliar with some of the
-            nastier traps.
-          </p>
+            nastier traps. </p>
           <p>Despite the improvements listed above, in a <a
               href="https://www.red-gate.com/simple-talk/opinion/opinion-pieces/chris-date-and-the-relational-model/">2014
               interview</a>, CJ Date said “we didn’t realize how truly awful SQL was or would turn out to be (note that
@@ -1333,8 +1299,7 @@ ORDER BY 1,2
             and meyer lemon/cherry/almond -- did wonders for my mood. From Wild Flour, I’m a skip, hop and a jump away
             from San Francisco on familiar roads. I developed some pain in my right knee right after Pt Reyes Station
             (mile 330), but at that point, I felt so close to home that spirits were high, even limping along at a
-            severely diminished pace.
-          </p>
+            severely diminished pace. </p>
           <p> I rolled into the finish at Crissy Field just before 4 PM, greeted by a small crew of volunteers holding
             down the fort on a windy day at the shore. Too tired to socialize much, I grabbed a quick bite to eat,
             remounted my bike, and rode the final few miles back to my apartment. </p>
@@ -1367,8 +1332,7 @@ ORDER BY 1,2
             Modern headlights are <em>viciously bright</em>. Even a brief glance would make my eyes wince in pain and
             leave spots in my vision. I had to glean whatever information about the situation behind me by watching the
             shadows dance. When the lines of my shadow sharpened, it meant someone was approaching from behind. As they
-            <span style="filter: blur(0.66px)">faded</span>, it meant we were separating.
-          </p>
+            <span style="filter: blur(0.66px)">faded</span>, it meant we were separating. </p>
           <p> Three hours into the ride, I stopped on the side of the road to relieve myself. As I stretched my back and
             neck, I looked up at the sky and for the first time noticed the half-moon and the stars of the Milky Way
             above. I took a few extra seconds to soak in the beauty of the moment — red lights marching on ahead, white
