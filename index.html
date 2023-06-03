@@ -91,8 +91,8 @@
           <p> A very common workflow is to use dbt to create pipelines that produce clean output tables, then use those
             clean output tables to generate metrics for reporting. These metrics can be defined either in a semantic
             modeling layer like LookML or directly in a visualization tool like Tableau. In either case, it’s rare for
-            the transformation layer to own 100% of the metric logic. There are usually too many dimensional slices and
-            edge cases to enumerate all of them in the transformation layer. </p>
+            the transformation layer to own 100% of the metric logic. There are usually too many dimensional cuts and
+            edge cases to enumerate explicitly in the pipeline. </p>
           <p> At first glance this might seem like a reasonable approach, but let’s look at what happens when the
             inevitable question arises: “why is Number X different from Number Y?” Numbers X and Y probably come from
             two different dashboards, and if you’re lucky enough to use a tool like Looker, you can easily inspect the
