@@ -1523,6 +1523,11 @@ ORDER BY 1,2
                 + window.location.hash;
               window.history.replaceState(null, null, newUrl)
             }, 100);
+          } else {
+            setTimeout(() => {
+              const parent = document.querySelector(`#blog input#${postId}`).parentNode;
+              parent.scrollIntoView();
+            }, 100)
           }
         }
 
