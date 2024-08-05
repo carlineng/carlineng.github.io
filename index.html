@@ -1499,39 +1499,40 @@ ORDER BY 1,2
       </div>
       <script>
 
-        // Allow for links directly to specific blog posts
-        // e.g., https://carlineng.com/?postid=post1#blog
-        const urlQueryString = window.location.search;
+        window.addEventListener("load", () => {
 
-        if (urlQueryString) {
-          const urlParams = new URLSearchParams(urlQueryString);
-          const postId = urlParams.get('postid');
-          if (postId) {
-            const linkedBlog = document.querySelector(`#blog input#${postId}`);
-            if (linkedBlog) {
-              linkedBlog.checked = true;
+          // Allow for links directly to specific blog posts
+          // e.g., https://carlineng.com/?postid=post1#blog
+          const urlQueryString = window.location.search;
+
+          if (urlQueryString) {
+            const urlParams = new URLSearchParams(urlQueryString);
+            const postId = urlParams.get('postid');
+            if (postId) {
+              const linkedBlog = document.querySelector(`#blog input#${postId}`);
+              if (linkedBlog) {
+                linkedBlog.checked = true;
+              }
             }
-          }
 
-          // Help the Lightbox return to a particular point in a post
-          // Provide a `scrollto` parameter in the Lightbox return link --
-          const scrollto = urlParams.get('scrollto');
-          if (scrollto) {
-            const elem = document.querySelector(`#${scrollto}`);
-            setTimeout(() => {
-              elem.scrollIntoView({ block: "center", inline: "nearest" });
-              const newUrl = window.location.pathname
-                + (postId ? `?postid=${postId}` : '')
-                + window.location.hash;
-              window.history.replaceState(null, null, newUrl)
-            }, 100);
-          } else {
-            setTimeout(() => {
+            // Help the Lightbox return to a particular point in a post
+            // Provide a `scrollto` parameter in the Lightbox return link --
+            const scrollto = urlParams.get('scrollto');
+            if (scrollto) {
+              const elem = document.querySelector(`#${scrollto}`);
+              if (elem) {
+                elem.scrollIntoView({ block: "center", inline: "nearest" });
+                const newUrl = window.location.pathname
+                  + (postId ? `?postid=${postId}` : '')
+                  + window.location.hash;
+                window.history.replaceState(null, null, newUrl)
+              }
+            } else if (postId) {
               const parent = document.querySelector(`#blog input#${postId}`).parentNode;
               parent.scrollIntoView();
-            }, 100)
+            }
           }
-        }
+        });
 
         // Social Icon mover
         const socials = document.querySelector('div#social')
