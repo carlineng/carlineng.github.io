@@ -97,14 +97,18 @@
             each node in the graph is a single query, and the queries are all executed in the appropriate order. In
             these pipelines, each query can be thought of as a function that takes one or more tables as input, and
             produces a single table as output. </p>
-          <p> f(t_1, t_2, …, t_n) -> t_output </p>
+          <p>
+            <code>
+              𝑓(𝑡₁, 𝑡₂, …, 𝑡ₙ) ⇒ 𝑡ₒ
+            </code>
+          </p>
           <p>Conceptually, this is no different from how functions in standard programming languages work: take some
             input parameters, and produce some output. When writing a function in a language like TypeScript, a software
             engineer might begin by defining an interface for the function’s input – a blueprint that defines which
             parameters are allowed, and their input types. This allows the function to execute on any input data that
             conforms to the required shape. But now consider this scenario in the context of data engineering. In the
-            example I described, each of the parameters, t_1 through t_n, is a table in the data warehouse, and the
-            function, f, is a SQL query. In the first case, the function is defined over an abstract interface. Any
+            example I described, each of the parameters, 𝑡₁ through 𝑡ₙ, is a table in the data warehouse, and the
+            function, 𝑓, is a SQL query. In the first case, the function is defined over an abstract interface. Any
             piece of data that conforms to the interface can be used as input to the function. In the latter case, the
             function (a SQL query) must be executed against specific tables that exist in the warehouse, and can only be
             executed on those tables. There is no way in SQL itself to define queries on an abstract interface.</p>
