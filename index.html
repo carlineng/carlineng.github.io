@@ -115,8 +115,8 @@
           <p> Let’s look at one of the simplest possible examples: deduplicating log events. A data warehouse might have
             several tables that contain logged events. Log events oftentimes have duplicates due to issues that arise in
             the source systems, and the warehouse needs to deal with deduplication. Most systems will have some form of
-            deduplication that performs a row_number window function over the event’s primary key, and grabs the first
-            row. </p>
+            deduplication that performs a <code>row_number</code> window function over the event’s primary key, and
+            grabs the first row. </p>
           <p>
             <code>
               <pre>
