@@ -63,14 +63,14 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
-        <label for="holy-grail-data-engineering" class="post-title">Reusability in Data Engineering: The Holy Grail or a
+        <label for="holy-grail-data-engineering" class="post-title">Reusability in Data Engineering: Holy Grail or
           Fool's Errand?</label>
         <a href="?postid=holy-grail-data-engineering#blog" class="selflink">[link]</a>
         <time datetime="2024-11-01">11.04.2024</time>
-        <input type="" checkbox" id="holy-grail-data-engineering" />
+        <input type="checkbox" id="holy-grail-data-engineering" />
         <div class="post-body">
           <p>It’s not a controversial statement to say that Data Engineering as a discipline does not have much in the
-            way of reusability. Max Beauchemin explored this idea in his <a
+            way of reusability. Maxime Beauchemin explored this idea in his <a
               href="https://preset.io/blog/why-data-teams-keep-reinventing-the-wheel/">recent blog post</a>, and
             attributed the lack of reusability to subtle differences between organizations:</p>
           <blockquote>
@@ -111,19 +111,21 @@
           <p> Let’s look at one of the simplest possible examples: deduplicating log events. A data warehouse might have
             several tables that contain logged events. Log events oftentimes have duplicates due to issues that arise in
             the source systems, and the warehouse needs to deal with deduplication. Most systems will have some form of
-            deduplication that performs a row_rank window function over the event’s primary key, and grabs the first
+            deduplication that performs a row_number window function over the event’s primary key, and grabs the first
             row. </p>
           <p>
             <code>
               <pre>
-                WITH ranked AS (
-                  SELECT
-                  *
-                  , ROW_RANK() OVER (PARTITION BY uuid, unixtime ORDER BY val DESC) as row_rank
-                  FROM log_table
-                  )
-                  SELECT *, except(row_rank) FROM ranked
-                  WHERE row_rank = 1
+WITH ranked AS (
+  SELECT
+    *
+    , ROW_NUMBER() OVER (
+      PARTITION BY uuid, unixtime ORDER BY val DESC
+    ) as row_rank
+  FROM log_table
+)
+SELECT *, except(row_rank) FROM ranked
+WHERE row_rank = 1
               </pre>
             </code>
           </p>
