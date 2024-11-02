@@ -63,6 +63,97 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+        <label for="holy-grail-data-engineering" class="post-title">Reusability in Data Engineering: The Holy Grail or a
+          Fool's Errand?</label>
+        <a href="?postid=holy-grail-data-engineering#blog" class="selflink">[link]</a>
+        <time datetime="2024-11-01">11.04.2024</time>
+        <input type="" checkbox" id="holy-grail-data-engineering" />
+        <div class="post-body">
+          <p>It’s not a controversial statement to say that Data Engineering as a discipline does not have much in the
+            way of reusability. Max Beauchemin explored this idea in his <a
+              href="https://preset.io/blog/why-data-teams-keep-reinventing-the-wheel/">recent blog post</a>, and
+            attributed the lack of reusability to subtle differences between organizations:</p>
+          <blockquote>
+            <p> “As you dig deeper, you realize that no two companies calculate their metrics in exactly the same way.
+              Whether it’s the way they define engagement or measure churn, every business has its own quirks. These
+              small but significant differences prevent the kind of standardization and reuse that should be possible in
+              software engineering.” </p>
+          </blockquote>
+          <p> But in the same way that no two companies are alike, the same can be said of software products. Every
+            software product is unique, and yet software engineers across the infinite variety of products can share and
+            reuse code libraries for foundational tasks like database management, user authentication and cryptography.
+            This reuse allows engineers to focus on building product-specific features rather than reinventing basic
+            components. So why doesn’t data engineering have similar shared core libraries? I believe the problem is not
+            the subtle differences between how companies define metrics, but something much more crude and overt: the
+            primary language of data engineering (SQL) simply does not allow for it! </p>
+          <p> First, let’s define data engineering. It’s a term that can mean many things, but in this case, I’m going
+            to look at a very SQL-centric view. Let’s assume data arrives in the warehouse via some load process –
+            either CDC from a transactional DB, or from a vendor like Fivetran. In this scenario, I define data
+            engineering as the process of turning these raw tables (which are often shaped in ways that are more
+            suitable for an application to work with) into new tables that are easier for human consumers to use via
+            dashboarding tools or hand-written SQL queries. Some might call this “analytics engineering”. </p>
+          <p> One of the most popular tools for this job is dbt. In dbt, users write SQL queries against tables in their
+            data warehouse. These queries form a directed acyclic graph, sometimes called a DAG or a pipeline, where
+            each node in the graph is a single query, and the queries are all executed in the appropriate order. In
+            these pipelines, each query can be thought of as a function that takes one or more tables as input, and
+            produces a single table as output. </p>
+          <p> f(t_1, t_2, …, t_n) -> t_output </p>
+          <p>Conceptually, this is no different from how functions in standard programming languages work: take some
+            input parameters, and produce some output. When writing a function in a language like TypeScript, a software
+            engineer might begin by defining an interface for the function’s input – a blueprint that defines which
+            parameters are allowed, and their input types. This allows the function to execute on any input data that
+            conforms to the required shape. But now consider this scenario in the context of data engineering. In the
+            example I described, each of the parameters, t_1 through t_n, is a table in the data warehouse, and the
+            function, f, is a SQL query. In the first case, the function is defined over an abstract interface. Any
+            piece of data that conforms to the interface can be used as input to the function. In the latter case, the
+            function (a SQL query) must be executed against specific tables that exist in the warehouse, and can only be
+            executed on those tables. There is no way in SQL itself to define queries on an abstract interface.</p>
+          <p> Let’s look at one of the simplest possible examples: deduplicating log events. A data warehouse might have
+            several tables that contain logged events. Log events oftentimes have duplicates due to issues that arise in
+            the source systems, and the warehouse needs to deal with deduplication. Most systems will have some form of
+            deduplication that performs a row_rank window function over the event’s primary key, and grabs the first
+            row. </p>
+          <p>
+            <code>
+              <pre>
+                WITH ranked AS (
+                  SELECT
+                  *
+                  , ROW_RANK() OVER (PARTITION BY uuid, unixtime ORDER BY val DESC) as row_rank
+                  FROM log_table
+                  )
+                  SELECT *, except(row_rank) FROM ranked
+                  WHERE row_rank = 1
+              </pre>
+            </code>
+          </p>
+          <p> I should be able to specify this query by calling a simple “deduplicate” function, and providing it with
+            three parameters: tablename, partition columns, and ordering. Instead, for every table, I need to rewrite
+            the full query, despite the fact that the vast majority of the logic is repeated. </p>
+          <p> Many software and data engineers have noticed this problem and end up solving this problem by writing code
+            that writes SQL. Often this looks like writing a Python function that wraps a SQL string template and
+            produces the desired query based on the function’s input parameters. Unfortunately, this pushes us into a
+            new realm of complexity. The SQL now lives as a string in a Python program which is painful to write and
+            maintain, since typical IDE functionality like type-checking and autocomplete won’t work inside the string.
+            Additionally, syntax errors aren’t caught until runtime, making debugging more difficult. </p>
+          <p> From the query runner’s perspective, the logic is now split between two different languages. Some of the
+            business logic lives in SQL, and some lives in Python. Directly executing the query is no longer an option –
+            first it must be run through a compilation process, and in the event of problems, there are now two separate
+            systems that must be debugged: the query generation logic, and the business logic of the query itself. This
+            added complexity is significant, and in practice, means that writing these kinds of abstracted data
+            pipelines is not accessible to the typical data engineer. </p>
+          <p> Taking a step back, this is rather absurd. Imagine if this same idea were true of software engineering. It
+            would be as if in order to write reusable Javascript, an engineer would need to wrap it inside of a string
+            template in a Python program. It would also mean that only the most talented software engineers could
+            actually write reusable components. I hope that one day, data engineers will have a way to write “natively”
+            reusable code, i.e., plain queries that can be run on abstract interfaces, without requiring the use of
+            SQL-generating templates. This could happen if SQL adopts a way to run abstract queries (e.g., <a
+              href="https://duckdb.org/2024/03/01/sql-gymnastics.html">DuckDB’s Macros</a>), or some other language or
+            framework offers this capability and becomes mainstream. But I firmly believe that until this happens, the
+            discipline of Data Engineering will not meaningfully advance. </p>
+        </div>
+      </article>
+      <article>
         <label for="data-modeling-divide" class="post-title">The Data Modeling Divide</label>
         <a href="?postid=data-modeling-divide#blog" class="selflink">[link]</a>
         <time datetime="2023-06-03">06.03.2023</time>
