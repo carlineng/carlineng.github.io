@@ -66,7 +66,7 @@
         <label for="holy-grail-data-engineering" class="post-title">Reusability in Data Engineering: Holy Grail or
           Fool's Errand?</label>
         <a href="?postid=holy-grail-data-engineering#blog" class="selflink">[link]</a>
-        <time datetime="2024-11-01">11.04.2024</time>
+        <time datetime="2024-11-01">11.03.2024</time>
         <input type="checkbox" id="holy-grail-data-engineering" />
         <div class="post-body">
           <p>It’s not a controversial statement to say that Data Engineering as a discipline does not have much in the
@@ -92,11 +92,11 @@
             engineering as the process of turning these raw tables (which are often shaped in ways that are more
             suitable for an application to work with) into new tables that are easier for human consumers to use via
             dashboarding tools or hand-written SQL queries. Some might call this “analytics engineering”. </p>
-          <p> One of the most popular tools for this job is dbt. In dbt, users write SQL queries against tables in their
-            data warehouse. These queries form a directed acyclic graph, sometimes called a DAG or a pipeline, where
-            each node in the graph is a single query, and the queries are all executed in the appropriate order. In
-            these pipelines, each query can be thought of as a function that takes one or more tables as input, and
-            produces a single table as output. </p>
+          <p> One of the most popular tools for this job is <a href="https://www.getdbt.com/">dbt/</a>. In dbt, users
+            write SQL queries against tables in their data warehouse. These queries form a directed acyclic graph,
+            sometimes called a DAG or a pipeline, where each node in the graph is a single query, and the queries are
+            all executed in the appropriate order. In these pipelines, each query can be thought of as a function that
+            takes one or more tables as input, and produces a single table as output. </p>
           <p>
             <code>
               𝑓(𝑡₁, 𝑡₂, …, 𝑡ₙ) ⇒ 𝑡ₒ
@@ -108,15 +108,16 @@
             parameters are allowed, and their input types. This allows the function to execute on any input data that
             conforms to the required shape. But now consider this scenario in the context of data engineering. In the
             example I described, each of the parameters, 𝑡₁ through 𝑡ₙ, is a table in the data warehouse, and the
-            function, 𝑓, is a SQL query. In the first case, the function is defined over an abstract interface. Any
-            piece of data that conforms to the interface can be used as input to the function. In the latter case, the
-            function (a SQL query) must be executed against specific tables that exist in the warehouse, and can only be
-            executed on those tables. There is no way in SQL itself to define queries on an abstract interface.</p>
+            function, 𝑓, is a SQL query. In the first case (software engineer writing TypeScript), the function is
+            defined over an abstract interface. Any piece of data that conforms to the interface can be used as input to
+            the function. In the latter case (data engineer writing SQL), the function (a SQL query) must be written
+            against specific tables that exist in the warehouse, and can only be executed on those tables. There is no
+            way in SQL itself to define queries on an abstract interface.</p>
           <p> Let’s look at one of the simplest possible examples: deduplicating log events. A data warehouse might have
-            several tables that contain logged events. Log events oftentimes have duplicates due to issues that arise in
-            the source systems, and the warehouse needs to deal with deduplication. Most systems will have some form of
-            deduplication that performs a <code>row_number</code> window function over the event’s primary key, and
-            grabs the first row. </p>
+            several tables that contain logged events. Log event tables often contain duplicates due to issues that
+            arise in the source systems that emit the events, and data engineers need to deduplicate rows from these
+            tables in the warehouse. Usually this looks like a query that performs a <code>row_number</code> window
+            function partitioned over the event’s primary key, and grabs the first row from each window. </p>
           <p>
             <code>
               <pre>
@@ -124,7 +125,7 @@ WITH ranked AS (
   SELECT
     *
     , ROW_NUMBER() OVER (
-      PARTITION BY uuid, unixtime ORDER BY val DESC
+      PARTITION BY event_uuid ORDER BY unixtime ASC
     ) as row_rank
   FROM log_table
 )
@@ -135,7 +136,7 @@ WHERE row_rank = 1
           </p>
           <p> I should be able to specify this query by calling a simple “deduplicate” function, and providing it with
             three parameters: tablename, partition columns, and ordering. Instead, for every table, I need to rewrite
-            the full query, despite the fact that the vast majority of the logic is repeated. </p>
+            the full query, despite the fact that the majority of the logic is not unique. </p>
           <p> Many software and data engineers have noticed this problem and end up solving this problem by writing code
             that writes SQL. Often this looks like writing a Python function that wraps a SQL string template and
             produces the desired query based on the function’s input parameters. Unfortunately, this pushes us into a
