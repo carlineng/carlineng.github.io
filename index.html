@@ -499,12 +499,10 @@ WHERE row_rank = 1
             lines:</p>
           <div id="tpcds4" class="side-by-side">
             <div class="sbs-child">
-              <script
-                src="https://gist.github.com/carlineng/624846faf62c2158dcf49af07a82e1da.js?file=tpcds4.sql"></script>
+              <script src="./gists/tpcds4sql.js"></script>
             </div>
             <div class="sbs-child">
-              <script
-                src="https://gist.github.com/carlineng/624846faf62c2158dcf49af07a82e1da.js?file=tpcds4.malloy"></script>
+              <script src="./gists/tpcds4malloy.js"></script>
             </div>
           </div>
           <p>It’s not a completely fair comparison, since the Malloy query leverages pre-defined logic imported from the
@@ -546,12 +544,10 @@ WHERE row_rank = 1
             a standard part of the language. </p>
           <div id="tpcds21" class="side-by-side">
             <div class="sbs-child">
-              <script
-                src="https://gist.github.com/carlineng/1156dceee87530b024d0bccffd5be5cd.js?file=tpcds21.sql"></script>
+              <script src="./gists/tpcds21sql.js"></script>
             </div>
             <div class="sbs-child">
-              <script
-                src="https://gist.github.com/carlineng/1156dceee87530b024d0bccffd5be5cd.js?file=tpcds21.malloy"></script>
+              <script src="./gists/tpcds21malloy.js"></script>
             </div>
           </div>
           <h2>Potential Areas for Improvement</h2>
@@ -575,7 +571,7 @@ WHERE row_rank = 1
             (lines 2-7 in the query below), and an additional <code>NULL</code> filter in the <code>where</code> block
             (line 16):
           </p>
-          <script src="https://gist.github.com/carlineng/703a08b36cd77055aa4073d9c01e9786.js"></script>
+          <script src="./gists/tpcds33malloy.js"></script>
           <p>Logically, this produces the correct output, but I don’t love the syntax since it combines two operations
             that could each have separate semantic meanings, and which are far apart in the query. This makes it harder
             to interpret exactly what the query is doing. By contrast, the SQL syntax of
@@ -671,15 +667,13 @@ WHERE row_rank = 1
           <p>I described the following example in depth in my <a href="index.html?postid=sql-bad-syntax#blog">previous
               post</a>, but to quickly go over it again, the following SQL query generates a result aggregated at both
             the yearly and monthly level.</p>
-          <script src="https://gist.github.com/carlineng/7fe9b23a2137e08bc6f8f8751125df7c.js"></script>
-          <script
-            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_duplicates.md"></script>
+          <script src="./gists/art__group_by_rollup_sql.js"></script>
+          <script src="./gists/art__raw_results_with_duplicates.js"></script>
           <p>Note that data aggregated at the yearly level is duplicated in every row. This column is now "unsafe" for
             use by downstream queries. Summing the <code>yearly_sales</code> column will result in values that are
             wildly incorrect.</p>
           <p>Compare this to the equivalent Malloy query:</p>
-          <script
-            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=query.malloy"></script>
+          <script src="./gists/art__malloy_rollup.js"></script>
           <p>The <code>by_month</code> column contains a nested table, with its own rows and columns, and we no longer
             have duplicated data for yearly sales.</p>
           <a href="#img-malloy-nest-result-2"><img loading="lazy" alt="" id="malloy-nest-result-2"
@@ -742,12 +736,11 @@ WHERE row_rank = 1
           <p>A concrete example of something difficult in SQL is any kind of nested analysis, such as computing
             subtotals and percent of total in a hierarchical dimension. For example, suppose we have a table of daily
             sales, and we want to roll up total sales simultaneously at the monthly and yearly level: </p>
-          <script
-            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=sales_by_date.markdown"></script>
+          <script src="./gists/sql_sucks__sales_by_date.js"></script>
           <p> This is typically done in SQL with one of three approaches: (1) computing multiple subqueries and joining
             the results together, (2) using a window function to aggregate at different levels, or (3) using a GROUP BY
             ROLLUP clause, if supported by the database. The queries for each of these approaches is below: </p>
-          <script src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=queries.sql"></script>
+          <script src="./gists/sql_sucks__multiple_grain_queries.js"></script>
           <p> Each of these three options produces a correct answer, but presented in a seriously flawed way. A query
             like this requires the data to be aggregated along multiple grains (year and month, in this case); however,
             a typical SQL query is only capable of naturally representing data in two dimensions (rows and columns),
@@ -755,15 +748,13 @@ WHERE row_rank = 1
             resort to unnatural representations that are difficult to interpret and use. This is tough to explain in
             words, but hopefully the following examples are more clear. In approaches (1) and (2) above, the SQL results
             contain duplicate data for the coarser grain (yearly sales):</p>
-          <script
-            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_duplicates.md"></script>
+          <script src="./gists/sql_sucks__results_with_duples.js"></script>
           <p> The <code>yearly_sales</code> column above contains duplicate data for each month's row. Doing a naive
             <code>SUM(yearly_sales)</code> aggregation on this table is a dangerous operation that will lead to
             incorrect results without the appropriate filters.
           <p>In approach (3), yearly aggregates are represented as rows where the finer-grained column (month) contains
             <code>NULL</code> values: </p>
-          <script
-            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=results_with_nulls.markdown"></script>
+          <script src="./gists/sql_sucks__results_with_nulls.js"></script>
           <p>Values aggregated at different grains are all contained in the <code>total_sales</code> column. Whether
             it's a yearly aggregate or a monthly aggregate depends on the values of other columns. Here again, running
             <code>SUM(total_sales)</code> is potentially a very dangerous operation. </p>
@@ -776,8 +767,7 @@ WHERE row_rank = 1
               functionality</a> in Malloy allows you to write a subquery within an aggregation. This will produce a
             sub-table for each row in the GROUP BY clause. It feels much more natural to write the query this way, since
             the query is now written in a way that matches the hierarchical logic that’s being performed:</p>
-          <script
-            src="https://gist.github.com/carlineng/42cb522844d081c71ddced0d0b00bb04.js?file=query.malloy"></script>
+          <script src="./gists/sql_sucks__malloy_rollup.js"></script>
           <p>The output is presented in a way that respects the hierarchical relationship of the data. Every aggregate
             column contains data at a single level of granularity, and we no longer see duplicate values for data at the
             coarser grain.</p>
@@ -1764,6 +1754,7 @@ ORDER BY 1,2
             }
           }
         });
+
 
       </script>
     </section>
