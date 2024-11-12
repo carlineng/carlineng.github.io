@@ -1,0 +1,198 @@
+<div>
+    <link rel="stylesheet" href="gist.css">
+    <div id="gist121067158" class="gist">
+<div class="gist-file" translate="no" data-color-mode="light" data-light-theme="light">
+<div class="gist-data">
+<div class="js-gist-file-update-container js-task-list-container">
+<div id="file-tpcds21-malloy" class="file my-2">
+
+<div itemprop="text" class="Box-body p-0 blob-wrapper data type-text  ">
+
+
+<div class="js-check-bidi js-blob-code-container blob-code-content">
+
+<template class="js-file-alert-template">
+<div data-view-component="true" class="flash flash-warn flash-full d-flex flex-items-center">
+<svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+<path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+<span>
+This file contains bidirectional Unicode text that may be interpreted or compiled differently than what appears below. To review, open the file in an editor that reveals hidden Unicode characters.
+<a class="Link--inTextBlock" href="https://github.co/hiddenchars" target="_blank">Learn more about bidirectional Unicode characters</a>
+</span>
+
+
+<div data-view-component="true" class="flash-action">        <a href="{{ revealButtonHref }}" data-view-component="true" class="btn-sm btn">    Show hidden characters
+</a>
+</div>
+</div></template>
+<template class="js-line-alert-template">
+<span aria-label="This line has hidden Unicode characters" data-view-component="true" class="line-alert tooltipped tooltipped-e">
+<svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+<path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+</span></template>
+
+<table data-hpc="" class="highlight tab-size js-file-line-container js-code-nav-container js-tagsearch-file" data-tab-size="8" data-paste-markdown-skip="" data-tagsearch-lang="" data-tagsearch-path="tpcds21.malloy">
+<tbody><tr>
+<td id="file-tpcds21-malloy-L1" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="1"></td>
+<td id="file-tpcds21-malloy-LC1" class="blob-code blob-code-inner js-file-line">// Malloy Implementation</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L2" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="2"></td>
+<td id="file-tpcds21-malloy-LC2" class="blob-code blob-code-inner js-file-line">// TPC-DS Query 21</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L3" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="3"></td>
+<td id="file-tpcds21-malloy-LC3" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L4" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="4"></td>
+<td id="file-tpcds21-malloy-LC4" class="blob-code blob-code-inner js-file-line">import "tpcds.malloy"</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L5" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="5"></td>
+<td id="file-tpcds21-malloy-LC5" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L6" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="6"></td>
+<td id="file-tpcds21-malloy-LC6" class="blob-code blob-code-inner js-file-line">query: inventory -&gt; {</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L7" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="7"></td>
+<td id="file-tpcds21-malloy-LC7" class="blob-code blob-code-inner js-file-line">  declare: </td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L8" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="8"></td>
+<td id="file-tpcds21-malloy-LC8" class="blob-code blob-code-inner js-file-line">    inv_before is sum(inv_quantity_on_hand) { where: date_dim.d_date &lt; '2000-03-11' }</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L9" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="9"></td>
+<td id="file-tpcds21-malloy-LC9" class="blob-code blob-code-inner js-file-line">    inv_after is sum(inv_quantity_on_hand) { where: date_dim.d_date &gt;= '2000-03-11' }</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L10" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="10"></td>
+<td id="file-tpcds21-malloy-LC10" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L11" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="11"></td>
+<td id="file-tpcds21-malloy-LC11" class="blob-code blob-code-inner js-file-line">  group_by:</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L12" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="12"></td>
+<td id="file-tpcds21-malloy-LC12" class="blob-code blob-code-inner js-file-line">    warehouse.w_warehouse_name</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L13" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="13"></td>
+<td id="file-tpcds21-malloy-LC13" class="blob-code blob-code-inner js-file-line">    item.i_item_id</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L14" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="14"></td>
+<td id="file-tpcds21-malloy-LC14" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L15" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="15"></td>
+<td id="file-tpcds21-malloy-LC15" class="blob-code blob-code-inner js-file-line">  aggregate:</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L16" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="16"></td>
+<td id="file-tpcds21-malloy-LC16" class="blob-code blob-code-inner js-file-line">    inv_before</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L17" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="17"></td>
+<td id="file-tpcds21-malloy-LC17" class="blob-code blob-code-inner js-file-line">    inv_after</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L18" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="18"></td>
+<td id="file-tpcds21-malloy-LC18" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L19" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="19"></td>
+<td id="file-tpcds21-malloy-LC19" class="blob-code blob-code-inner js-file-line">  where:</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L20" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="20"></td>
+<td id="file-tpcds21-malloy-LC20" class="blob-code blob-code-inner js-file-line">    date_dim.d_date &gt;= '2000-02-10'</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L21" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="21"></td>
+<td id="file-tpcds21-malloy-LC21" class="blob-code blob-code-inner js-file-line">    and date_dim.d_date &lt;= '2000-04-10'</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L22" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="22"></td>
+<td id="file-tpcds21-malloy-LC22" class="blob-code blob-code-inner js-file-line">    and item.i_current_price &gt;= 0.99</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L23" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="23"></td>
+<td id="file-tpcds21-malloy-LC23" class="blob-code blob-code-inner js-file-line">    and item.i_current_price &lt;= 1.49</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L24" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="24"></td>
+<td id="file-tpcds21-malloy-LC24" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L25" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="25"></td>
+<td id="file-tpcds21-malloy-LC25" class="blob-code blob-code-inner js-file-line">  having:</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L26" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="26"></td>
+<td id="file-tpcds21-malloy-LC26" class="blob-code blob-code-inner js-file-line">    inv_before &gt; 0</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L27" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="27"></td>
+<td id="file-tpcds21-malloy-LC27" class="blob-code blob-code-inner js-file-line">    , inv_after / inv_before &gt;= 2.0 / 3.0</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L28" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="28"></td>
+<td id="file-tpcds21-malloy-LC28" class="blob-code blob-code-inner js-file-line">    , inv_after / inv_before &lt;= 3.0 / 2.0</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L29" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="29"></td>
+<td id="file-tpcds21-malloy-LC29" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L30" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="30"></td>
+<td id="file-tpcds21-malloy-LC30" class="blob-code blob-code-inner js-file-line">  order_by:</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L31" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="31"></td>
+<td id="file-tpcds21-malloy-LC31" class="blob-code blob-code-inner js-file-line">    w_warehouse_name</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L32" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="32"></td>
+<td id="file-tpcds21-malloy-LC32" class="blob-code blob-code-inner js-file-line">    i_item_id</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L33" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="33"></td>
+<td id="file-tpcds21-malloy-LC33" class="blob-code blob-code-inner js-file-line">
+</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L34" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="34"></td>
+<td id="file-tpcds21-malloy-LC34" class="blob-code blob-code-inner js-file-line">  limit: 100</td>
+</tr>
+<tr>
+<td id="file-tpcds21-malloy-L35" class="blob-num js-line-number js-code-nav-line-number js-blob-rnum" data-line-number="35"></td>
+<td id="file-tpcds21-malloy-LC35" class="blob-code blob-code-inner js-file-line">}</td>
+</tr>
+</tbody></table>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+  </div>

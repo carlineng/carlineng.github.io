@@ -499,12 +499,10 @@ WHERE row_rank = 1
             lines:</p>
           <div id="tpcds4" class="side-by-side">
             <div class="sbs-child">
-              <script
-                src="https://gist.github.com/carlineng/624846faf62c2158dcf49af07a82e1da.js?file=tpcds4.sql"></script>
+                <iframe id="tpcds4_sql" src="./gists/tpcds4_sql.html" frameborder="0"></iframe>
             </div>
             <div class="sbs-child">
-              <script
-                src="https://gist.github.com/carlineng/624846faf62c2158dcf49af07a82e1da.js?file=tpcds4.malloy"></script>
+                <iframe id="tpcds4_malloy" src="./gists/tpcds4_malloy.html" frameborder="0"></iframe>
             </div>
           </div>
           <p>It’s not a completely fair comparison, since the Malloy query leverages pre-defined logic imported from the
@@ -1764,6 +1762,18 @@ ORDER BY 1,2
             }
           }
         });
+
+        // Resize gist iframes
+        function resizeIframe(iframeId) {
+          const iframe = document.getElementById(iframeId);
+          if (iframe && iframe.contentWindow.document.body) {
+            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+          }
+        }
+
+        // Wait until each iframe loads to resize
+        document.getElementById('tpcds4_sql').onload = () => resizeIframe('tpcds4_sql');
+        document.getElementById('tpcds4_malloy').onload = () => resizeIframe('tpcds4_malloy');
 
       </script>
     </section>
