@@ -1,0 +1,77 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<svg>
+<metadata>
+Created by FontForge 20120731 at Mon Oct 24 17:37:40 2016
+ By ,,,
+Copyright Dave Gandy 2016. All rights reserved.
+</metadata>
+<defs>
+<font id="FontAwesome" horiz-adv-x="1536" >
+  <font-face 
+    font-family="FontAwesome"
+    font-weight="400"
+    font-stretch="normal"
+    units-per-em="1792"
+    panose-1="0 0 0 0 0 0 0 0 0 0"
+    ascent="1536"
+    descent="-256"
+    bbox="-1.02083 -256.962 2304.6 1537.02"
+    underline-thickness="0"
+    underline-position="0"
+    unicode-range="U+0020-F500"
+  />
+<missing-glyph horiz-adv-x="896" 
+d="M224 112h448v1312h-448v-1312zM112 0v1536h672v-1536h-672z" />
+
+    <glyph glyph-name="twitter" unicode="&#xf099;" horiz-adv-x="1664" 
+d="M1620 1128q-67 -98 -162 -167q1 -14 1 -42q0 -130 -38 -259.5t-115.5 -248.5t-184.5 -210.5t-258 -146t-323 -54.5q-271 0 -496 145q35 -4 78 -4q225 0 401 138q-105 2 -188 64.5t-114 159.5q33 -5 61 -5q43 0 85 11q-112 23 -185.5 111.5t-73.5 205.5v4q68 -38 146 -41
+q-66 44 -105 115t-39 154q0 88 44 163q121 -149 294.5 -238.5t371.5 -99.5q-8 38 -8 74q0 134 94.5 228.5t228.5 94.5q140 0 236 -102q109 21 205 78q-37 -115 -142 -178q93 10 186 50z" />
+    <glyph glyph-name="facebook" unicode="&#xf09a;" horiz-adv-x="1024" 
+d="M959 1524v-264h-157q-86 0 -116 -36t-30 -108v-189h293l-39 -296h-254v-759h-306v759h-255v296h255v218q0 186 104 288.5t277 102.5q147 0 228 -12z" />
+    <glyph glyph-name="linkedin" unicode="&#xf0e1;" 
+d="M349 911v-991h-330v991h330zM370 1217q1 -73 -50.5 -122t-135.5 -49h-2q-82 0 -132 49t-50 122q0 74 51.5 122.5t134.5 48.5t133 -48.5t51 -122.5zM1536 488v-568h-329v530q0 105 -40.5 164.5t-126.5 59.5q-63 0 -105.5 -34.5t-63.5 -85.5q-11 -30 -11 -81v-553h-329
+q2 399 2 647t-1 296l-1 48h329v-144h-2q20 32 41 56t56.5 52t87 43.5t114.5 15.5q171 0 275 -113.5t104 -332.5z" />
+<glyph glyph-name="facebook_sign" unicode="&#xf082;" 
+d="M1248 1408q119 0 203.5 -84.5t84.5 -203.5v-960q0 -119 -84.5 -203.5t-203.5 -84.5h-188v595h199l30 232h-229v148q0 56 23.5 84t91.5 28l122 1v207q-63 9 -178 9q-136 0 -217.5 -80t-81.5 -226v-171h-200v-232h200v-595h-532q-119 0 -203.5 84.5t-84.5 203.5v960
+q0 119 84.5 203.5t203.5 84.5h960z" />
+    <glyph glyph-name="linkedin_sign" unicode="&#xf08c;" 
+d="M237 122h231v694h-231v-694zM483 1030q-1 52 -36 86t-93 34t-94.5 -34t-36.5 -86q0 -51 35.5 -85.5t92.5 -34.5h1q59 0 95 34.5t36 85.5zM1068 122h231v398q0 154 -73 233t-193 79q-136 0 -209 -117h2v101h-231q3 -66 0 -694h231v388q0 38 7 56q15 35 45 59.5t74 24.5
+q116 0 116 -157v-371zM1536 1120v-960q0 -119 -84.5 -203.5t-203.5 -84.5h-960q-119 0 -203.5 84.5t-84.5 203.5v960q0 119 84.5 203.5t203.5 84.5h960q119 0 203.5 -84.5t84.5 -203.5z" />
+    <glyph glyph-name="twitter_sign" unicode="&#xf081;" 
+d="M1280 926q-56 -25 -121 -34q68 40 93 117q-65 -38 -134 -51q-61 66 -153 66q-87 0 -148.5 -61.5t-61.5 -148.5q0 -29 5 -48q-129 7 -242 65t-192 155q-29 -50 -29 -106q0 -114 91 -175q-47 1 -100 26v-2q0 -75 50 -133.5t123 -72.5q-29 -8 -51 -8q-13 0 -39 4
+q21 -63 74.5 -104t121.5 -42q-116 -90 -261 -90q-26 0 -50 3q148 -94 322 -94q112 0 210 35.5t168 95t120.5 137t75 162t24.5 168.5q0 18 -1 27q63 45 105 109zM1536 1120v-960q0 -119 -84.5 -203.5t-203.5 -84.5h-960q-119 0 -203.5 84.5t-84.5 203.5v960q0 119 84.5 203.5
+t203.5 84.5h960q119 0 203.5 -84.5t84.5 -203.5z" />
+
+    <glyph glyph-name="uniF2E1" unicode="&#xf2e1;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2E2" unicode="&#xf2e2;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2E3" unicode="&#xf2e3;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2E4" unicode="&#xf2e4;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2E5" unicode="&#xf2e5;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2E6" unicode="&#xf2e6;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2E7" unicode="&#xf2e7;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="_698" unicode="&#xf2e8;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2E9" unicode="&#xf2e9;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2EA" unicode="&#xf2ea;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2EB" unicode="&#xf2eb;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2EC" unicode="&#xf2ec;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2ED" unicode="&#xf2ed;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="uniF2EE" unicode="&#xf2ee;" horiz-adv-x="1792" 
+ />
+    <glyph glyph-name="lessequal" unicode="&#xf500;" horiz-adv-x="1792" 
+ />
+  </font>
+</defs></svg>
