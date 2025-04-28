@@ -73,6 +73,103 @@
     <section id="blog">
       <!-- BLOG -->
       <article>
+        <label for="platform-shifts-malloy" class="post-title">Escaping SQL’s Legacy: Malloy and the era of AI-powered
+          Analytics</label>
+        <a href="?postid=platform-shifts-malloy#blog" class="selflink">[link]</a>
+        <time datetime="2025-04-27">04.27.2025</time>
+        <input type="checkbox" id="platform-shifts-malloy" />
+        <div class="post-body">
+          <p>In the 1980s, a fundamental debate emerged in computer architecture between two competing approaches: CISC
+            (Complex Instruction Set Computer) and RISC (Reduced Instruction Set Computer). CISC architectures, backed
+            by Intel with leaders such as Pat Gelsinger pushing x86 forward - emphasized powerful, multi-function
+            instructions to optimize programmer effort. Meanwhile, RISC architectures, developed by researchers like
+            John Hennessy at Stanford, prioritized modularity and speed with simpler instructions. RISC was universally
+            considered a technically superior approach, but not strong enough to overcome the immense weight of legacy
+            software investments that favored CISC. Enormous amounts of critical software had already been written for
+            CISC architectures, and migrating it to RISC would have required costly, large-scale reimplementation - a
+            tradeoff few businesses could justify. It was only with the rise of mobile computing in the 2000s - a new
+            platform with different constraints - that RISC architectures like ARM finally displaced incumbents,
+            following the classic pattern of disruptive innovation. With GenAl, I believe that a similar shift is
+            underway in analytics. </p>
+          <p> Today, SQL holds a position in the world of analytics very similar to CISC's position in computing decades
+            ago: deeply entrenched, widely understood, and supported by a massive ecosystem of tools, systems, and
+            talent. This weight of legacy is what has made previous efforts to replace or significantly evolve SQL so
+            difficult, no matter how promising the alternative. Tens of millions of people have been trained to write
+            and understand SQL, and an enormous volume of business-critical systems rely on it. Replacing SQL not only
+            requires migrating software and rewriting queries - it also demands retraining entire workforces, redefining
+            best practices, and rebuilding a huge stack of interconnected tools and integrations. Even if a new language
+            like Malloy offers clear technical advantages, the switching cost is staggering, and the risks high. </p>
+          <p> This is the trap of legacy: the best technology doesn't always win. Sometimes the most compatible and
+            entrenched one does. However, platform shifts create rare windows of opportunity - moments when the weight
+            of legacy temporarily weakens, and new technologies have a chance to break through and redefine the future.
+          </p>
+          <h3>Why SQL is not fit for GenAI-Powered Analytcs</h3>
+          <p> GenAl has the potential to become a primary interface for interacting with data, but it requires
+            foundational technologies that are modular, composable, and semantically rich. SQL was never designed for
+            this. SQL is a low-level language: every complex analysis must be constructed manually, with little inherent
+            support for abstraction or reuse. Metrics are often derived from scratch, based on formulas and business
+            rules that live not in the database itself, but in the minds of human experts. These recipes are rarely
+            codified in ways that LLMs can easily discover or reuse — they are domain-specific, highly contextual, and
+            sparsely represented in the training data available to large models. As a result, the risk of hallucination
+            and semantic error when generating SQL is extremely high. </p>
+          <p> The problem is structural, not stylistic. Writing semantically correct SQL is not simply a matter of
+            following grammar rules; it requires correctly reassembling entire analytical concepts from first
+            principles, every time. To borrow an analogy from software engineering, SQL is like Assembly language:
+            precise, powerful, but fundamentally low-level. An LLM can write syntactically correct Assembly, but it
+            becomes vastly more capable when operating in higher-level environments like Python or TypeScript, where
+            complex abstractions like networking, storage, and Ul components are already built. Without those
+            higher-level building blocks, even trivial applications would require enormous, error-prone efforts. The
+            same is true in analytics. Asking LLMs to generate full analyses in SQL - without composable, reusable
+            models for key metrics - is akin to asking them to vibe-code an entire web application from raw Assembly.
+            It's technically possible, but the room for error grows exponentially with complexity. </p>
+          <h3>Malloy was Built for this Moment</h3>
+          <p> Malloy was designed with the realities of the GenAl era in mind. It elevates the level of abstraction by
+            treating analytic concepts - measures, dimensions, relationships, and queries - as first-class, modular
+            building blocks. Instead of forcing an LLM (or a human) to re-derive complex metrics and joins from scratch,
+            Malloy allows these analytical patterns to be defined once, in clear, reusable models. This composability
+            dramatically reduces the cognitive burden on either man or machine, and minimizes the risk of errors and
+            hallucinations when generating analysis. Just as high-level programming languages unlocked new capabilities
+            for software developers, Malloy unlocks a higher-level interface for analytics, where GenAl systems can
+            build on solid foundations instead of reinventing them every time. In a world where machines are becoming
+            active participants in data exploration and decision-making, a modular, semantic, and composable query
+            language isn't just helpful — it's essential. </p>
+          <p> Even in a future where GenAl tools generate much of the initial analysis, human judgment remains
+            essential. Analysts, decision-makers, and domain experts will still need to review, modify, and iterate on
+            the outputs. However, SQL makes this human-in-the-loop process difficult and error-prone. SQL queries,
+            whether written by a human or an LLM, are very often extremely complex and brittle, and challenging to read,
+            debug, or safely modify. It's rarely obvious which parts of a long SQL statement can be edited without
+            accidentally breaking joins, filters, or business logic. Small changes can have cascading, unintended
+            effects. </p>
+          <p> Malloy changes this dynamic fundamentally. Because Malloy introduces higher-level abstractions - modular
+            models, defined relationships, reusable measures — it provides clear, semantically meaningful structures
+            that are easier for humans to understand and edit. Instead of reverse-engineering the intent behind hundreds
+            of lines of generated SQL, an analyst can quickly see which models, fields, and metrics are being used, and
+            can make targeted, safe adjustments. The iteration loop between human and machine becomes faster, more
+            reliable, and far less risky. </p>
+          <p>In a GenAl-driven world, success won't just be measured by how well machines generate queries — it will be
+            measured by how well humans and machines can collaborate. Malloy provides the foundation for that
+            collaboration to be safe, scalable, and productive. </p>
+          <h3>The Opportunity Ahead</h3>
+          <p> When RISC architectures like ARM powered the rise of smartphones, it didn't just create better computers -
+            it created a revolution in accessibility. Computing, once confined to those who could afford a desktop
+            machine, became truly global. Billions of people could suddenly access the internet, applications, and
+            information from the palms of their hands. The impact wasn't just technical; it was economic, cultural, and
+            societal. </p>
+          <p> Today, a similar opportunity exists in analytics. SQL has historically served as the gatekeeper to
+            sophisticated data work — an essential but specialized skillset, accessible only to those with the time,
+            training, and expertise to master it. This bottleneck has limited who can directly interrogate data and
+            extract insights. The combination of GenAl and Malloy holds the potential to break that barrier. By making
+            analytic logic modular, composable, and semantically rich, Malloy enables LLMs to build, extend, and adapt
+            sophisticated analyses - and enables humans without deep SQL expertise to participate meaningfully in the
+            process. </p>
+          <p> This shift could massively expand the number of people who can engage with data at a sophisticated level.
+            Analysts, product managers, operations teams, and even executives could move from passive consumers of
+            dashboards to active participants in data-driven problem solving. Just as the smartphone era democratized
+            access to computing, the GenAl era - powered by Malloy - has the potential to democratize access to deep
+            analytics. </p>
+        </div>
+      </article>
+      <article>
         <label for="holy-grail-data-engineering" class="post-title">Reusability in Data Engineering: Holy Grail or
           Fool's Errand?</label>
         <a href="?postid=holy-grail-data-engineering#blog" class="selflink">[link]</a>
