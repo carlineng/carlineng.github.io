@@ -5,23 +5,23 @@ on:
     branches:
     - master
 
+permissions:
+  id-token: write   # lets the job request a short-lived OIDC token for AWS
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: jakejarvis/s3-sync-action@master
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+    - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd  # v6.3.0
       with:
-        args: --follow-symlinks --delete --exclude '.git/*' --exclude '.github/*' --exclude '.nojekyll' --exclude '.gitignore' --exclude 'rusa-analysis/*' --exclude 'tpcds-fiddle/*'
-      env:
-        AWS_S3_BUCKET: 'carlineng.com'
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: 'us-west-2'
-    - uses: chetan/invalidate-cloudfront-action@v2
-      env:
-        DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION }}
-        PATHS: "/index.html"
-        AWS_REGION: "us-west-2"
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: arn:aws:iam::731860625658:role/github-actions-carlineng-website
+        aws-region: us-west-2
+    - name: Sync site to S3
+      run: >
+        aws s3 sync . s3://carlineng.com --follow-symlinks --delete
+        --exclude '.git/*' --exclude '.github/*' --exclude '.nojekyll' --exclude '.gitignore'
+        --exclude 'rusa-analysis/*' --exclude 'tpcds-fiddle/*'
+    - name: Invalidate CloudFront
+      run: aws cloudfront create-invalidation --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION }}" --paths "/index.html"
