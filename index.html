@@ -47,11 +47,11 @@
         </a>
       </figure>
       <p> I have worn many hats in my career, including Data Engineer, Engineering Manager, Enterprise Sales, Software
-        Engineer, and Product Manager; but always in the domain of data and analytics. Previously worked at <a
+        Engineer, and Product Manager; but always in the domain of data and analytics. Currently a Customer Engineer at
+        <a href='https://motherduck.com/'>MotherDuck</a>. Previously worked at <a
           href='https://strava.com/'>Strava</a>, <a href='https://www.snowflake.com/'>Snowflake</a>, <a
-          href='https://www.geteppo.com'>Eppo</a>, and <a href='https://google.com'>Google</a>. Currently working on the
-        <a href='https://malloydata.github.io/documentation/index.html'>Malloy</a> query language at <a
-          href='http://meta.com'>Meta</a>. Avid cyclist, and proud member of the Dolphin Club in San Francisco,
+          href='https://www.geteppo.com'>Eppo</a>, <a href='https://google.com'>Google</a>, and <a
+          href='https://meta.com'>Meta</a>. Avid cyclist, and proud member of the Dolphin Club in San Francisco,
         California. I use this space to post my <a href='https://carlineng.com/#blog'>musings on the topic of data and
           analytics.</a></p>
       <div style="position: absolute; bottom: 5%; font-size: .8em; color: #949494"> Made with <span
@@ -1746,46 +1746,68 @@ ORDER BY 1,2
         });
 
         // Social Icon mover
-        const socials = document.querySelector('div#social')
-        socials.addEventListener('mouseover', (e) => {
-          if (e.target !== e.currentTarget) {
+        // The icons drift away from the cursor as it approaches, easing back home
+        // when it leaves. The push is measured from the icons' resting spot, so
+        // they give ground but can still be caught and clicked.
+        const socials = document.querySelector('div#social');
+        const REPEL_RADIUS = 120; // px from resting center where the push starts
+        const MAX_PUSH = 70;      // px of displacement when the cursor is dead center
+        const EASE = 0.12;        // fraction of the remaining distance covered per frame
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        let current = { x: 0, y: 0 };
+        let target = { x: 0, y: 0 };
+        let lastDir = { x: 0, y: -1 };
+        let frame = null;
+
+        function animateSocials() {
+          current.x += (target.x - current.x) * EASE;
+          current.y += (target.y - current.y) * EASE;
+          if (Math.abs(target.x - current.x) < 0.1 && Math.abs(target.y - current.y) < 0.1) {
+            current = { ...target };
+            frame = null;
+          } else {
+            frame = requestAnimationFrame(animateSocials);
+          }
+          socials.style.transform = `translate(${current.x}px, ${current.y}px)`;
+        }
+
+        function setSocialsTarget(x, y) {
+          target = { x, y };
+          if (frame === null) frame = requestAnimationFrame(animateSocials);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+          if (reduceMotion.matches || socials.offsetParent === null) return;
+
+          // Resting position = current box minus the offset we applied
+          const rect = socials.getBoundingClientRect();
+          const restX = rect.left - current.x + rect.width / 2;
+          const restY = rect.top - current.y + rect.height / 2;
+          const dx = restX - e.clientX;
+          const dy = restY - e.clientY;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist >= REPEL_RADIUS) {
+            setSocialsTarget(0, 0);
             return;
           }
+          if (dist > 1) lastDir = { x: dx / dist, y: dy / dist };
 
-          // Snap element back if it gets close to bottom
-          const topEdge = e.target.previousElementSibling.getBoundingClientRect().bottom;
-          const { bottom: bottom, left: left, top: top } = e.target.getBoundingClientRect();
-          if (bottom >= window.innerHeight * 0.98 || top <= (topEdge - 1)) {
-            socials.style.transform = '';
-            return;
-          }
+          const strength = 1 - dist / REPEL_RADIUS;
+          const push = MAX_PUSH * strength * strength;
+          let x = lastDir.x * push;
+          let y = lastDir.y * push;
 
-          const { offsetWidth: width, offsetHeight: height } = e.target;
-          const { offsetX: x, offsetY: y } = e;
+          // Keep the icons on screen
+          const restBottom = rect.bottom - current.y;
+          y = Math.min(y, window.innerHeight - restBottom - 4);
+          x = Math.max(x, -(rect.left - current.x) + 4);
 
-          const enterRight = 1 - ((width - x) / width);
-          const enterLeft = (width - x) / width;
-          const enterTop = 1 - ((height - y) / height);
-          const enterBottom = (height - y) / height;
-
-          let [pushX, pushY] = [0, 0];
-
-          if (enterRight < enterLeft && enterRight < enterTop && enterRight < enterBottom) {
-            pushX = 80;
-          } else if (enterLeft < enterRight && enterLeft < enterTop && enterLeft < enterBottom) {
-            pushX = -80;
-          } else if (enterTop < enterLeft && enterTop < enterRight && enterTop < enterBottom) {
-            pushY = 40;
-          } else if (enterBottom < enterLeft && enterBottom < enterRight && enterBottom < enterTop) {
-            pushY = -40;
-          }
-
-          socials.style.transform = `translate(${e.offsetX + pushX}px, ${e.offsetY + pushY}px)`;
+          setSocialsTarget(x, y);
         });
 
-        socials.addEventListener('mouseleave', (e) => {
-          socials.style.transform = '';
-        });
+        document.addEventListener('mouseleave', () => setSocialsTarget(0, 0));
 
         // Emoji carousel
 
